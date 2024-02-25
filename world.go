@@ -5,9 +5,11 @@ import (
 )
 
 var (
-	world map[rl.Rectangle]Block
-	wall  rl.Texture2D
-	floor rl.Texture2D
+	world      map[rl.Rectangle]Block
+	wall       rl.Texture2D
+	floor      rl.Texture2D
+	chestOpen  rl.Texture2D
+	chestClose rl.Texture2D
 )
 
 const (
@@ -24,11 +26,15 @@ func loadWorld() {
 	world = make(map[rl.Rectangle]Block)
 	wall = rl.LoadTexture("assets/images/blocks/wall.png")
 	floor = rl.LoadTexture("assets/images/blocks/floor.png")
+	chestOpen = rl.LoadTexture("assets/images/blocks/chest_open.png")
+	chestClose = rl.LoadTexture("assets/images/blocks/chest_close.png")
 }
 
 func unloadWorld() {
 	rl.UnloadTexture(wall)
 	rl.UnloadTexture(floor)
+	rl.UnloadTexture(chestOpen)
+	rl.UnloadTexture(chestClose)
 }
 
 func addBlock(img rl.Texture2D, x, y float32, passable bool) {

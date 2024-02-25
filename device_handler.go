@@ -40,6 +40,8 @@ func mouseHandler() {
 				addBlock(wall, float32(mouseX), float32(mouseY), false)
 			case 2:
 				addBlock(floor, float32(mouseX), float32(mouseY), true)
+			case 3:
+				addBlock(chestClose, float32(mouseX), float32(mouseY), false)
 			}
 		}
 	}
@@ -105,5 +107,8 @@ func keyboardHandler() {
 	}
 	if rl.IsKeyPressed(rl.KeyTwo) {
 		item = 2
+	}
+	if rl.IsKeyPressed(rl.KeyThree) {
+		item = 3
 	}
 }
