@@ -6,7 +6,6 @@ import (
 
 var (
 	player          rl.Texture2D
-	playerDirection byte         = 0 // 0 - лево, 1 - право
 	playerPosition  rl.Vector2   = rl.NewVector2(0.0, 0.0)
 	playerRectangle rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, TILE_SIZE, TILE_SIZE)
 	playerSpeed     float32      = 80
