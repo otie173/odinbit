@@ -5,7 +5,8 @@ import (
 )
 
 var (
-	bkgColor rl.Color = rl.NewColor(0, 0, 0, 255)
+	bkgColor       rl.Color = rl.NewColor(0, 0, 0, 255)
+	fontBold, font rl.Font
 )
 
 const (
@@ -20,12 +21,7 @@ func update() {
 }
 
 func render() {
-	rl.BeginDrawing()
-	rl.ClearBackground(bkgColor)
-	rl.BeginMode2D(cam)
-	drawWorld()
-	rl.EndMode2D()
-	rl.EndDrawing()
+	drawScene()
 }
 
 func exit() {
@@ -33,6 +29,8 @@ func exit() {
 
 	unloadWorld()
 	unloadPlayer()
+	rl.UnloadFont(fontBold)
+	rl.UnloadFont(font)
 }
 
 func init() {
@@ -40,8 +38,10 @@ func init() {
 	rl.SetConfigFlags(rl.FlagFullscreenMode)
 	rl.InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Odinbit")
 	rl.SetExitKey(0)
-	rl.SetTargetFPS(144)
+	rl.SetTargetFPS(60)
 
+	fontBold = rl.LoadFont("assets/fonts/pypx/pypx_bold.ttf")
+	font = rl.LoadFont("assets/fonts/pypx/pypx.ttf")
 	loadWorld()
 	loadPlayer()
 }

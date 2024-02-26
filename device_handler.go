@@ -109,4 +109,7 @@ func keyboardHandler() {
 	if rl.IsKeyPressed(rl.KeyThree) {
 		item = 3
 	}
+	if rl.IsKeyPressed(rl.KeyX) {
+		currentScene = GAME
+	}
 }
