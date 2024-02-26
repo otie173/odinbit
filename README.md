@@ -1,3 +1,4 @@
+![odinbit_banner](https://github.com/useri52og5i7e/odinbit/assets/121895140/5a030143-d232-46cc-8ee8-262c82f901d6)
 ## Game overview
 You're in a one-bit world. What will you do in it?
 
