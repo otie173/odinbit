@@ -21,6 +21,7 @@ func mouseHandler() {
 		for _, block := range world {
 			if rl.CheckCollisionPointRec(mousePos, block.rec) {
 				removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+				soundBlockRemove()
 			}
 		}
 	}
@@ -46,10 +47,13 @@ func mouseHandler() {
 			switch item {
 			case 1:
 				addBlock(wall, float32(mouseX), float32(mouseY), false)
+				soundBlockAdd()
 			case 2:
 				addBlock(floor, float32(mouseX), float32(mouseY), true)
+				soundBlockAdd()
 			case 3:
 				addBlock(chestClose, float32(mouseX), float32(mouseY), false)
+				soundBlockAdd()
 			}
 		}
 	}

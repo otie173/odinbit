@@ -29,6 +29,7 @@ func exit() {
 
 	unloadWorld()
 	unloadPlayer()
+	unloadAudio()
 	rl.UnloadFont(fontBold)
 	rl.UnloadFont(font)
 }
@@ -44,6 +45,7 @@ func init() {
 	font = rl.LoadFont("assets/fonts/pypx/pypx.ttf")
 	loadWorld()
 	loadPlayer()
+	loadAudio()
 }
 
 func main() {
