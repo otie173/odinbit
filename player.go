@@ -5,10 +5,12 @@ import (
 )
 
 var (
-	player          rl.Texture2D
-	playerPosition  rl.Vector2   = rl.NewVector2(0.0, 0.0)
-	playerRectangle rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, TILE_SIZE, TILE_SIZE)
-	cam             rl.Camera2D
+	player                 rl.Texture2D
+	playerPosition         rl.Vector2   = rl.NewVector2(0.0, 0.0)
+	playerRectangle        rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, TILE_SIZE, TILE_SIZE)
+	playerFlippedRectangle rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, -TILE_SIZE, TILE_SIZE)
+	playerDirection        bool         = false
+	cam                    rl.Camera2D
 )
 
 func loadPlayer() {

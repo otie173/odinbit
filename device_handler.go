@@ -70,6 +70,7 @@ func keyboardHandler() {
 		}
 	}
 	if rl.IsKeyPressed(rl.KeyA) {
+		playerDirection = false
 		for _, block := range world {
 			if playerPosition.X-TILE_SIZE == block.rec.X && playerPosition.Y == block.rec.Y && !block.passable {
 				canMove = false
@@ -96,6 +97,7 @@ func keyboardHandler() {
 		}
 	}
 	if rl.IsKeyPressed(rl.KeyD) {
+		playerDirection = true
 		for _, block := range world {
 			if playerPosition.X+TILE_SIZE == block.rec.X && playerPosition.Y == block.rec.Y && !block.passable {
 				canMove = false
