@@ -8,7 +8,6 @@ var (
 	player          rl.Texture2D
 	playerPosition  rl.Vector2   = rl.NewVector2(0.0, 0.0)
 	playerRectangle rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, TILE_SIZE, TILE_SIZE)
-	playerSpeed     float32      = 80
 	cam             rl.Camera2D
 )
 

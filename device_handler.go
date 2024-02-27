@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -10,6 +11,7 @@ var (
 	mousePos     rl.Vector2
 	mouseOnBlock bool
 	canMove      bool
+	canBuild     bool
 	item         int
 )
 
@@ -26,6 +28,12 @@ func mouseHandler() {
 		mousePos = rl.GetScreenToWorld2D(rl.GetMousePosition(), cam)
 		mouseX := int(math.Floor(float64(mousePos.X / TILE_SIZE)))
 		mouseY := int(math.Floor(float64(mousePos.Y / TILE_SIZE)))
+		fmt.Println(playerPosition.X, playerPosition.Y, mouseX*10, mouseY*10)
+		if playerPosition.X == (float32(mouseX)*10) && playerPosition.Y == (float32(mouseY)*10) {
+			canBuild = false
+		} else {
+			canBuild = true
+		}
 		for _, block := range world {
 			if rl.CheckCollisionPointRec(mousePos, block.rec) {
 				mouseOnBlock = true
@@ -34,7 +42,7 @@ func mouseHandler() {
 				mouseOnBlock = false
 			}
 		}
-		if !mouseOnBlock {
+		if !mouseOnBlock && canBuild {
 			switch item {
 			case 1:
 				addBlock(wall, float32(mouseX), float32(mouseY), false)
