@@ -8,7 +8,7 @@ var (
 
 func loadAudio() {
 	rl.InitAudioDevice()
-	blockAction = rl.LoadSound("assets/audio/block_action.mp3")
+	blockAction = rl.LoadSound("assets/audio/block_action.wav")
 }
 
 func unloadAudio() {
