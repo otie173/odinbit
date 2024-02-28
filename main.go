@@ -12,7 +12,11 @@ var (
 func update() {
 	keyboardHandler()
 	mouseHandler()
-	cam.Target = rl.NewVector2(playerPosition.X, playerPosition.Y)
+	//cam.Target = rl.NewVector2(playerPosition.X, playerPosition.Y)
+	deltaX := playerPosition.X - cam.Target.X
+	deltaY := playerPosition.Y - cam.Target.Y
+	cam.Target.X += deltaX / camSpeed
+	cam.Target.Y += deltaY / camSpeed
 }
 
 func render() {

@@ -11,6 +11,7 @@ var (
 	playerFlippedRectangle rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, -TILE_SIZE, TILE_SIZE)
 	playerDirection        bool         = false
 	cam                    rl.Camera2D
+	camSpeed               float32 = 20.0
 )
 
 func loadPlayer() {
