@@ -5,9 +5,7 @@ import (
 )
 
 var (
-	currentScene  int          = TITLE
-	gameRectangle rl.Rectangle = rl.NewRectangle(775, 500, 175, 65)
-	exitRectangle rl.Rectangle = rl.NewRectangle(1005, 500, 145, 65)
+	currentScene int = TITLE
 )
 
 const (
@@ -18,10 +16,15 @@ const (
 func drawScene() {
 	switch currentScene {
 	case TITLE:
+		odinbitLabelSize := rl.MeasureTextEx(fontBold, "Odinbit", 72, 2)
+		odinbitLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(odinbitLabelSize.X))/2, float32(rl.GetScreenHeight()-int(odinbitLabelSize.Y))/2-95)
+		exitRectangle := rl.NewRectangle(odinbitLabelPos.X+230, odinbitLabelPos.Y+90, 145, 65)
+		gameRectangle := rl.NewRectangle(odinbitLabelPos.X, odinbitLabelPos.Y+90, 175, 65)
+
 		rl.BeginDrawing()
-		rl.DrawTextEx(fontBold, "Odinbit", rl.NewVector2(775, 400), 72, 2, rl.White)
-		rl.DrawTextEx(font, "Game", rl.NewVector2(775, 500), 56, 2, rl.White)
-		rl.DrawTextEx(font, "Exit", rl.NewVector2(1005, 500), 56, 2, rl.White)
+		rl.DrawTextEx(fontBold, "Odinbit", odinbitLabelPos, 72, 2, rl.White)
+		rl.DrawTextEx(font, "Game", rl.NewVector2(odinbitLabelPos.X, odinbitLabelPos.Y+90), 56, 2, rl.White)
+		rl.DrawTextEx(font, "Exit", rl.NewVector2(odinbitLabelPos.X+230, odinbitLabelPos.Y+90), 56, 2, rl.White)
 		rl.EndDrawing()
 
 		if rl.IsMouseButtonDown(rl.MouseButtonLeft) {

@@ -15,7 +15,7 @@ var (
 
 func loadPlayer() {
 	player = rl.LoadTexture("assets/images/characters/player.png")
-	cam = rl.NewCamera2D(rl.NewVector2(float32(SCREEN_WIDTH/2), float32(SCREEN_HEIGHT/2)), rl.NewVector2(float32(playerPosition.X), float32(playerPosition.Y)), 0.0, 5.0)
+	cam = rl.NewCamera2D(rl.NewVector2(float32(rl.GetScreenWidth()/2), float32(rl.GetScreenHeight()/2)), rl.NewVector2(float32(playerPosition.X), float32(playerPosition.Y)), 0.0, 5.0)
 }
 
 func unloadPlayer() {

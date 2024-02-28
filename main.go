@@ -9,11 +9,6 @@ var (
 	fontBold, font rl.Font
 )
 
-const (
-	SCREEN_WIDTH  int32 = 1920
-	SCREEN_HEIGHT int32 = 1080
-)
-
 func update() {
 	keyboardHandler()
 	mouseHandler()
@@ -37,7 +32,7 @@ func exit() {
 func init() {
 	rl.SetConfigFlags(rl.FlagVsyncHint)
 	rl.SetConfigFlags(rl.FlagFullscreenMode)
-	rl.InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Odinbit")
+	rl.InitWindow(int32(rl.GetScreenWidth()), int32(rl.GetScreenHeight()), "Odinbit")
 	rl.SetExitKey(0)
 	rl.SetTargetFPS(60)
 
