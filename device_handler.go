@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -29,7 +28,6 @@ func mouseHandler() {
 		mousePos = rl.GetScreenToWorld2D(rl.GetMousePosition(), cam)
 		mouseX := int(math.Floor(float64(mousePos.X / TILE_SIZE)))
 		mouseY := int(math.Floor(float64(mousePos.Y / TILE_SIZE)))
-		fmt.Println(playerPosition.X, playerPosition.Y, mouseX*10, mouseY*10)
 		if playerPosition.X == (float32(mouseX)*10) && playerPosition.Y == (float32(mouseY)*10) {
 			canBuild = false
 		} else {

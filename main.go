@@ -12,7 +12,6 @@ var (
 func update() {
 	keyboardHandler()
 	mouseHandler()
-	//cam.Target = rl.NewVector2(playerPosition.X, playerPosition.Y)
 	deltaX := playerPosition.X - cam.Target.X
 	deltaY := playerPosition.Y - cam.Target.Y
 	cam.Target.X += deltaX / camSpeed
@@ -38,8 +37,7 @@ func init() {
 	rl.SetConfigFlags(rl.FlagFullscreenMode)
 	rl.InitWindow(int32(rl.GetScreenWidth()), int32(rl.GetScreenHeight()), "Odinbit")
 	rl.SetExitKey(0)
-	rl.SetTargetFPS(60)
-
+	rl.SetTargetFPS(int32(rl.GetMonitorRefreshRate(rl.GetCurrentMonitor())))
 	fontBold = rl.LoadFont("assets/fonts/pypx/pypx_bold.ttf")
 	font = rl.LoadFont("assets/fonts/pypx/pypx.ttf")
 	loadWorld()
