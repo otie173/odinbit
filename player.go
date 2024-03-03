@@ -24,3 +24,11 @@ func loadPlayer() {
 func unloadPlayer() {
 	rl.UnloadTexture(player)
 }
+
+func drawPlayer() {
+	if playerDirection {
+		rl.DrawTextureRec(player, playerRectangle, rl.NewVector2(playerPosition.X, playerPosition.Y), rl.White)
+	} else if !playerDirection {
+		rl.DrawTextureRec(player, playerFlippedRectangle, rl.NewVector2(playerPosition.X, playerPosition.Y), rl.White)
+	}
+}

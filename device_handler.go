@@ -13,6 +13,8 @@ var (
 )
 
 func mouseHandler() {
+	canBuild = true
+	mouseOnBlock = false
 	if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
 		mousePos = rl.GetScreenToWorld2D(rl.GetMousePosition(), cam)
 		for _, block := range world {
@@ -108,6 +110,19 @@ func keyboardHandler() {
 		}
 		if canMove {
 			playerPosition.X += TILE_SIZE
+		}
+	}
+	if rl.IsKeyPressed(rl.KeyE) && currentScene != TITLE {
+		switch inventoryOpen {
+		case true:
+			inventoryOpen = false
+		case false:
+			inventoryOpen = true
+		}
+		if inventoryOpen {
+			currentScene = INVENTORY
+		} else if !inventoryOpen {
+			currentScene = GAME
 		}
 	}
 	if rl.IsKeyPressed(rl.KeyOne) {

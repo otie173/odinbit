@@ -54,9 +54,4 @@ func drawWorld() {
 	for _, block := range world {
 		rl.DrawTextureRec(block.img, block.rec, rl.NewVector2(block.rec.X, block.rec.Y), rl.White)
 	}
-	if playerDirection {
-		rl.DrawTextureRec(player, playerRectangle, rl.NewVector2(playerPosition.X, playerPosition.Y), rl.White)
-	} else if !playerDirection {
-		rl.DrawTextureRec(player, playerFlippedRectangle, rl.NewVector2(playerPosition.X, playerPosition.Y), rl.White)
-	}
 }

@@ -30,6 +30,7 @@ func exit() {
 	unloadAudio()
 	rl.UnloadFont(fontBold)
 	rl.UnloadFont(font)
+	unloadInventory()
 }
 
 func init() {
@@ -43,6 +44,7 @@ func init() {
 	loadWorld()
 	loadPlayer()
 	loadAudio()
+	loadInventory()
 }
 
 func main() {
