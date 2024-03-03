@@ -9,8 +9,6 @@ import (
 var (
 	mousePos     rl.Vector2
 	mouseOnBlock bool
-	canMove      bool
-	canBuild     bool
 	item         int
 )
 

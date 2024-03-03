@@ -12,6 +12,8 @@ var (
 	playerDirection        bool         = false
 	cam                    rl.Camera2D
 	camSpeed               float32 = 50.0
+	canMove                bool
+	canBuild               bool
 )
 
 func loadPlayer() {
