@@ -11,7 +11,7 @@ var (
 	playerFlippedRectangle rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, -TILE_SIZE, TILE_SIZE)
 	playerDirection        bool         = false
 	cam                    rl.Camera2D
-	camSpeed               float32 = 50.0
+	camSpeed               float32 = 25.0
 	canMove                bool
 	canBuild               bool
 )

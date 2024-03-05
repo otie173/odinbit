@@ -15,7 +15,7 @@ var (
 func mouseHandler() {
 	canBuild = true
 	mouseOnBlock = false
-	if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
+	if rl.IsMouseButtonPressed(rl.MouseButtonLeft) && currentScene == GAME {
 		mousePos = rl.GetScreenToWorld2D(rl.GetMousePosition(), cam)
 		for _, block := range world {
 			if rl.CheckCollisionPointRec(mousePos, block.rec) {
@@ -24,7 +24,7 @@ func mouseHandler() {
 			}
 		}
 	}
-	if rl.IsMouseButtonPressed(rl.MouseButtonRight) {
+	if rl.IsMouseButtonPressed(rl.MouseButtonRight) && currentScene == GAME {
 		mousePos = rl.GetScreenToWorld2D(rl.GetMousePosition(), cam)
 		mouseX := int(math.Floor(float64(mousePos.X / TILE_SIZE)))
 		mouseY := int(math.Floor(float64(mousePos.Y / TILE_SIZE)))
@@ -58,7 +58,7 @@ func mouseHandler() {
 }
 
 func keyboardHandler() {
-	if rl.IsKeyPressed(rl.KeyW) {
+	if rl.IsKeyPressed(rl.KeyW) && currentScene == GAME {
 		for _, block := range world {
 			if playerPosition.Y-TILE_SIZE == block.rec.Y && playerPosition.X == block.rec.X && !block.passable {
 				canMove = false
@@ -71,7 +71,7 @@ func keyboardHandler() {
 			playerPosition.Y -= TILE_SIZE
 		}
 	}
-	if rl.IsKeyPressed(rl.KeyA) {
+	if rl.IsKeyPressed(rl.KeyA) && currentScene == GAME {
 		playerDirection = false
 		for _, block := range world {
 			if playerPosition.X-TILE_SIZE == block.rec.X && playerPosition.Y == block.rec.Y && !block.passable {
@@ -85,7 +85,7 @@ func keyboardHandler() {
 			playerPosition.X -= TILE_SIZE
 		}
 	}
-	if rl.IsKeyPressed(rl.KeyS) {
+	if rl.IsKeyPressed(rl.KeyS) && currentScene == GAME {
 		for _, block := range world {
 			if playerPosition.Y+TILE_SIZE == block.rec.Y && playerPosition.X == block.rec.X && !block.passable {
 				canMove = false
@@ -98,7 +98,7 @@ func keyboardHandler() {
 			playerPosition.Y += TILE_SIZE
 		}
 	}
-	if rl.IsKeyPressed(rl.KeyD) {
+	if rl.IsKeyPressed(rl.KeyD) && currentScene == GAME {
 		playerDirection = true
 		for _, block := range world {
 			if playerPosition.X+TILE_SIZE == block.rec.X && playerPosition.Y == block.rec.Y && !block.passable {
