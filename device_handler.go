@@ -28,7 +28,7 @@ func mouseHandler() {
 		mousePos = rl.GetScreenToWorld2D(rl.GetMousePosition(), cam)
 		mouseX := int(math.Floor(float64(mousePos.X / TILE_SIZE)))
 		mouseY := int(math.Floor(float64(mousePos.Y / TILE_SIZE)))
-		if playerPosition.X == (float32(mouseX)*10) && playerPosition.Y == (float32(mouseY)*10) {
+		if playerPosition.X == (float32(mouseX)*10) && playerPosition.Y == (float32(mouseY)*10) && item != 2 {
 			canBuild = false
 		} else {
 			canBuild = true
@@ -50,6 +50,10 @@ func mouseHandler() {
 				addBlock(floor, float32(mouseX), float32(mouseY), true)
 				soundBlockAdd()
 			case 3:
+				//TODO
+				//addBlock(door, float32(mouseX), float32(mouseY), true)
+				//soundBlockAdd()
+			case 4:
 				addBlock(chest, float32(mouseX), float32(mouseY), false)
 				soundBlockAdd()
 			}
@@ -133,5 +137,8 @@ func keyboardHandler() {
 	}
 	if rl.IsKeyPressed(rl.KeyThree) {
 		item = 3
+	}
+	if rl.IsKeyPressed(rl.KeyFour) {
+		item = 4
 	}
 }
