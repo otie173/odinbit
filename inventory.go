@@ -16,12 +16,16 @@ var (
 	wood          rl.Texture2D
 	stone         rl.Texture2D
 	metal         rl.Texture2D
-	woodCount     int  = 0
-	stoneCount    int  = 0
-	metalCount    int  = 0
+	woodCount     int  = 1
+	stoneCount    int  = 5
+	metalCount    int  = 3
 	wallIsOpen    bool = true
 	floorIsOpen   bool = true
+	chestIsOpen   bool = true
 	question      rl.Texture2D
+	wallCount     int = 2
+	floorCount    int = 3
+	chestCount    int = 8
 )
 
 type InventorySlot struct {
@@ -48,7 +52,7 @@ func loadInventory() {
 	stone = rl.LoadTexture("assets/images/items/stone.png")
 	metal = rl.LoadTexture("assets/images/items/metal.png")
 	textures = []rl.Texture2D{wood, stone, metal}
-	otherTextures = []rl.Texture2D{wall, floor}
+	otherTextures = []rl.Texture2D{wall, floor, chest}
 	question = rl.LoadTexture("assets/images/gui/question.png")
 
 	inventoryLabelSize := rl.MeasureTextEx(fontBold, "Inventory", 72, 2)
@@ -115,33 +119,47 @@ func drawItems() {
 			case 2:
 				itemCount = metalCount
 			}
-			itemCountText := fmt.Sprintf("%d", itemCount)
-			fontSize := float32(16)
-			fontSpacing := float32(2)
-			var itemCountTextWidth float32
-			for {
-				itemCountTextWidth = rl.MeasureTextEx(font, itemCountText, fontSize, fontSpacing).X
-				if itemCountTextWidth+14 <= float32(slotImage.Width)*cam.Zoom {
-					break
-				}
-				fontSize -= 1
-				if fontSize <= 8 {
-					break
-				}
-			}
-			itemCountPosX := slot.x + float32(slotImage.Width)*cam.Zoom - itemCountTextWidth - 7
-			itemCountPosY := slot.y + float32(slotImage.Height)*cam.Zoom - fontSize - 4
-			rl.DrawTextEx(font, itemCountText, rl.NewVector2(itemCountPosX, itemCountPosY), fontSize, fontSpacing, rl.White)
-		}
-		if wallIsOpen {
-			drawSlot(0, true)
-		} else {
-			drawSlot(0, false)
-		}
-		if floorIsOpen {
-			drawSlot(1, true)
-		} else {
-			drawSlot(1, false)
+			drawItemCount(slot.x, slot.y, itemCount, slotImage.Width, slotImage.Height)
 		}
 	}
+
+	if wallIsOpen {
+		drawSlot(0, true)
+		drawItemCount(hotInventory[0].x, hotInventory[0].y, wallCount, slotImage.Width, slotImage.Height)
+	} else {
+		drawSlot(0, false)
+	}
+	if floorIsOpen {
+		drawSlot(1, true)
+		drawItemCount(hotInventory[1].x, hotInventory[1].y, floorCount, slotImage.Width, slotImage.Height)
+	} else {
+		drawSlot(1, false)
+	}
+	if chestIsOpen {
+		drawSlot(2, true)
+		drawItemCount(hotInventory[2].x, hotInventory[2].y, floorCount, slotImage.Width, slotImage.Height)
+	} else {
+		drawSlot(2, false)
+	}
+
+}
+
+func drawItemCount(x, y float32, count int, slotWidth, slotHeight int32) {
+	itemCountText := fmt.Sprintf("%d", count)
+	fontSize := float32(16)
+	fontSpacing := float32(2)
+	var itemCountTextWidth float32
+	for {
+		itemCountTextWidth = rl.MeasureTextEx(font, itemCountText, fontSize, fontSpacing).X
+		if itemCountTextWidth+14 <= float32(slotWidth)*cam.Zoom {
+			break
+		}
+		fontSize -= 1
+		if fontSize <= 8 {
+			break
+		}
+	}
+	itemCountPosX := x + float32(slotWidth)*cam.Zoom - itemCountTextWidth - 7
+	itemCountPosY := y + float32(slotHeight)*cam.Zoom - fontSize - 4
+	rl.DrawTextEx(font, itemCountText, rl.NewVector2(itemCountPosX, itemCountPosY), fontSize, fontSpacing, rl.White)
 }
