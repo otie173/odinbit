@@ -140,13 +140,14 @@ func drawItems() {
 	if doorIsOpen {
 		drawSlot(2, true)
 		drawItemCount(hotInventory[2].x, hotInventory[2].y, doorCount, slotImage.Width, slotImage.Height)
-	}
-
-	if chestIsOpen {
-		drawSlot(2, true)
-		drawItemCount(hotInventory[2].x, hotInventory[2].y, chestCount, slotImage.Width, slotImage.Height)
 	} else {
 		drawSlot(2, false)
+	}
+	if chestIsOpen {
+		drawSlot(3, true)
+		drawItemCount(hotInventory[3].x, hotInventory[3].y, chestCount, slotImage.Width, slotImage.Height)
+	} else {
+		drawSlot(3, false)
 	}
 
 }
