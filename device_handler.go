@@ -21,6 +21,28 @@ func mouseHandler() {
 			if rl.CheckCollisionPointRec(mousePos, block.rec) {
 				removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 				soundBlockRemove()
+				switch block.img {
+				case wall:
+					if !wallIsOpen {
+						wallIsOpen = true
+					}
+					wallCount++
+				case floor:
+					if !floorIsOpen {
+						floorIsOpen = true
+					}
+					floorCount++
+				case door:
+					if !doorIsOpen {
+						doorIsOpen = true
+					}
+					doorCount++
+				case chest:
+					if !chestIsOpen {
+						chestIsOpen = true
+					}
+					chestCount++
+				}
 			}
 		}
 	}
@@ -44,17 +66,29 @@ func mouseHandler() {
 		if !mouseOnBlock && canBuild {
 			switch item {
 			case 1:
-				addBlock(wall, float32(mouseX), float32(mouseY), false)
-				soundBlockAdd()
+				if wallIsOpen && wallCount != 0 {
+					addBlock(wall, float32(mouseX), float32(mouseY), false)
+					soundBlockAdd()
+					wallCount--
+				}
 			case 2:
-				addBlock(floor, float32(mouseX), float32(mouseY), true)
-				soundBlockAdd()
+				if floorIsOpen && floorCount != 0 {
+					addBlock(floor, float32(mouseX), float32(mouseY), true)
+					soundBlockAdd()
+					floorCount--
+				}
 			case 3:
-				addBlock(door, float32(mouseX), float32(mouseY), true)
-				soundBlockAdd()
+				if doorIsOpen && doorCount != 0 {
+					addBlock(door, float32(mouseX), float32(mouseY), true)
+					soundBlockAdd()
+					doorCount--
+				}
 			case 4:
-				addBlock(chest, float32(mouseX), float32(mouseY), false)
-				soundBlockAdd()
+				if chestIsOpen && chestCount != 0 {
+					addBlock(chest, float32(mouseX), float32(mouseY), true)
+					soundBlockAdd()
+					chestCount--
+				}
 			}
 		}
 	}

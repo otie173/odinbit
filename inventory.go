@@ -16,18 +16,18 @@ var (
 	wood          rl.Texture2D
 	stone         rl.Texture2D
 	metal         rl.Texture2D
-	woodCount     int  = 1
-	stoneCount    int  = 5
-	metalCount    int  = 3
-	wallIsOpen    bool = true
-	floorIsOpen   bool = true
-	doorIsOpen    bool = true
-	chestIsOpen   bool = true
+	woodCount     int  = 0
+	stoneCount    int  = 0
+	metalCount    int  = 0
+	wallIsOpen    bool = false
+	floorIsOpen   bool = false
+	doorIsOpen    bool = false
+	chestIsOpen   bool = false
 	question      rl.Texture2D
-	wallCount     int = 2
-	floorCount    int = 3
+	wallCount     int = 0
+	floorCount    int = 0
 	doorCount     int = 0
-	chestCount    int = 8
+	chestCount    int = 0
 )
 
 type InventorySlot struct {
@@ -97,8 +97,8 @@ func drawSlot(slot int, open bool) {
 	} else {
 		slotCenterX := hotInventory[slot].x + (float32(slotImage.Width)/2)*cam.Zoom
 		slotCenterY := hotInventory[slot].y + (float32(slotImage.Height)/2)*cam.Zoom
-		itemPosX := slotCenterX - (float32(textures[slot].Width)/2)*cam.Zoom
-		itemPosY := slotCenterY - (float32(textures[slot].Height)/2)*cam.Zoom
+		itemPosX := slotCenterX - (float32(otherTextures[slot].Width)/2)*cam.Zoom
+		itemPosY := slotCenterY - (float32(otherTextures[slot].Height)/2)*cam.Zoom
 		rl.DrawTextureEx(question, rl.NewVector2(itemPosX, itemPosY), 0, cam.Zoom, rl.White)
 	}
 }

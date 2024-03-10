@@ -45,6 +45,7 @@ func init() {
 	loadPlayer()
 	loadAudio()
 	loadInventory()
+	addBlock(wall, 0, 2, false)
 }
 
 func main() {
