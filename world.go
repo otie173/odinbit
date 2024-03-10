@@ -8,6 +8,7 @@ var (
 	world map[rl.Rectangle]Block
 	wall  rl.Texture2D
 	floor rl.Texture2D
+	door  rl.Texture2D
 	chest rl.Texture2D
 )
 
@@ -25,6 +26,7 @@ func loadWorld() {
 	world = make(map[rl.Rectangle]Block)
 	wall = rl.LoadTexture("assets/images/blocks/wall.png")
 	floor = rl.LoadTexture("assets/images/blocks/floor.png")
+	door = rl.LoadTexture("assets/images/blocks/door.png")
 	chest = rl.LoadTexture("assets/images/blocks/chest.png")
 }
 

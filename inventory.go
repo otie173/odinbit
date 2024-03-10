@@ -21,10 +21,12 @@ var (
 	metalCount    int  = 3
 	wallIsOpen    bool = true
 	floorIsOpen   bool = true
+	doorIsOpen    bool = true
 	chestIsOpen   bool = true
 	question      rl.Texture2D
 	wallCount     int = 2
 	floorCount    int = 3
+	doorCount     int = 0
 	chestCount    int = 8
 )
 
@@ -52,7 +54,7 @@ func loadInventory() {
 	stone = rl.LoadTexture("assets/images/items/stone.png")
 	metal = rl.LoadTexture("assets/images/items/metal.png")
 	textures = []rl.Texture2D{wood, stone, metal}
-	otherTextures = []rl.Texture2D{wall, floor, chest}
+	otherTextures = []rl.Texture2D{wall, floor, door, chest}
 	question = rl.LoadTexture("assets/images/gui/question.png")
 
 	inventoryLabelSize := rl.MeasureTextEx(fontBold, "Inventory", 72, 2)
@@ -135,6 +137,11 @@ func drawItems() {
 	} else {
 		drawSlot(1, false)
 	}
+	if doorIsOpen {
+		drawSlot(2, true)
+		drawItemCount(hotInventory[2].x, hotInventory[2].y, doorCount, slotImage.Width, slotImage.Height)
+	}
+
 	if chestIsOpen {
 		drawSlot(2, true)
 		drawItemCount(hotInventory[2].x, hotInventory[2].y, chestCount, slotImage.Width, slotImage.Height)

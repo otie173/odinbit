@@ -50,9 +50,8 @@ func mouseHandler() {
 				addBlock(floor, float32(mouseX), float32(mouseY), true)
 				soundBlockAdd()
 			case 3:
-				//TODO
-				//addBlock(door, float32(mouseX), float32(mouseY), true)
-				//soundBlockAdd()
+				addBlock(door, float32(mouseX), float32(mouseY), true)
+				soundBlockAdd()
 			case 4:
 				addBlock(chest, float32(mouseX), float32(mouseY), false)
 				soundBlockAdd()
