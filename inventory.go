@@ -24,10 +24,11 @@ var (
 	doorIsOpen    bool = false
 	chestIsOpen   bool = false
 	question      rl.Texture2D
-	wallCount     int = 0
-	floorCount    int = 0
-	doorCount     int = 0
-	chestCount    int = 0
+	wallCount     int     = 0
+	floorCount    int     = 0
+	doorCount     int     = 0
+	chestCount    int     = 0
+	inventoryZoom float32 = 5.0
 )
 
 type InventorySlot struct {
@@ -38,7 +39,7 @@ type InventorySlot struct {
 
 func createInventoryRow(startX, startY float32, slots, spacing int, inventory *[]InventorySlot, slotNum *int) {
 	for i := 0; i < slots; i++ {
-		slotX := startX + float32(i)*float32(slotImage.Width*int32(cam.Zoom)+int32(spacing))
+		slotX := startX + float32(i)*float32(slotImage.Width*int32(inventoryZoom)+int32(spacing))
 		(*inventory)[*slotNum] = newInventorySlot(slotX, startY, *slotNum)
 		*slotNum++
 	}
@@ -89,28 +90,28 @@ func newInventorySlot(x, y float32, slotNumber int) InventorySlot {
 
 func drawSlot(slot int, open bool) {
 	if open {
-		slotCenterX := hotInventory[slot].x + (float32(slotImage.Width)/2)*cam.Zoom
-		slotCenterY := hotInventory[slot].y + (float32(slotImage.Height)/2)*cam.Zoom
-		itemPosX := slotCenterX - (float32(otherTextures[slot].Width)/2)*cam.Zoom
-		itemPosY := slotCenterY - (float32(otherTextures[slot].Height)/2)*cam.Zoom
-		rl.DrawTextureEx(otherTextures[slot], rl.NewVector2(itemPosX, itemPosY), 0, cam.Zoom, rl.White)
+		slotCenterX := hotInventory[slot].x + (float32(slotImage.Width)/2)*inventoryZoom
+		slotCenterY := hotInventory[slot].y + (float32(slotImage.Height)/2)*inventoryZoom
+		itemPosX := slotCenterX - (float32(otherTextures[slot].Width)/2)*inventoryZoom
+		itemPosY := slotCenterY - (float32(otherTextures[slot].Height)/2)*inventoryZoom
+		rl.DrawTextureEx(otherTextures[slot], rl.NewVector2(itemPosX, itemPosY), 0, inventoryZoom, rl.White)
 	} else {
-		slotCenterX := hotInventory[slot].x + (float32(slotImage.Width)/2)*cam.Zoom
-		slotCenterY := hotInventory[slot].y + (float32(slotImage.Height)/2)*cam.Zoom
-		itemPosX := slotCenterX - (float32(otherTextures[slot].Width)/2)*cam.Zoom
-		itemPosY := slotCenterY - (float32(otherTextures[slot].Height)/2)*cam.Zoom
-		rl.DrawTextureEx(question, rl.NewVector2(itemPosX, itemPosY), 0, cam.Zoom, rl.White)
+		slotCenterX := hotInventory[slot].x + (float32(slotImage.Width)/2)*inventoryZoom
+		slotCenterY := hotInventory[slot].y + (float32(slotImage.Height)/2)*inventoryZoom
+		itemPosX := slotCenterX - (float32(otherTextures[slot].Width)/2)*inventoryZoom
+		itemPosY := slotCenterY - (float32(otherTextures[slot].Height)/2)*inventoryZoom
+		rl.DrawTextureEx(question, rl.NewVector2(itemPosX, itemPosY), 0, inventoryZoom, rl.White)
 	}
 }
 
 func drawItems() {
 	for i, slot := range inventory {
-		slotCenterX := slot.x + (float32(slotImage.Width)/2)*cam.Zoom
-		slotCenterY := slot.y + (float32(slotImage.Height)/2)*cam.Zoom
+		slotCenterX := slot.x + (float32(slotImage.Width)/2)*inventoryZoom
+		slotCenterY := slot.y + (float32(slotImage.Height)/2)*inventoryZoom
 		if i < len(textures) {
-			itemPosX := slotCenterX - (float32(textures[i].Width)/2)*cam.Zoom
-			itemPosY := slotCenterY - (float32(textures[i].Height)/2)*cam.Zoom
-			rl.DrawTextureEx(textures[i], rl.NewVector2(itemPosX, itemPosY), 0, cam.Zoom, rl.White)
+			itemPosX := slotCenterX - (float32(textures[i].Width)/2)*inventoryZoom
+			itemPosY := slotCenterY - (float32(textures[i].Height)/2)*inventoryZoom
+			rl.DrawTextureEx(textures[i], rl.NewVector2(itemPosX, itemPosY), 0, inventoryZoom, rl.White)
 
 			var itemCount int
 			switch i {
@@ -159,7 +160,7 @@ func drawItemCount(x, y float32, count int, slotWidth, slotHeight int32) {
 	var itemCountTextWidth float32
 	for {
 		itemCountTextWidth = rl.MeasureTextEx(font, itemCountText, fontSize, fontSpacing).X
-		if itemCountTextWidth+14 <= float32(slotWidth)*cam.Zoom {
+		if itemCountTextWidth+14 <= float32(slotWidth)*inventoryZoom {
 			break
 		}
 		fontSize -= 1
@@ -167,7 +168,7 @@ func drawItemCount(x, y float32, count int, slotWidth, slotHeight int32) {
 			break
 		}
 	}
-	itemCountPosX := x + float32(slotWidth)*cam.Zoom - itemCountTextWidth - 7
-	itemCountPosY := y + float32(slotHeight)*cam.Zoom - fontSize - 4
+	itemCountPosX := x + float32(slotWidth)*inventoryZoom - itemCountTextWidth - 7
+	itemCountPosY := y + float32(slotHeight)*inventoryZoom - fontSize - 4
 	rl.DrawTextEx(font, itemCountText, rl.NewVector2(itemCountPosX, itemCountPosY), fontSize, fontSpacing, rl.White)
 }

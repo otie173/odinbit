@@ -80,7 +80,67 @@ func removeBlock(x, y float32) {
 	delete(world, rl.NewRectangle(x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE, TILE_SIZE))
 }
 
+func generateStructure(x, y, structure int) {
+	switch structure {
+	case 1:
+		addBlock(wall, float32(x), float32(y), false)
+		addBlock(wall, float32(x+1), float32(y), false)
+		addBlock(wall, float32(x), float32(y+1), false)
+		addBlock(floor, float32(x+1), float32(y+1), true)
+		addBlock(floor, float32(x+1), float32(y+2), true)
+		addBlock(chest, float32(x+2), float32(y+2), false)
+		addBlock(floor, float32(x+3), float32(y+2), true)
+		addBlock(wall, float32(x+4), float32(y+1), false)
+		addBlock(floor, float32(x+3), float32(y+4), true)
+	case 2:
+		addBlock(wall, float32(x), float32(y), false)
+		addBlock(door, float32(x+1), float32(y), true)
+		addBlock(wall, float32(x+2), float32(y), false)
+		addBlock(wall, float32(x), float32(y+1), false)
+		addBlock(floor, float32(x+1), float32(y+1), true)
+		addBlock(floor, float32(x+2), float32(y+1), true)
+		addBlock(floor, float32(x), float32(y+2), true)
+		addBlock(floor, float32(x+1), float32(y+2), true)
+		addBlock(chest, float32(x+2), float32(y+2), false)
+		addBlock(wall, float32(x+1), float32(y+3), false)
+		addBlock(floor, float32(x+2), float32(y+3), true)
+	case 3:
+		addBlock(floor, float32(x), float32(y), true)
+		addBlock(floor, float32(x+1), float32(y), true)
+		addBlock(floor, float32(x+3), float32(y), true)
+		addBlock(wall, float32(x), float32(y+1), false)
+		addBlock(floor, float32(x+1), float32(y+1), true)
+		addBlock(floor, float32(x+2), float32(y+1), true)
+		addBlock(wall, float32(x+3), float32(y+1), false)
+		addBlock(wall, float32(x), float32(y+2), false)
+		addBlock(floor, float32(x+1), float32(y+2), true)
+		addBlock(chest, float32(x+2), float32(y+2), false)
+		addBlock(door, float32(x+3), float32(y+2), true)
+		addBlock(floor, float32(x+4), float32(y+2), true)
+		addBlock(wall, float32(x+1), float32(y+3), false)
+		addBlock(wall, float32(x+2), float32(y+3), false)
+		addBlock(wall, float32(x+3), float32(y+3), false)
+
+	}
+}
+
 func generateWorld() {
+	// Генерация данжа1
+	x1 := rand.Intn(65) - 32
+	y1 := rand.Intn(65) - 32
+	generateStructure(x1, y1, 1)
+
+	//Генерация данжа2
+	x2 := rand.Intn(65) - 32
+	y2 := rand.Intn(65) - 32
+	generateStructure(x2, y2, 2)
+
+	// Генерация данжа3
+	x3 := rand.Intn(65) - 32
+	y3 := rand.Intn(65) - 32
+	generateStructure(x3, y3, 3)
+
+	// Генерация деревьев
 	for i := 0; i < 96; i++ {
 		x := rand.Intn(65) - 32
 		y := rand.Intn(65) - 32
@@ -96,6 +156,7 @@ func generateWorld() {
 		}
 	}
 
+	// Генерация камней
 	for i := 0; i < 96; i++ {
 		x := rand.Intn(65) - 32
 		y := rand.Intn(65) - 32

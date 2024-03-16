@@ -96,6 +96,24 @@ func mouseHandler() {
 			}
 		}
 	}
+	// Крафт блоков из материалов
+	if rl.IsMouseButtonPressed(rl.MouseButtonLeft) && currentScene == INVENTORY {
+		mousePos := rl.GetMousePosition()
+		// Крафт стены
+		if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[0].x, hotInventory[0].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+			if wallIsOpen && stoneCount-9 >= 0 {
+				wallCount++
+				stoneCount -= 9
+			}
+		}
+		//Крафт пола
+		if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[1].x, hotInventory[1].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+			if floorIsOpen && woodCount-9 >= 0 {
+				floorCount++
+				woodCount -= 9
+			}
+		}
+	}
 }
 
 func keyboardHandler() {
