@@ -12,10 +12,7 @@ var (
 func update() {
 	keyboardHandler()
 	mouseHandler()
-	deltaX := playerPosition.X - cam.Target.X
-	deltaY := playerPosition.Y - cam.Target.Y
-	cam.Target.X += deltaX / camSpeed
-	cam.Target.Y += deltaY / camSpeed
+	cam.Target = rl.Vector2Lerp(cam.Target, rl.NewVector2(playerPosition.X+playerRectangle.Width/2, playerPosition.Y+playerRectangle.Height/2), 0.05)
 }
 
 func render() {
@@ -34,7 +31,6 @@ func exit() {
 }
 
 func init() {
-	rl.SetConfigFlags(rl.FlagVsyncHint)
 	rl.SetConfigFlags(rl.FlagFullscreenMode)
 	rl.InitWindow(int32(rl.GetScreenWidth()), int32(rl.GetScreenHeight()), "Odinbit")
 	rl.SetExitKey(0)
@@ -45,7 +41,7 @@ func init() {
 	loadPlayer()
 	loadAudio()
 	loadInventory()
-	addBlock(wall, 0, 2, false)
+	generateWorld()
 }
 
 func main() {

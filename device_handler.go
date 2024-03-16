@@ -42,6 +42,10 @@ func mouseHandler() {
 						chestIsOpen = true
 					}
 					chestCount++
+				case smallTree, normalTree, bigTree:
+					woodCount += 1
+				case stone1, stone2, stone3, stone4:
+					stoneCount += 1
 				}
 			}
 		}
