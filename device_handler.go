@@ -20,7 +20,15 @@ func mouseHandler() {
 		for _, block := range world {
 			if rl.CheckCollisionPointRec(mousePos, block.rec) {
 				removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
-				soundBlockRemove()
+				// Воспроизведение звука при разрушении объекта в зависимости от текстуры
+				switch block.img {
+				case smallTree, normalTree, bigTree, stone1, stone2, stone3, stone4:
+					pickupResourceSound()
+				default:
+					soundBlockAction()
+
+				}
+				// Открытие слота инвентаря, если блок был неизвестен
 				switch block.img {
 				case wall:
 					if !wallIsOpen {
@@ -72,25 +80,25 @@ func mouseHandler() {
 			case 1:
 				if wallIsOpen && wallCount != 0 {
 					addBlock(wall, float32(mouseX), float32(mouseY), false)
-					soundBlockAdd()
+					soundBlockAction()
 					wallCount--
 				}
 			case 2:
 				if floorIsOpen && floorCount != 0 {
 					addBlock(floor, float32(mouseX), float32(mouseY), true)
-					soundBlockAdd()
+					soundBlockAction()
 					floorCount--
 				}
 			case 3:
 				if doorIsOpen && doorCount != 0 {
 					addBlock(door, float32(mouseX), float32(mouseY), true)
-					soundBlockAdd()
+					soundBlockAction()
 					doorCount--
 				}
 			case 4:
 				if chestIsOpen && chestCount != 0 {
 					addBlock(chest, float32(mouseX), float32(mouseY), true)
-					soundBlockAdd()
+					soundBlockAction()
 					chestCount--
 				}
 			}
