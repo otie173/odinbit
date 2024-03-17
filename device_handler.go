@@ -19,13 +19,21 @@ func mouseHandler() {
 		mousePos = rl.GetScreenToWorld2D(rl.GetMousePosition(), cam)
 		for _, block := range world {
 			if rl.CheckCollisionPointRec(mousePos, block.rec) {
-				removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
-				// Воспроизведение звука при разрушении объекта в зависимости от текстуры
+
+				// Воспроизведение звука и разрушение объекта в зависимости от текстуры
 				switch block.img {
 				case smallTree, normalTree, bigTree, stone1, stone2, stone3, stone4:
+					removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 					pickupResourceSound()
+					// Генерация травы на месте сломанного блока, чтобы не было просто пустого места
+					generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+				case grass1, grass2, grass3, grass4, grass5, grass6:
+					break
 				default:
+					removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 					soundBlockAction()
+					// Генерация травы на месте сломанного блока, чтобы не было просто пустого места
+					generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 
 				}
 				// Открытие слота инвентаря, если блок был неизвестен
@@ -68,7 +76,7 @@ func mouseHandler() {
 			canBuild = true
 		}
 		for _, block := range world {
-			if rl.CheckCollisionPointRec(mousePos, block.rec) {
+			if rl.CheckCollisionPointRec(mousePos, block.rec) && block.img != grass1 && block.img != grass2 && block.img != grass3 && block.img != grass4 && block.img != grass5 && block.img != grass6 {
 				mouseOnBlock = true
 				break
 			} else {
@@ -97,7 +105,7 @@ func mouseHandler() {
 				}
 			case 4:
 				if chestIsOpen && chestCount != 0 {
-					addBlock(chest, float32(mouseX), float32(mouseY), true)
+					addBlock(chest, float32(mouseX), float32(mouseY), false)
 					soundBlockAction()
 					chestCount--
 				}

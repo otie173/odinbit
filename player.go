@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"math"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -22,6 +25,23 @@ func loadPlayer() {
 
 func unloadPlayer() {
 	rl.UnloadTexture(player)
+}
+
+func roundToFixed(x float32, places int) float32 {
+	shift := math.Pow(10, float64(places))
+	return float32(math.Round(float64(x)*shift) / shift)
+}
+
+func updateCameraTarget(cam *rl.Camera2D, playerPosition rl.Vector2, playerRectangle rl.Rectangle) {
+	targetX := playerPosition.X + playerRectangle.Width/2
+	targetY := playerPosition.Y + playerRectangle.Height/2
+
+	newX := rl.Vector2Lerp(cam.Target, rl.NewVector2(targetX, cam.Target.Y), 0.025).X
+	newY := rl.Vector2Lerp(cam.Target, rl.NewVector2(cam.Target.X, targetY), 0.025).Y
+
+	cam.Target.X = roundToFixed(newX, 1)
+	cam.Target.Y = roundToFixed(newY, 1)
+	fmt.Println(cam.Target)
 }
 
 func drawPlayer() {

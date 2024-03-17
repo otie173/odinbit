@@ -19,6 +19,12 @@ var (
 	stone4     rl.Texture2D
 	normalTree rl.Texture2D
 	bigTree    rl.Texture2D
+	grass1     rl.Texture2D
+	grass2     rl.Texture2D
+	grass3     rl.Texture2D
+	grass4     rl.Texture2D
+	grass5     rl.Texture2D
+	grass6     rl.Texture2D
 )
 
 const (
@@ -44,6 +50,12 @@ func loadWorld() {
 	stone4 = rl.LoadTexture("assets/images/world/stone4.png")
 	normalTree = rl.LoadTexture("assets/images/world/normal_tree.png")
 	bigTree = rl.LoadTexture("assets/images/world/big_tree.png")
+	grass1 = rl.LoadTexture("assets/images/world/grass1.png")
+	grass2 = rl.LoadTexture("assets/images/world/grass2.png")
+	grass3 = rl.LoadTexture("assets/images/world/grass3.png")
+	grass4 = rl.LoadTexture("assets/images/world/grass4.png")
+	grass5 = rl.LoadTexture("assets/images/world/grass5.png")
+	grass6 = rl.LoadTexture("assets/images/world/grass6.png")
 
 	rl.SetTextureFilter(smallTree, rl.TextureFilterNearest)
 	rl.SetTextureFilter(stone1, rl.TextureFilterNearest)
@@ -52,6 +64,12 @@ func loadWorld() {
 	rl.SetTextureFilter(stone4, rl.TextureFilterNearest)
 	rl.SetTextureFilter(normalTree, rl.TextureFilterNearest)
 	rl.SetTextureFilter(bigTree, rl.TextureFilterNearest)
+	rl.SetTextureFilter(grass1, rl.TextureFilterNearest)
+	rl.SetTextureFilter(grass2, rl.TextureFilterNearest)
+	rl.SetTextureFilter(grass3, rl.TextureFilterNearest)
+	rl.SetTextureFilter(grass4, rl.TextureFilterNearest)
+	rl.SetTextureFilter(grass5, rl.TextureFilterNearest)
+	rl.SetTextureFilter(grass6, rl.TextureFilterNearest)
 }
 
 func unloadWorld() {
@@ -65,6 +83,12 @@ func unloadWorld() {
 	rl.UnloadTexture(stone4)
 	rl.UnloadTexture(normalTree)
 	rl.UnloadTexture(bigTree)
+	rl.UnloadTexture(grass1)
+	rl.UnloadTexture(grass2)
+	rl.UnloadTexture(grass3)
+	rl.UnloadTexture(grass4)
+	rl.UnloadTexture(grass5)
+	rl.UnloadTexture(grass6)
 }
 
 func addBlock(img rl.Texture2D, x, y float32, passable bool) {
@@ -124,7 +148,48 @@ func generateStructure(x, y, structure int) {
 	}
 }
 
+func generateTree(x, y float32) {
+	// Генерация случайного номера изображения дерева
+	treeImg := rand.Intn(3) + 1
+	// Постановка дерева на карту в зависимости от номера текстуры
+	switch treeImg {
+	case 1:
+		addBlock(smallTree, float32(x), float32(y), false)
+	case 2:
+		addBlock(normalTree, float32(x), float32(y), false)
+	case 3:
+		addBlock(bigTree, float32(x), float32(y), false)
+	}
+}
+
+func generateGrass(x, y float32) {
+	// Генерация случайного номера изображения травы
+	grassImage := rand.Intn(6) + 1
+	// Поставновка травы на карту в зависимости от номера текстуры
+	switch grassImage {
+	case 1:
+		addBlock(grass1, x, y, true)
+	case 2:
+		addBlock(grass2, x, y, true)
+	case 3:
+		addBlock(grass3, x, y, true)
+	case 4:
+		addBlock(grass4, x, y, true)
+	case 5:
+		addBlock(grass5, x, y, true)
+	case 6:
+		addBlock(grass6, x, y, true)
+	}
+}
+
 func generateWorld() {
+	// Генерация травы
+	for x := -32; x <= 32; x++ {
+		for y := -32; y <= 32; y++ {
+			generateGrass(float32(x), float32(y))
+		}
+	}
+
 	// Генерация данжа1
 	x1 := rand.Intn(65) - 32
 	y1 := rand.Intn(65) - 32
@@ -144,16 +209,7 @@ func generateWorld() {
 	for i := 0; i < 96; i++ {
 		x := rand.Intn(65) - 32
 		y := rand.Intn(65) - 32
-
-		treeImg := rand.Intn(3) + 1
-		switch treeImg {
-		case 1:
-			addBlock(smallTree, float32(x), float32(y), false)
-		case 2:
-			addBlock(normalTree, float32(x), float32(y), false)
-		case 3:
-			addBlock(bigTree, float32(x), float32(y), false)
-		}
+		generateTree(float32(x), float32(y))
 	}
 
 	// Генерация камней
@@ -173,6 +229,7 @@ func generateWorld() {
 			addBlock(stone4, float32(x), float32(y), false)
 		}
 	}
+
 }
 
 func drawWorld() {

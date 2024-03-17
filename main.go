@@ -12,7 +12,7 @@ var (
 func update() {
 	keyboardHandler()
 	mouseHandler()
-	cam.Target = rl.Vector2Lerp(cam.Target, rl.NewVector2(playerPosition.X+playerRectangle.Width/2, playerPosition.Y+playerRectangle.Height/2), 0.05)
+	updateCameraTarget(&cam, playerPosition, playerRectangle)
 }
 
 func render() {
