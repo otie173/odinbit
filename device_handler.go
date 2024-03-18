@@ -9,7 +9,6 @@ import (
 var (
 	mousePos     rl.Vector2
 	mouseOnBlock bool
-	item         int
 )
 
 func mouseHandler() {
@@ -85,25 +84,25 @@ func mouseHandler() {
 		}
 		if !mouseOnBlock && canBuild {
 			switch item {
-			case 1:
+			case WALL:
 				if wallIsOpen && wallCount != 0 {
 					addBlock(wall, float32(mouseX), float32(mouseY), false)
 					soundBlockAction()
 					wallCount--
 				}
-			case 2:
+			case FLOOR:
 				if floorIsOpen && floorCount != 0 {
 					addBlock(floor, float32(mouseX), float32(mouseY), true)
 					soundBlockAction()
 					floorCount--
 				}
-			case 3:
+			case DOOR:
 				if doorIsOpen && doorCount != 0 {
 					addBlock(door, float32(mouseX), float32(mouseY), true)
 					soundBlockAction()
 					doorCount--
 				}
-			case 4:
+			case CHEST:
 				if chestIsOpen && chestCount != 0 {
 					addBlock(chest, float32(mouseX), float32(mouseY), false)
 					soundBlockAction()
@@ -201,15 +200,15 @@ func keyboardHandler() {
 		}
 	}
 	if rl.IsKeyPressed(rl.KeyOne) {
-		item = 1
+		item = WALL
 	}
 	if rl.IsKeyPressed(rl.KeyTwo) {
-		item = 2
+		item = FLOOR
 	}
 	if rl.IsKeyPressed(rl.KeyThree) {
-		item = 3
+		item = DOOR
 	}
 	if rl.IsKeyPressed(rl.KeyFour) {
-		item = 4
+		item = CHEST
 	}
 }

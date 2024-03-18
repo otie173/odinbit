@@ -8,6 +8,7 @@ import (
 
 var (
 	world      map[rl.Rectangle]Block
+	item       int
 	wall       rl.Texture2D
 	floor      rl.Texture2D
 	door       rl.Texture2D
@@ -29,6 +30,10 @@ var (
 
 const (
 	TILE_SIZE float32 = 10.0
+	WALL              = iota
+	FLOOR
+	DOOR
+	CHEST
 )
 
 type Block struct {
