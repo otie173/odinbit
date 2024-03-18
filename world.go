@@ -162,6 +162,22 @@ func generateTree(x, y float32) {
 	}
 }
 
+func generateStone(x, y float32) {
+	// Генерация случайного номера изображения камня
+	stoneImg := rand.Intn(4) + 1
+	// Постановка камня на карту в зависимости от номера текстуры
+	switch stoneImg {
+	case 1:
+		addBlock(stone1, float32(x), float32(y), false)
+	case 2:
+		addBlock(stone2, float32(x), float32(y), false)
+	case 3:
+		addBlock(stone3, float32(x), float32(y), false)
+	case 4:
+		addBlock(stone4, float32(x), float32(y), false)
+	}
+}
+
 func generateGrass(x, y float32) {
 	// Генерация случайного номера изображения травы
 	grassImage := rand.Intn(6) + 1
@@ -206,28 +222,17 @@ func generateWorld() {
 	generateStructure(x3, y3, 3)
 
 	// Генерация деревьев
-	for i := 0; i < 96; i++ {
+	for i := 0; i < 128; i++ {
 		x := rand.Intn(65) - 32
 		y := rand.Intn(65) - 32
 		generateTree(float32(x), float32(y))
 	}
 
 	// Генерация камней
-	for i := 0; i < 96; i++ {
+	for i := 0; i < 128; i++ {
 		x := rand.Intn(65) - 32
 		y := rand.Intn(65) - 32
-
-		stoneImg := rand.Intn(4) + 1
-		switch stoneImg {
-		case 1:
-			addBlock(stone1, float32(x), float32(y), false)
-		case 2:
-			addBlock(stone2, float32(x), float32(y), false)
-		case 3:
-			addBlock(stone3, float32(x), float32(y), false)
-		case 4:
-			addBlock(stone4, float32(x), float32(y), false)
-		}
+		generateStone(float32(x), float32(y))
 	}
 
 }

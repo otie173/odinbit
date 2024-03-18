@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -41,7 +40,6 @@ func updateCameraTarget(cam *rl.Camera2D, playerPosition rl.Vector2, playerRecta
 
 	cam.Target.X = roundToFixed(newX, 1)
 	cam.Target.Y = roundToFixed(newY, 1)
-	fmt.Println(cam.Target)
 }
 
 func drawPlayer() {
