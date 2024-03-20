@@ -41,7 +41,6 @@ func init() {
 	loadPlayer()
 	loadAudio()
 	loadInventory()
-	generateWorld()
 }
 
 func main() {

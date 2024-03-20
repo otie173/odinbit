@@ -10,6 +10,7 @@ var (
 
 const (
 	TITLE int = iota
+	GENERATE
 	GAME
 	INVENTORY
 )
@@ -31,12 +32,25 @@ func drawScene() {
 		if rl.IsMouseButtonDown(rl.MouseButtonLeft) {
 			mousePos := rl.GetMousePosition()
 			if rl.CheckCollisionPointRec(mousePos, gameRectangle) {
-				currentScene = GAME
+				currentScene = GENERATE
 			}
 			if rl.CheckCollisionPointRec(mousePos, exitRectangle) {
 				rl.CloseWindow()
 			}
 		}
+	case GENERATE:
+		generatingWorldLabelSize := rl.MeasureTextEx(font, "Generating world", 56, 2)
+		generatingWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(generatingWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(generatingWorldLabelSize.Y))/2)
+
+		rl.BeginDrawing()
+		rl.DrawTextEx(font, "Generating world", generatingWorldLabelPos, 56, 2, rl.White)
+		rl.EndDrawing()
+
+		generateWorld()
+		if worldGenerated {
+			currentScene = GAME
+		}
+
 	case GAME:
 		rl.BeginDrawing()
 		rl.ClearBackground(bkgColor)

@@ -7,25 +7,26 @@ import (
 )
 
 var (
-	world      map[rl.Rectangle]Block
-	item       int
-	wall       rl.Texture2D
-	floor      rl.Texture2D
-	door       rl.Texture2D
-	chest      rl.Texture2D
-	smallTree  rl.Texture2D
-	stone1     rl.Texture2D
-	stone2     rl.Texture2D
-	stone3     rl.Texture2D
-	stone4     rl.Texture2D
-	normalTree rl.Texture2D
-	bigTree    rl.Texture2D
-	grass1     rl.Texture2D
-	grass2     rl.Texture2D
-	grass3     rl.Texture2D
-	grass4     rl.Texture2D
-	grass5     rl.Texture2D
-	grass6     rl.Texture2D
+	world          map[rl.Rectangle]Block
+	item           int
+	wall           rl.Texture2D
+	floor          rl.Texture2D
+	door           rl.Texture2D
+	chest          rl.Texture2D
+	smallTree      rl.Texture2D
+	stone1         rl.Texture2D
+	stone2         rl.Texture2D
+	stone3         rl.Texture2D
+	stone4         rl.Texture2D
+	normalTree     rl.Texture2D
+	bigTree        rl.Texture2D
+	grass1         rl.Texture2D
+	grass2         rl.Texture2D
+	grass3         rl.Texture2D
+	grass4         rl.Texture2D
+	grass5         rl.Texture2D
+	grass6         rl.Texture2D
+	worldGenerated bool
 )
 
 const (
@@ -240,6 +241,8 @@ func generateWorld() {
 		generateStone(float32(x), float32(y))
 	}
 
+	// Установка флага о завершении генерации мира в значение true
+	worldGenerated = true
 }
 
 func drawWorld() {
