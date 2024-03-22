@@ -39,11 +39,12 @@ func drawScene() {
 			}
 		}
 	case GENERATE:
-		generatingWorldLabelSize := rl.MeasureTextEx(font, "Generating world", 56, 2)
+		generatingWorldLabelSize := rl.MeasureTextEx(font, "Generating world...", 56, 2)
 		generatingWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(generatingWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(generatingWorldLabelSize.Y))/2)
 
 		rl.BeginDrawing()
-		rl.DrawTextEx(font, "Generating world", generatingWorldLabelPos, 56, 2, rl.White)
+		rl.ClearBackground(bkgColor)
+		rl.DrawTextEx(font, "Generating world...", generatingWorldLabelPos, 56, 2, rl.White)
 		rl.EndDrawing()
 
 		generateWorld()

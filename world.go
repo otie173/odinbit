@@ -30,8 +30,12 @@ var (
 )
 
 const (
-	TILE_SIZE float32 = 10.0
-	WALL              = iota
+	TILE_SIZE  float32 = 10.0
+	WORLD_SIZE int     = 256
+)
+
+const (
+	WALL = iota
 	FLOOR
 	DOOR
 	CHEST
@@ -206,8 +210,8 @@ func generateGrass(x, y float32) {
 
 func generateWorld() {
 	// Генерация травы
-	for x := -32; x <= 32; x++ {
-		for y := -32; y <= 32; y++ {
+	for x := -WORLD_SIZE / 2; x <= WORLD_SIZE/2; x++ {
+		for y := -WORLD_SIZE / 2; y <= WORLD_SIZE/2; y++ {
 			generateGrass(float32(x), float32(y))
 		}
 	}
