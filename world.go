@@ -30,8 +30,9 @@ var (
 )
 
 const (
-	TILE_SIZE  float32 = 10.0
-	WORLD_SIZE int     = 256
+	TILE_SIZE               float32 = 10.0
+	WORLD_SIZE              int     = 256
+	OBJECT_SPAWN_MULTIPLIER int     = 4
 )
 
 const (
@@ -189,23 +190,29 @@ func generateStone(x, y float32) {
 }
 
 func generateGrass(x, y float32) {
+	// Генерация шанса спавна травы
+	chance := rand.Intn(100) + 1
+
 	// Генерация случайного номера изображения травы
-	grassImage := rand.Intn(6) + 1
-	// Поставновка травы на карту в зависимости от номера текстуры
-	switch grassImage {
-	case 1:
-		addBlock(grass1, x, y, true)
-	case 2:
-		addBlock(grass2, x, y, true)
-	case 3:
-		addBlock(grass3, x, y, true)
-	case 4:
-		addBlock(grass4, x, y, true)
-	case 5:
-		addBlock(grass5, x, y, true)
-	case 6:
-		addBlock(grass6, x, y, true)
+	if chance < 20 {
+		grassImage := rand.Intn(6) + 1
+		switch grassImage {
+		case 1:
+			addBlock(grass1, x, y, true)
+		case 2:
+			addBlock(grass2, x, y, true)
+		case 3:
+			addBlock(grass3, x, y, true)
+		case 4:
+			addBlock(grass4, x, y, true)
+		case 5:
+			addBlock(grass5, x, y, true)
+		case 6:
+			addBlock(grass6, x, y, true)
+		}
 	}
+	// Поставновка травы на карту в зависимости от номера текстуры
+
 }
 
 func generateWorld() {
@@ -217,31 +224,31 @@ func generateWorld() {
 	}
 
 	// Генерация данжа1
-	x1 := rand.Intn(65) - 32
-	y1 := rand.Intn(65) - 32
+	x1 := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
+	y1 := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
 	generateStructure(x1, y1, 1)
 
 	//Генерация данжа2
-	x2 := rand.Intn(65) - 32
-	y2 := rand.Intn(65) - 32
+	x2 := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
+	y2 := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
 	generateStructure(x2, y2, 2)
 
 	// Генерация данжа3
-	x3 := rand.Intn(65) - 32
-	y3 := rand.Intn(65) - 32
+	x3 := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
+	y3 := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
 	generateStructure(x3, y3, 3)
 
 	// Генерация деревьев
-	for i := 0; i < 128; i++ {
-		x := rand.Intn(65) - 32
-		y := rand.Intn(65) - 32
+	for i := 0; i < WORLD_SIZE*OBJECT_SPAWN_MULTIPLIER; i++ {
+		x := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
+		y := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
 		generateTree(float32(x), float32(y))
 	}
 
 	// Генерация камней
-	for i := 0; i < 128; i++ {
-		x := rand.Intn(65) - 32
-		y := rand.Intn(65) - 32
+	for i := 0; i < WORLD_SIZE*OBJECT_SPAWN_MULTIPLIER; i++ {
+		x := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
+		y := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
 		generateStone(float32(x), float32(y))
 	}
 
@@ -249,8 +256,38 @@ func generateWorld() {
 	worldGenerated = true
 }
 
+func isVisible(block Block, cam rl.Camera2D, screenWidth, screenHeight int) bool {
+	// Границы объекта
+	left := block.rec.X
+	right := block.rec.X + float32(block.rec.Width)
+	top := block.rec.Y
+	bottom := block.rec.Y + float32(block.rec.Height)
+
+	// Границы видимой части экрана с учетом камеры
+	screenLeft := cam.Target.X - float32(screenWidth)/2/cam.Zoom
+	screenRight := cam.Target.X + float32(screenWidth)/2/cam.Zoom
+	screenTop := cam.Target.Y - float32(screenHeight)/2/cam.Zoom
+	screenBottom := cam.Target.Y + float32(screenHeight)/2/cam.Zoom
+
+	// Проверяем пересечение границ объекта и видимой области экрана
+	return left < screenRight && right > screenLeft && top < screenBottom && bottom > screenTop
+}
+
 func drawWorld() {
+
+	/*
+		// Рисовка каждого блока
+		for _, block := range world {
+			rl.DrawTextureRec(block.img, block.rec, rl.NewVector2(block.rec.X, block.rec.Y), rl.White)
+		}
+	*/
+
+	// Рисовка только видимых блоков
 	for _, block := range world {
-		rl.DrawTextureRec(block.img, block.rec, rl.NewVector2(block.rec.X, block.rec.Y), rl.White)
+		//fmt.Println(block.rec)
+		if isVisible(block, cam, rl.GetScreenWidth(), rl.GetScreenHeight()) {
+			rl.DrawTextureRec(block.img, block.rec, rl.NewVector2(block.rec.X, block.rec.Y), rl.White)
+		}
 	}
+
 }
