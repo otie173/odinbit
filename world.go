@@ -33,7 +33,7 @@ var (
 const (
 	TILE_SIZE               float32 = 10.0
 	WORLD_SIZE              int     = 256
-	OBJECT_SPAWN_MULTIPLIER int     = 4
+	OBJECT_SPAWN_MULTIPLIER int     = 5
 )
 
 const (
@@ -297,6 +297,12 @@ func isVisible(block Block, cam rl.Camera2D, screenWidth, screenHeight int) bool
 func drawWorld() {
 
 	// Рисовка только видимых блоков
+	/*
+		start := time.Now()
+		defer func() {
+			fmt.Println("this took ", time.Since(start).Milliseconds(), "ms")
+		}()
+	*/
 	for _, block := range world {
 		if isVisible(block, cam, rl.GetScreenWidth(), rl.GetScreenHeight()) {
 			rl.DrawTextureRec(block.img, block.rec, rl.NewVector2(block.rec.X, block.rec.Y), rl.White)
