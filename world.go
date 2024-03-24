@@ -26,6 +26,7 @@ var (
 	grass4         rl.Texture2D
 	grass5         rl.Texture2D
 	grass6         rl.Texture2D
+	barrier        rl.Texture2D
 	worldGenerated bool
 )
 
@@ -67,6 +68,7 @@ func loadWorld() {
 	grass4 = rl.LoadTexture("assets/images/world/grass4.png")
 	grass5 = rl.LoadTexture("assets/images/world/grass5.png")
 	grass6 = rl.LoadTexture("assets/images/world/grass6.png")
+	barrier = rl.LoadTexture("assets/images/blocks/barrier.png")
 
 	rl.SetTextureFilter(smallTree, rl.TextureFilterNearest)
 	rl.SetTextureFilter(stone1, rl.TextureFilterNearest)
@@ -81,6 +83,7 @@ func loadWorld() {
 	rl.SetTextureFilter(grass4, rl.TextureFilterNearest)
 	rl.SetTextureFilter(grass5, rl.TextureFilterNearest)
 	rl.SetTextureFilter(grass6, rl.TextureFilterNearest)
+	rl.SetTextureFilter(barrier, rl.TextureFilterNearest)
 }
 
 func unloadWorld() {
@@ -100,6 +103,7 @@ func unloadWorld() {
 	rl.UnloadTexture(grass4)
 	rl.UnloadTexture(grass5)
 	rl.UnloadTexture(grass6)
+	rl.UnloadTexture(barrier)
 }
 
 func addBlock(img rl.Texture2D, x, y float32, passable bool) {
@@ -113,6 +117,19 @@ func addBlock(img rl.Texture2D, x, y float32, passable bool) {
 
 func removeBlock(x, y float32) {
 	delete(world, rl.NewRectangle(x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE, TILE_SIZE))
+}
+
+func generateBarrier() {
+	// Генерация верхней и нижней границы
+	for x := -WORLD_SIZE / 2; x <= WORLD_SIZE/2; x++ {
+		addBlock(barrier, float32(x), float32(-WORLD_SIZE/2), false) // Верхняя граница
+		addBlock(barrier, float32(x), float32(WORLD_SIZE/2), false)  // Нижняя граница
+	}
+	// Генерация левой и правой границы
+	for y := -WORLD_SIZE / 2; y <= WORLD_SIZE/2; y++ {
+		addBlock(barrier, float32(-WORLD_SIZE/2), float32(y), false) // Левая граница
+		addBlock(barrier, float32(WORLD_SIZE/2), float32(y), false)  // Правая граница
+	}
 }
 
 func generateStructure(x, y, structure int) {
@@ -216,6 +233,7 @@ func generateGrass(x, y float32) {
 }
 
 func generateWorld() {
+
 	// Генерация травы
 	for x := -WORLD_SIZE / 2; x <= WORLD_SIZE/2; x++ {
 		for y := -WORLD_SIZE / 2; y <= WORLD_SIZE/2; y++ {
@@ -251,6 +269,9 @@ func generateWorld() {
 		y := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
 		generateStone(float32(x), float32(y))
 	}
+
+	// Генерация барьера вокруг мира
+	generateBarrier()
 
 	// Установка флага о завершении генерации мира в значение true
 	worldGenerated = true

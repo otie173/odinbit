@@ -26,7 +26,7 @@ func mouseHandler() {
 					pickupResourceSound()
 					// Генерация травы на месте сломанного блока, чтобы не было просто пустого места
 					generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
-				case grass1, grass2, grass3, grass4, grass5, grass6:
+				case grass1, grass2, grass3, grass4, grass5, grass6, barrier:
 					break
 				default:
 					removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
