@@ -275,16 +275,8 @@ func isVisible(block Block, cam rl.Camera2D, screenWidth, screenHeight int) bool
 
 func drawWorld() {
 
-	/*
-		// Рисовка каждого блока
-		for _, block := range world {
-			rl.DrawTextureRec(block.img, block.rec, rl.NewVector2(block.rec.X, block.rec.Y), rl.White)
-		}
-	*/
-
 	// Рисовка только видимых блоков
 	for _, block := range world {
-		//fmt.Println(block.rec)
 		if isVisible(block, cam, rl.GetScreenWidth(), rl.GetScreenHeight()) {
 			rl.DrawTextureRec(block.img, block.rec, rl.NewVector2(block.rec.X, block.rec.Y), rl.White)
 		}
