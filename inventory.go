@@ -19,12 +19,12 @@ var (
 	woodCount     int  = 0
 	stoneCount    int  = 0
 	metalCount    int  = 0
-	wallIsOpen    bool = true
+	wallIsOpen    bool = false
 	floorIsOpen   bool = false
 	doorIsOpen    bool = false
 	chestIsOpen   bool = false
 	question      rl.Texture2D
-	wallCount     int     = 999
+	wallCount     int     = 0
 	floorCount    int     = 0
 	doorCount     int     = 0
 	chestCount    int     = 0

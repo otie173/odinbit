@@ -34,7 +34,7 @@ func init() {
 	rl.SetConfigFlags(rl.FlagFullscreenMode)
 	rl.InitWindow(int32(rl.GetScreenWidth()), int32(rl.GetScreenHeight()), "Odinbit")
 	rl.SetExitKey(0)
-	rl.SetTargetFPS(int32(rl.GetMonitorRefreshRate(rl.GetCurrentMonitor())))
+	rl.SetTargetFPS(int32(rl.GetMonitorRefreshRate(rl.GetCurrentMonitor())) + 10)
 	fontBold = rl.LoadFont("assets/fonts/pypx/pypx_bold.ttf")
 	font = rl.LoadFont("assets/fonts/pypx/pypx.ttf")
 	loadWorld()

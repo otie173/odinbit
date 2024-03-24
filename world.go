@@ -49,7 +49,7 @@ type Block struct {
 }
 
 func loadWorld() {
-	world = make(map[rl.Rectangle]Block)
+	world = make(map[rl.Rectangle]Block, 65_536)
 	wall = rl.LoadTexture("assets/images/blocks/wall.png")
 	floor = rl.LoadTexture("assets/images/blocks/floor.png")
 	door = rl.LoadTexture("assets/images/blocks/door.png")
