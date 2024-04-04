@@ -82,7 +82,7 @@ func mouseHandler() {
 				mouseOnBlock = false
 			}
 		}
-		if !mouseOnBlock && canBuild {
+		if !mouseOnBlock && canBuild && mouseX > -(WORLD_SIZE/2) && mouseX < WORLD_SIZE/2 && mouseY > -(WORLD_SIZE/2) && mouseY < WORLD_SIZE/2 {
 			switch item {
 			case WALL:
 				if wallIsOpen && wallCount != 0 {
