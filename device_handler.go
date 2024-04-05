@@ -186,7 +186,7 @@ func keyboardHandler() {
 			playerPosition.X += TILE_SIZE
 		}
 	}
-	if rl.IsKeyPressed(rl.KeyE) && currentScene != TITLE {
+	if rl.IsKeyPressed(rl.KeyE) && currentScene != TITLE && currentScene != MENU {
 		switch inventoryOpen {
 		case true:
 			inventoryOpen = false
@@ -210,5 +210,22 @@ func keyboardHandler() {
 	}
 	if rl.IsKeyPressed(rl.KeyFour) {
 		item = CHEST
+	}
+	if rl.IsKeyPressed(rl.KeyI) {
+		saveWorldFile()
+	}
+	if rl.IsKeyPressed(rl.KeyEscape) && currentScene != TITLE && currentScene != INVENTORY {
+		switch menuOpen {
+		case true:
+			menuOpen = false
+		case false:
+			menuOpen = true
+		}
+
+		if menuOpen {
+			currentScene = MENU
+		} else if !menuOpen {
+			currentScene = GAME
+		}
 	}
 }

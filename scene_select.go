@@ -6,13 +6,16 @@ import (
 
 var (
 	currentScene int = TITLE
+	menuOpen     bool
 )
 
 const (
 	TITLE int = iota
 	GENERATE
+	LOAD
 	GAME
 	INVENTORY
+	MENU
 )
 
 func drawScene() {
@@ -21,18 +24,24 @@ func drawScene() {
 		odinbitLabelSize := rl.MeasureTextEx(fontBold, "Odinbit", 72, 2)
 		odinbitLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(odinbitLabelSize.X))/2, float32(rl.GetScreenHeight()-int(odinbitLabelSize.Y))/2-95)
 		exitRectangle := rl.NewRectangle(odinbitLabelPos.X+230, odinbitLabelPos.Y+90, 145, 65)
-		gameRectangle := rl.NewRectangle(odinbitLabelPos.X, odinbitLabelPos.Y+90, 175, 65)
+		playRectangle := rl.NewRectangle(odinbitLabelPos.X, odinbitLabelPos.Y+90, 175, 65)
 
 		rl.BeginDrawing()
 		rl.DrawTextEx(fontBold, "Odinbit", odinbitLabelPos, 72, 2, rl.White)
-		rl.DrawTextEx(font, "Game", rl.NewVector2(odinbitLabelPos.X, odinbitLabelPos.Y+90), 56, 2, rl.White)
+		rl.DrawTextEx(font, "Play", rl.NewVector2(odinbitLabelPos.X, odinbitLabelPos.Y+90), 56, 2, rl.White)
 		rl.DrawTextEx(font, "Exit", rl.NewVector2(odinbitLabelPos.X+230, odinbitLabelPos.Y+90), 56, 2, rl.White)
 		rl.EndDrawing()
 
-		if rl.IsMouseButtonDown(rl.MouseButtonLeft) {
+		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
 			mousePos := rl.GetMousePosition()
-			if rl.CheckCollisionPointRec(mousePos, gameRectangle) {
-				currentScene = GENERATE
+			if rl.CheckCollisionPointRec(mousePos, playRectangle) {
+				if checkWorldFile() {
+					currentScene = LOAD
+					world = loadWorldFile()
+					currentScene = GAME
+				} else {
+					currentScene = GENERATE
+				}
 			}
 			if rl.CheckCollisionPointRec(mousePos, exitRectangle) {
 				rl.CloseWindow()
@@ -51,7 +60,14 @@ func drawScene() {
 		if worldGenerated {
 			currentScene = GAME
 		}
+	case LOAD:
+		loadWorldLabelSize := rl.MeasureTextEx(font, "Load world...", 56, 2)
+		loadWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(loadWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(loadWorldLabelSize.Y))/2)
 
+		rl.BeginDrawing()
+		rl.ClearBackground(bkgColor)
+		rl.DrawTextEx(font, "Load world...", loadWorldLabelPos, 56, 2, rl.White)
+		rl.EndDrawing()
 	case GAME:
 		rl.BeginDrawing()
 		rl.ClearBackground(bkgColor)
@@ -78,6 +94,14 @@ func drawScene() {
 
 		}
 		drawItems()
+		rl.EndDrawing()
+	case MENU:
+		menuLabelSize := rl.MeasureTextEx(fontBold, "Menu", 72, 2)
+		menuLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(menuLabelSize.X))/2, 75)
+
+		rl.BeginDrawing()
+		rl.ClearBackground(bkgColor)
+		rl.DrawTextEx(fontBold, "Menu", rl.NewVector2(menuLabelPos.X, menuLabelPos.Y), 72, 2, rl.White)
 		rl.EndDrawing()
 	}
 }

@@ -1,23 +1,28 @@
 package main
 
 import (
+	"encoding/json"
+	"log"
 	"math/rand"
+	"os"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 var (
+	blocksData     []BlockData
 	world          map[rl.Rectangle]Block
+	id             map[int]rl.Texture2D
 	item           int
 	wall           rl.Texture2D
 	floor          rl.Texture2D
 	door           rl.Texture2D
 	chest          rl.Texture2D
-	smallTree      rl.Texture2D
 	stone1         rl.Texture2D
 	stone2         rl.Texture2D
 	stone3         rl.Texture2D
 	stone4         rl.Texture2D
+	smallTree      rl.Texture2D
 	normalTree     rl.Texture2D
 	bigTree        rl.Texture2D
 	grass1         rl.Texture2D
@@ -31,17 +36,38 @@ var (
 )
 
 const (
+	// Описание мира
 	TILE_SIZE               float32 = 10.0
 	WORLD_SIZE              int     = 256
 	OBJECT_SPAWN_MULTIPLIER int     = 5
-)
 
-const (
+	// Перечисление для строительных блоков
 	WALL = iota
 	FLOOR
 	DOOR
 	CHEST
+	SMALL_TREE
+	NORMAL_TREE
+	BIG_TREE
+	STONE1
+	STONE2
+	STONE3
+	STONE4
+	GRASS1
+	GRASS2
+	GRASS3
+	GRASS4
+	GRASS5
+	GRASS6
+	BARRIER
 )
+
+type BlockData struct {
+	X         float32 `json:"x"`
+	Y         float32 `json:"y"`
+	Passable  bool    `json:"passable"`
+	TextureID int     `json:"id"`
+}
 
 type Block struct {
 	img      rl.Texture2D
@@ -49,8 +75,88 @@ type Block struct {
 	passable bool
 }
 
+func loadID() {
+	id[WALL] = wall
+	id[FLOOR] = floor
+	id[DOOR] = door
+	id[CHEST] = chest
+	id[SMALL_TREE] = smallTree
+	id[NORMAL_TREE] = normalTree
+	id[BIG_TREE] = bigTree
+	id[STONE1] = stone1
+	id[STONE2] = stone2
+	id[STONE3] = stone3
+	id[STONE4] = stone4
+	id[GRASS1] = grass1
+	id[GRASS2] = grass2
+	id[GRASS3] = grass3
+	id[GRASS4] = grass4
+	id[GRASS5] = grass5
+	id[GRASS6] = grass6
+}
+
+func checkWorldFile() bool {
+	_, err := os.Stat("./world.json")
+	return !os.IsNotExist(err)
+}
+
+func loadWorldFile() map[rl.Rectangle]Block {
+	jsonData, err := os.ReadFile("./world.json")
+	if err != nil {
+		log.Fatalf("Ошибка при чтении файла: %v", err)
+	}
+
+	var blocksData []BlockData
+	err = json.Unmarshal(jsonData, &blocksData)
+	if err != nil {
+		log.Fatalf("Ошибка при десериализации данных: %v", err)
+	}
+
+	world := make(map[rl.Rectangle]Block)
+	for _, data := range blocksData {
+		rect := rl.Rectangle{
+			X:      data.X,
+			Y:      data.Y,
+			Width:  10.0,
+			Height: 10.0,
+		}
+		world[rect] = Block{img: id[data.TextureID], rec: rect, passable: data.Passable}
+	}
+
+	return world
+}
+
+func saveWorldFile() {
+	var targetID int
+
+	for rect, block := range world {
+		for key, texture := range id {
+			if block.img == texture {
+				targetID = key
+			}
+		}
+
+		blocksData = append(blocksData, BlockData{
+			X:         rect.X,
+			Y:         rect.Y,
+			TextureID: targetID,
+		})
+	}
+
+	worldData, err := json.Marshal(blocksData)
+	if err != nil {
+		log.Fatalf("Не удалось преобразовать данные мира: %v", err)
+	}
+
+	err = os.WriteFile("world.json", worldData, 0644)
+	if err != nil {
+		log.Fatalf("Не удалось сохранить мир: %v", err)
+	}
+}
+
 func loadWorld() {
 	world = make(map[rl.Rectangle]Block, 65_536)
+	id = make(map[int]rl.Texture2D, 256)
 	wall = rl.LoadTexture("assets/images/blocks/wall.png")
 	floor = rl.LoadTexture("assets/images/blocks/floor.png")
 	door = rl.LoadTexture("assets/images/blocks/door.png")
@@ -84,6 +190,9 @@ func loadWorld() {
 	rl.SetTextureFilter(grass5, rl.TextureFilterNearest)
 	rl.SetTextureFilter(grass6, rl.TextureFilterNearest)
 	rl.SetTextureFilter(barrier, rl.TextureFilterNearest)
+
+	// Установка id для блоков
+	loadID()
 }
 
 func unloadWorld() {
@@ -233,7 +342,6 @@ func generateGrass(x, y float32) {
 }
 
 func generateWorld() {
-
 	// Генерация травы
 	for x := -WORLD_SIZE / 2; x <= WORLD_SIZE/2; x++ {
 		for y := -WORLD_SIZE / 2; y <= WORLD_SIZE/2; y++ {

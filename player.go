@@ -17,6 +17,12 @@ var (
 	canBuild               bool
 )
 
+type Player struct {
+	X  float32 `json:"x"`
+	Y  float32 `json:"y"`
+	HP int     `json:"hp"`
+}
+
 func loadPlayer() {
 	player = rl.LoadTexture("assets/images/characters/player.png")
 	cam = rl.NewCamera2D(rl.NewVector2(float32(rl.GetScreenWidth()/2), float32(rl.GetScreenHeight()/2)), rl.NewVector2(float32(playerPosition.X), float32(playerPosition.Y)), 0.0, 6.0)
