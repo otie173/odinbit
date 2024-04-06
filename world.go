@@ -75,6 +75,10 @@ type Block struct {
 	passable bool
 }
 
+type WorldInfo struct {
+	Version string `json:"id"`
+}
+
 func loadID() {
 	id[WALL] = wall
 	id[FLOOR] = floor
@@ -93,15 +97,29 @@ func loadID() {
 	id[GRASS4] = grass4
 	id[GRASS5] = grass5
 	id[GRASS6] = grass6
+	id[BARRIER] = barrier
 }
 
 func checkWorldFile() bool {
-	_, err := os.Stat("./world.json")
+	_, err := os.Stat("./world_data.json")
 	return !os.IsNotExist(err)
 }
 
+func saveWorldInfo() {
+	worldInfo := WorldInfo{Version: "indev06042024"}
+	jsonData, err := json.Marshal(worldInfo)
+	if err != nil {
+		log.Fatalf("Не удалось преобразовать информацию мира: %v", err)
+	}
+
+	err = os.WriteFile("world_info.json", jsonData, 0644)
+	if err != nil {
+		log.Fatalf("Не удалось сохранить информацию о мире: %v", err)
+	}
+}
+
 func loadWorldFile() map[rl.Rectangle]Block {
-	jsonData, err := os.ReadFile("./world.json")
+	jsonData, err := os.ReadFile("./world_data.json")
 	if err != nil {
 		log.Fatalf("Ошибка при чтении файла: %v", err)
 	}
@@ -123,10 +141,12 @@ func loadWorldFile() map[rl.Rectangle]Block {
 		world[rect] = Block{img: id[data.TextureID], rec: rect, passable: data.Passable}
 	}
 
+	loadPlayerFile()
 	return world
 }
 
 func saveWorldFile() {
+	blocksData = []BlockData{}
 	var targetID int
 
 	for rect, block := range world {
@@ -140,6 +160,7 @@ func saveWorldFile() {
 			X:         rect.X,
 			Y:         rect.Y,
 			TextureID: targetID,
+			Passable:  block.passable,
 		})
 	}
 
@@ -148,10 +169,13 @@ func saveWorldFile() {
 		log.Fatalf("Не удалось преобразовать данные мира: %v", err)
 	}
 
-	err = os.WriteFile("world.json", worldData, 0644)
+	err = os.WriteFile("world_data.json", worldData, 0644)
 	if err != nil {
 		log.Fatalf("Не удалось сохранить мир: %v", err)
 	}
+
+	saveWorldInfo()
+	savePlayerFile()
 }
 
 func loadWorld() {
@@ -403,14 +427,6 @@ func isVisible(block Block, cam rl.Camera2D, screenWidth, screenHeight int) bool
 }
 
 func drawWorld() {
-
-	// Рисовка только видимых блоков
-	/*
-		start := time.Now()
-		defer func() {
-			fmt.Println("this took ", time.Since(start).Milliseconds(), "ms")
-		}()
-	*/
 	for _, block := range world {
 		if isVisible(block, cam, rl.GetScreenWidth(), rl.GetScreenHeight()) {
 			rl.DrawTextureRec(block.img, block.rec, rl.NewVector2(block.rec.X, block.rec.Y), rl.White)

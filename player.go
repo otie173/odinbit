@@ -1,7 +1,10 @@
 package main
 
 import (
+	"encoding/json"
+	"log"
 	"math"
+	"os"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -18,9 +21,62 @@ var (
 )
 
 type Player struct {
-	X  float32 `json:"x"`
-	Y  float32 `json:"y"`
-	HP int     `json:"hp"`
+	X          float32 `json:"x"`
+	Y          float32 `json:"y"`
+	WoodCount  int     `json:"wood"`
+	StoneCount int     `json:"stone"`
+	MetalCount int     `json:"metal"`
+	WallOpen   bool    `json:"wall_open"`
+	FloorOpen  bool    `json:"floor_open"`
+	DoorOpen   bool    `json:"door_open"`
+	ChestOpen  bool    `json:"chest_open"`
+	WallCount  int     `json:"wall_count"`
+	FloorCount int     `json:"floor_count"`
+	DoorCount  int     `json:"door_count"`
+	ChestCount int     `json:"chest_count"`
+}
+
+func savePlayerFile() {
+	playerData := Player{playerPosition.X, playerPosition.Y, woodCount, stoneCount, metalCount, wallIsOpen, floorIsOpen, doorIsOpen, chestIsOpen, wallCount, floorCount, doorCount, chestCount}
+	jsonData, err := json.Marshal(playerData)
+	if err != nil {
+		log.Fatalf("Не удалось преобразовать информацию игрока: %v", err)
+	}
+
+	err = os.WriteFile("player_data.json", jsonData, 0644)
+	if err != nil {
+		log.Fatalf("Не удалось сохранить информацию о мире: %v", err)
+	}
+}
+
+func loadPlayerFile() {
+	jsonData, err := os.ReadFile("./player_data.json")
+	if err != nil {
+		log.Fatalf("Ошибка при чтении файла: %v", err)
+	}
+
+	var playerData Player
+	err = json.Unmarshal(jsonData, &playerData)
+	if err != nil {
+		log.Fatalf("Ошибка при десериализации данных: %v", err)
+	}
+
+	playerPosition = rl.NewVector2(playerData.X, playerData.Y)
+	cam.Target = playerPosition
+
+	woodCount = playerData.WoodCount
+	stoneCount = playerData.StoneCount
+	metalCount = playerData.MetalCount
+
+	wallIsOpen = playerData.WallOpen
+	floorIsOpen = playerData.FloorOpen
+	doorIsOpen = playerData.DoorOpen
+	chestIsOpen = playerData.ChestOpen
+
+	wallCount = playerData.WallCount
+	floorCount = playerData.FloorCount
+	doorCount = playerData.DoorCount
+	chestCount = playerData.ChestCount
 }
 
 func loadPlayer() {

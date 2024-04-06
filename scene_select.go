@@ -13,6 +13,7 @@ const (
 	TITLE int = iota
 	GENERATE
 	LOAD
+	SAVE
 	GAME
 	INVENTORY
 	MENU
@@ -27,6 +28,7 @@ func drawScene() {
 		playRectangle := rl.NewRectangle(odinbitLabelPos.X, odinbitLabelPos.Y+90, 175, 65)
 
 		rl.BeginDrawing()
+		rl.ClearBackground(bkgColor)
 		rl.DrawTextEx(fontBold, "Odinbit", odinbitLabelPos, 72, 2, rl.White)
 		rl.DrawTextEx(font, "Play", rl.NewVector2(odinbitLabelPos.X, odinbitLabelPos.Y+90), 56, 2, rl.White)
 		rl.DrawTextEx(font, "Exit", rl.NewVector2(odinbitLabelPos.X+230, odinbitLabelPos.Y+90), 56, 2, rl.White)
@@ -68,6 +70,17 @@ func drawScene() {
 		rl.ClearBackground(bkgColor)
 		rl.DrawTextEx(font, "Load world...", loadWorldLabelPos, 56, 2, rl.White)
 		rl.EndDrawing()
+	case SAVE:
+		saveWorldLabelSize := rl.MeasureTextEx(font, "Save world...", 56, 2)
+		saveWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(saveWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(saveWorldLabelSize.Y))/2)
+
+		rl.BeginDrawing()
+		rl.ClearBackground(bkgColor)
+		rl.DrawTextEx(font, "Save world...", saveWorldLabelPos, 56, 2, rl.White)
+		rl.EndDrawing()
+
+		saveWorldFile()
+		currentScene = TITLE
 	case GAME:
 		rl.BeginDrawing()
 		rl.ClearBackground(bkgColor)
@@ -96,12 +109,32 @@ func drawScene() {
 		drawItems()
 		rl.EndDrawing()
 	case MENU:
-		menuLabelSize := rl.MeasureTextEx(fontBold, "Menu", 72, 2)
-		menuLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(menuLabelSize.X))/2, 75)
+		menuLabelSize := rl.MeasureTextEx(fontBold, "Game menu", 72, 2)
+		menuLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(menuLabelSize.X))/2, float32(rl.GetScreenHeight()-int(menuLabelSize.Y))/2-175)
+		backToGameLabelSize := rl.MeasureTextEx(font, "1) Back to game", 48, 2)
+		backToGameLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(backToGameLabelSize.X))/2, float32(rl.GetScreenHeight()-int(backToGameLabelSize.Y))/2-80)
+		saveAndQuitLabelSize := rl.MeasureTextEx(font, "2) Save and quit", 48, 2)
+		saveAndQuitLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(backToGameLabelSize.X))/2, float32(rl.GetScreenHeight()-int(saveAndQuitLabelSize.Y))/2)
+		backToGameRectangle := rl.NewRectangle(backToGameLabelPos.X, backToGameLabelPos.Y, 515, 65)
+		saveAndQuitRectangle := rl.NewRectangle(backToGameLabelPos.X, saveAndQuitLabelPos.Y, 530, 65)
 
 		rl.BeginDrawing()
 		rl.ClearBackground(bkgColor)
-		rl.DrawTextEx(fontBold, "Menu", rl.NewVector2(menuLabelPos.X, menuLabelPos.Y), 72, 2, rl.White)
+		rl.DrawTextEx(fontBold, "Game menu", rl.NewVector2(menuLabelPos.X, menuLabelPos.Y), 72, 2, rl.White)
+		rl.DrawTextEx(font, "1) Back to game", rl.NewVector2(backToGameLabelPos.X, backToGameLabelPos.Y), 48, 2, rl.White)
+		rl.DrawTextEx(font, "2) Save and quit", rl.NewVector2(saveAndQuitLabelPos.X, saveAndQuitLabelPos.Y), 48, 2, rl.White)
 		rl.EndDrawing()
+
+		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
+			mousePos := rl.GetMousePosition()
+			if rl.CheckCollisionPointRec(mousePos, backToGameRectangle) {
+				currentScene = GAME
+				menuOpen = false
+			}
+			if rl.CheckCollisionPointRec(mousePos, saveAndQuitRectangle) {
+				currentScene = SAVE
+				menuOpen = false
+			}
+		}
 	}
 }
