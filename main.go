@@ -9,15 +9,10 @@ var (
 	fontBold, font rl.Font
 )
 
-const (
-	SCREEN_WIDTH  int32 = 1920
-	SCREEN_HEIGHT int32 = 1080
-)
-
 func update() {
 	keyboardHandler()
 	mouseHandler()
-	cam.Target = rl.NewVector2(playerPosition.X, playerPosition.Y)
+	updateCameraTarget(&cam, playerPosition, playerRectangle)
 }
 
 func render() {
@@ -29,21 +24,23 @@ func exit() {
 
 	unloadWorld()
 	unloadPlayer()
+	unloadAudio()
 	rl.UnloadFont(fontBold)
 	rl.UnloadFont(font)
+	unloadInventory()
 }
 
 func init() {
-	rl.SetConfigFlags(rl.FlagVsyncHint)
 	rl.SetConfigFlags(rl.FlagFullscreenMode)
-	rl.InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Odinbit")
+	rl.InitWindow(int32(rl.GetScreenWidth()), int32(rl.GetScreenHeight()), "Odinbit")
 	rl.SetExitKey(0)
-	rl.SetTargetFPS(60)
-
+	rl.SetTargetFPS(int32(rl.GetMonitorRefreshRate(rl.GetCurrentMonitor())))
 	fontBold = rl.LoadFont("assets/fonts/pypx/pypx_bold.ttf")
 	font = rl.LoadFont("assets/fonts/pypx/pypx.ttf")
 	loadWorld()
 	loadPlayer()
+	loadAudio()
+	loadInventory()
 }
 
 func main() {
