@@ -134,7 +134,7 @@ func mouseHandler() {
 func keyboardHandler() {
 	if rl.IsKeyPressed(rl.KeyW) && currentScene == GAME {
 		for _, block := range world {
-			if playerPosition.Y-TILE_SIZE == block.rec.Y && playerPosition.X == block.rec.X && !block.passable {
+			if targetPosition.Y-TILE_SIZE == block.rec.Y && targetPosition.X == block.rec.X && !block.passable {
 				canMove = false
 				break
 			} else {
@@ -142,13 +142,13 @@ func keyboardHandler() {
 			}
 		}
 		if canMove {
-			playerPosition.Y -= TILE_SIZE
+			targetPosition.Y -= TILE_SIZE
 		}
 	}
 	if rl.IsKeyPressed(rl.KeyA) && currentScene == GAME {
 		playerDirection = false
 		for _, block := range world {
-			if playerPosition.X-TILE_SIZE == block.rec.X && playerPosition.Y == block.rec.Y && !block.passable {
+			if targetPosition.X-TILE_SIZE == block.rec.X && targetPosition.Y == block.rec.Y && !block.passable {
 				canMove = false
 				break
 			} else {
@@ -156,12 +156,12 @@ func keyboardHandler() {
 			}
 		}
 		if canMove {
-			playerPosition.X -= TILE_SIZE
+			targetPosition.X -= TILE_SIZE
 		}
 	}
 	if rl.IsKeyPressed(rl.KeyS) && currentScene == GAME {
 		for _, block := range world {
-			if playerPosition.Y+TILE_SIZE == block.rec.Y && playerPosition.X == block.rec.X && !block.passable {
+			if targetPosition.Y+TILE_SIZE == block.rec.Y && targetPosition.X == block.rec.X && !block.passable {
 				canMove = false
 				break
 			} else {
@@ -169,13 +169,13 @@ func keyboardHandler() {
 			}
 		}
 		if canMove {
-			playerPosition.Y += TILE_SIZE
+			targetPosition.Y += TILE_SIZE
 		}
 	}
 	if rl.IsKeyPressed(rl.KeyD) && currentScene == GAME {
 		playerDirection = true
 		for _, block := range world {
-			if playerPosition.X+TILE_SIZE == block.rec.X && playerPosition.Y == block.rec.Y && !block.passable {
+			if targetPosition.X+TILE_SIZE == block.rec.X && targetPosition.Y == block.rec.Y && !block.passable {
 				canMove = false
 				break
 			} else {
@@ -183,7 +183,7 @@ func keyboardHandler() {
 			}
 		}
 		if canMove {
-			playerPosition.X += TILE_SIZE
+			targetPosition.X += TILE_SIZE
 		}
 	}
 	if rl.IsKeyPressed(rl.KeyE) && currentScene != TITLE && currentScene != MENU {

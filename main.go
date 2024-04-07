@@ -13,6 +13,7 @@ func update() {
 	keyboardHandler()
 	mouseHandler()
 	updateCameraTarget(&cam, playerPosition, playerRectangle)
+	updatePlayerPosition()
 }
 
 func render() {

@@ -12,6 +12,7 @@ import (
 var (
 	player                 rl.Texture2D
 	playerPosition         rl.Vector2   = rl.NewVector2(0.0, 0.0)
+	targetPosition         rl.Vector2   = rl.NewVector2(0.0, 0.0)
 	playerRectangle        rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, TILE_SIZE, TILE_SIZE)
 	playerFlippedRectangle rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, -TILE_SIZE, TILE_SIZE)
 	playerDirection        bool         = false
@@ -97,11 +98,15 @@ func updateCameraTarget(cam *rl.Camera2D, playerPosition rl.Vector2, playerRecta
 	targetX := playerPosition.X + playerRectangle.Width/2
 	targetY := playerPosition.Y + playerRectangle.Height/2
 
-	newX := rl.Vector2Lerp(cam.Target, rl.NewVector2(targetX, cam.Target.Y), 0.025).X
-	newY := rl.Vector2Lerp(cam.Target, rl.NewVector2(cam.Target.X, targetY), 0.025).Y
+	newX := rl.Vector2Lerp(cam.Target, rl.NewVector2(targetX, cam.Target.Y), 0.05).X
+	newY := rl.Vector2Lerp(cam.Target, rl.NewVector2(cam.Target.X, targetY), 0.05).Y
 
 	cam.Target.X = roundToFixed(newX, 1)
 	cam.Target.Y = roundToFixed(newY, 1)
+}
+
+func updatePlayerPosition() {
+	playerPosition = rl.Vector2Lerp(playerPosition, targetPosition, 0.1)
 }
 
 func drawPlayer() {
