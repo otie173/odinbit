@@ -12,7 +12,6 @@ var (
 const (
 	TITLE int = iota
 	GENERATE
-	LOAD
 	SAVE
 	GAME
 	INVENTORY
@@ -38,7 +37,13 @@ func drawScene() {
 			mousePos := rl.GetMousePosition()
 			if rl.CheckCollisionPointRec(mousePos, playRectangle) {
 				if checkWorldFile() {
-					currentScene = LOAD
+					loadWorldLabelSize := rl.MeasureTextEx(font, "Load world...", 56, 2)
+					loadWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(loadWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(loadWorldLabelSize.Y))/2)
+
+					rl.BeginDrawing()
+					rl.ClearBackground(bkgColor)
+					rl.DrawTextEx(font, "Load world...", loadWorldLabelPos, 56, 2, rl.White)
+					rl.EndDrawing()
 					world = loadWorldFile()
 					currentScene = GAME
 				} else {
@@ -62,14 +67,6 @@ func drawScene() {
 		if worldGenerated {
 			currentScene = GAME
 		}
-	case LOAD:
-		loadWorldLabelSize := rl.MeasureTextEx(font, "Load world...", 56, 2)
-		loadWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(loadWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(loadWorldLabelSize.Y))/2)
-
-		rl.BeginDrawing()
-		rl.ClearBackground(bkgColor)
-		rl.DrawTextEx(font, "Load world...", loadWorldLabelPos, 56, 2, rl.White)
-		rl.EndDrawing()
 	case SAVE:
 		saveWorldLabelSize := rl.MeasureTextEx(font, "Save world...", 56, 2)
 		saveWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(saveWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(saveWorldLabelSize.Y))/2)

@@ -38,7 +38,7 @@ var (
 const (
 	// Описание мира
 	TILE_SIZE               float32 = 10.0
-	WORLD_SIZE              int     = 256
+	WORLD_SIZE              int     = 384
 	OBJECT_SPAWN_MULTIPLIER int     = 5
 
 	// Перечисление для строительных блоков
@@ -409,28 +409,29 @@ func generateWorld() {
 	worldGenerated = true
 }
 
-func isVisible(block Block, cam rl.Camera2D, screenWidth, screenHeight int) bool {
-	// Границы объекта
-	left := block.rec.X
-	right := block.rec.X + float32(block.rec.Width)
-	top := block.rec.Y
-	bottom := block.rec.Y + float32(block.rec.Height)
+func updateVisibleArea(cam rl.Camera2D, screenWidth, screenHeight int) (left, right, top, bottom float32) {
+	zoomFactor := 1 / cam.Zoom
+	halfScreenWidth := float32(screenWidth) * 0.5 * zoomFactor
+	halfScreenHeight := float32(screenHeight) * 0.5 * zoomFactor
 
-	// Границы видимой части экрана с учетом камеры
-	screenLeft := cam.Target.X - float32(screenWidth)/2/cam.Zoom
-	screenRight := cam.Target.X + float32(screenWidth)/2/cam.Zoom
-	screenTop := cam.Target.Y - float32(screenHeight)/2/cam.Zoom
-	screenBottom := cam.Target.Y + float32(screenHeight)/2/cam.Zoom
-
-	// Проверяем пересечение границ объекта и видимой области экрана
-	return left < screenRight && right > screenLeft && top < screenBottom && bottom > screenTop
+	left = cam.Target.X - halfScreenWidth
+	right = cam.Target.X + halfScreenWidth
+	top = cam.Target.Y - halfScreenHeight
+	bottom = cam.Target.Y + halfScreenHeight
+	return
 }
 
 func drawWorld() {
+	screenWidth, screenHeight := rl.GetScreenWidth(), rl.GetScreenHeight()
+	left, right, top, bottom := updateVisibleArea(cam, screenWidth, screenHeight)
+
 	for _, block := range world {
-		if isVisible(block, cam, rl.GetScreenWidth(), rl.GetScreenHeight()) {
+		blockRight := block.rec.X + block.rec.Width
+		blockBottom := block.rec.Y + block.rec.Height
+
+		if block.rec.X < right && blockRight > left &&
+			block.rec.Y < bottom && blockBottom > top {
 			rl.DrawTextureRec(block.img, block.rec, rl.NewVector2(block.rec.X, block.rec.Y), rl.White)
 		}
 	}
-
 }
