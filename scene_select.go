@@ -45,6 +45,7 @@ func drawScene() {
 					rl.DrawTextEx(font, "Load world...", loadWorldLabelPos, 56, 2, rl.White)
 					rl.EndDrawing()
 					world = loadWorldFile()
+					loadPlayerFile()
 					currentScene = GAME
 				} else {
 					currentScene = GENERATE
@@ -77,6 +78,8 @@ func drawScene() {
 		rl.EndDrawing()
 
 		saveWorldFile()
+		saveWorldInfo()
+		savePlayerFile()
 		currentScene = TITLE
 	case GAME:
 		rl.BeginDrawing()

@@ -1,16 +1,24 @@
 package main
 
 import (
+	"embed"
 	"encoding/json"
 	"log"
 	"math/rand"
 	"os"
+	"path/filepath"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+//go:embed assets/images/blocks/*.png
+//go:embed assets/images/world/*.png
+//go:embed assets/images/characters/*.png
+//go:embed assets/images/gui/*.png
+//go:embed assets/images/items/*.png
+var assets embed.FS
+
 var (
-	blocksData     []BlockData
 	world          map[rl.Rectangle]Block
 	id             map[int]rl.Texture2D
 	item           int
@@ -39,7 +47,7 @@ const (
 	// Описание мира
 	TILE_SIZE               float32 = 10.0
 	WORLD_SIZE              int     = 384
-	OBJECT_SPAWN_MULTIPLIER int     = 5
+	OBJECT_SPAWN_MULTIPLIER int     = 6
 
 	// Перечисление для строительных блоков
 	WALL = iota
@@ -100,9 +108,22 @@ func loadID() {
 	id[BARRIER] = barrier
 }
 
-func checkWorldFile() bool {
-	_, err := os.Stat("./world_data.json")
-	return !os.IsNotExist(err)
+func getOdinbitPath() string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatalf("Не удалось получить домашнюю директорию: %v", err)
+	}
+	odinbitPath := filepath.Join(home, "AppData", "Roaming", ".odinbit")
+
+	// Проверка существования папки .odinbit и её создание при отсутствии
+	if _, err := os.Stat(odinbitPath); os.IsNotExist(err) {
+		err := os.MkdirAll(odinbitPath, os.ModePerm)
+		if err != nil {
+			log.Fatalf("Не удалось создать папку .odinbit: %v", err)
+		}
+	}
+
+	return odinbitPath
 }
 
 func saveWorldInfo() {
@@ -112,41 +133,17 @@ func saveWorldInfo() {
 		log.Fatalf("Не удалось преобразовать информацию мира: %v", err)
 	}
 
-	err = os.WriteFile("world_info.json", jsonData, 0644)
+	odinbitPath := getOdinbitPath()
+	worldInfoPath := filepath.Join(odinbitPath, "world_info.json")
+
+	err = os.WriteFile(worldInfoPath, jsonData, 0644)
 	if err != nil {
 		log.Fatalf("Не удалось сохранить информацию о мире: %v", err)
 	}
 }
 
-func loadWorldFile() map[rl.Rectangle]Block {
-	jsonData, err := os.ReadFile("./world_data.json")
-	if err != nil {
-		log.Fatalf("Ошибка при чтении файла: %v", err)
-	}
-
-	var blocksData []BlockData
-	err = json.Unmarshal(jsonData, &blocksData)
-	if err != nil {
-		log.Fatalf("Ошибка при десериализации данных: %v", err)
-	}
-
-	world := make(map[rl.Rectangle]Block)
-	for _, data := range blocksData {
-		rect := rl.Rectangle{
-			X:      data.X,
-			Y:      data.Y,
-			Width:  10.0,
-			Height: 10.0,
-		}
-		world[rect] = Block{img: id[data.TextureID], rec: rect, passable: data.Passable}
-	}
-
-	loadPlayerFile()
-	return world
-}
-
 func saveWorldFile() {
-	blocksData = []BlockData{}
+	blocksData := []BlockData{}
 	var targetID int
 
 	for rect, block := range world {
@@ -169,36 +166,86 @@ func saveWorldFile() {
 		log.Fatalf("Не удалось преобразовать данные мира: %v", err)
 	}
 
-	err = os.WriteFile("world_data.json", worldData, 0644)
+	odinbitPath := getOdinbitPath()
+	worldDataPath := filepath.Join(odinbitPath, "world_data.json")
+
+	err = os.WriteFile(worldDataPath, worldData, 0644)
 	if err != nil {
 		log.Fatalf("Не удалось сохранить мир: %v", err)
 	}
+}
 
-	saveWorldInfo()
-	savePlayerFile()
+func checkWorldFile() bool {
+	odinbitPath := getOdinbitPath()
+	worldDataPath := filepath.Join(odinbitPath, "world_data.json")
+
+	_, err := os.Stat(worldDataPath)
+	return !os.IsNotExist(err)
+}
+
+func loadWorldFile() map[rl.Rectangle]Block {
+	odinbitPath := getOdinbitPath()
+	worldDataPath := filepath.Join(odinbitPath, "world_data.json")
+
+	jsonData, err := os.ReadFile(worldDataPath)
+	if err != nil {
+		log.Fatalf("Ошибка при чтении файла: %v", err)
+	}
+
+	var blocksData []BlockData
+	err = json.Unmarshal(jsonData, &blocksData)
+	if err != nil {
+		log.Fatalf("Ошибка при десериализации данных: %v", err)
+	}
+
+	world := make(map[rl.Rectangle]Block)
+	for _, data := range blocksData {
+		rect := rl.Rectangle{
+			X:      data.X,
+			Y:      data.Y,
+			Width:  10.0,
+			Height: 10.0,
+		}
+		world[rect] = Block{img: id[data.TextureID], rec: rect, passable: data.Passable}
+	}
+
+	return world
+}
+
+func loadTexture(fileName string) rl.Texture2D {
+	fileBytes, err := assets.ReadFile(fileName)
+	if err != nil {
+		log.Fatalf("Не удалость прочитать embed файл: %v", err)
+	}
+
+	image := rl.LoadImageFromMemory(".png", fileBytes, int32(len(fileBytes)))
+	texture := rl.LoadTextureFromImage(image)
+	rl.UnloadImage(image)
+
+	return texture
 }
 
 func loadWorld() {
 	world = make(map[rl.Rectangle]Block, 65_536)
 	id = make(map[int]rl.Texture2D, 256)
-	wall = rl.LoadTexture("assets/images/blocks/wall.png")
-	floor = rl.LoadTexture("assets/images/blocks/floor.png")
-	door = rl.LoadTexture("assets/images/blocks/door.png")
-	chest = rl.LoadTexture("assets/images/blocks/chest.png")
-	smallTree = rl.LoadTexture("assets/images/world/small_tree.png")
-	stone1 = rl.LoadTexture("assets/images/world/stone1.png")
-	stone2 = rl.LoadTexture("assets/images/world/stone2.png")
-	stone3 = rl.LoadTexture("assets/images/world/stone3.png")
-	stone4 = rl.LoadTexture("assets/images/world/stone4.png")
-	normalTree = rl.LoadTexture("assets/images/world/normal_tree.png")
-	bigTree = rl.LoadTexture("assets/images/world/big_tree.png")
-	grass1 = rl.LoadTexture("assets/images/world/grass1.png")
-	grass2 = rl.LoadTexture("assets/images/world/grass2.png")
-	grass3 = rl.LoadTexture("assets/images/world/grass3.png")
-	grass4 = rl.LoadTexture("assets/images/world/grass4.png")
-	grass5 = rl.LoadTexture("assets/images/world/grass5.png")
-	grass6 = rl.LoadTexture("assets/images/world/grass6.png")
-	barrier = rl.LoadTexture("assets/images/blocks/barrier.png")
+	wall = loadTexture("assets/images/blocks/wall.png")
+	floor = loadTexture("assets/images/blocks/floor.png")
+	door = loadTexture("assets/images/blocks/door.png")
+	chest = loadTexture("assets/images/blocks/chest.png")
+	smallTree = loadTexture("assets/images/world/small_tree.png")
+	stone1 = loadTexture("assets/images/world/stone1.png")
+	stone2 = loadTexture("assets/images/world/stone2.png")
+	stone3 = loadTexture("assets/images/world/stone3.png")
+	stone4 = loadTexture("assets/images/world/stone4.png")
+	normalTree = loadTexture("assets/images/world/normal_tree.png")
+	bigTree = loadTexture("assets/images/world/big_tree.png")
+	grass1 = loadTexture("assets/images/world/grass1.png")
+	grass2 = loadTexture("assets/images/world/grass2.png")
+	grass3 = loadTexture("assets/images/world/grass3.png")
+	grass4 = loadTexture("assets/images/world/grass4.png")
+	grass5 = loadTexture("assets/images/world/grass5.png")
+	grass6 = loadTexture("assets/images/world/grass6.png")
+	barrier = loadTexture("assets/images/blocks/barrier.png")
 
 	rl.SetTextureFilter(smallTree, rl.TextureFilterNearest)
 	rl.SetTextureFilter(stone1, rl.TextureFilterNearest)

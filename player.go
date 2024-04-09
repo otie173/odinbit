@@ -5,6 +5,7 @@ import (
 	"log"
 	"math"
 	"os"
+	"path/filepath"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -24,6 +25,8 @@ var (
 type Player struct {
 	X          float32 `json:"x"`
 	Y          float32 `json:"y"`
+	TargetX    float32 `json:"target_x"`
+	TargetY    float32 `json:"target_y"`
 	WoodCount  int     `json:"wood"`
 	StoneCount int     `json:"stone"`
 	MetalCount int     `json:"metal"`
@@ -38,20 +41,26 @@ type Player struct {
 }
 
 func savePlayerFile() {
-	playerData := Player{playerPosition.X, playerPosition.Y, woodCount, stoneCount, metalCount, wallIsOpen, floorIsOpen, doorIsOpen, chestIsOpen, wallCount, floorCount, doorCount, chestCount}
+	playerData := Player{playerPosition.X, playerPosition.Y, targetPosition.X, targetPosition.Y, woodCount, stoneCount, metalCount, wallIsOpen, floorIsOpen, doorIsOpen, chestIsOpen, wallCount, floorCount, doorCount, chestCount}
 	jsonData, err := json.Marshal(playerData)
 	if err != nil {
 		log.Fatalf("Не удалось преобразовать информацию игрока: %v", err)
 	}
 
-	err = os.WriteFile("player_data.json", jsonData, 0644)
+	odinbitPath := getOdinbitPath()
+	playerDataPath := filepath.Join(odinbitPath, "player_data.json")
+
+	err = os.WriteFile(playerDataPath, jsonData, 0644)
 	if err != nil {
-		log.Fatalf("Не удалось сохранить информацию о мире: %v", err)
+		log.Fatalf("Не удалось сохранить информацию о игроке: %v", err)
 	}
 }
 
 func loadPlayerFile() {
-	jsonData, err := os.ReadFile("./player_data.json")
+	odinbitPath := getOdinbitPath()
+	playerDataPath := filepath.Join(odinbitPath, "player_data.json")
+
+	jsonData, err := os.ReadFile(playerDataPath)
 	if err != nil {
 		log.Fatalf("Ошибка при чтении файла: %v", err)
 	}
@@ -63,6 +72,7 @@ func loadPlayerFile() {
 	}
 
 	playerPosition = rl.NewVector2(playerData.X, playerData.Y)
+	targetPosition = rl.NewVector2(playerData.TargetX, playerData.TargetY)
 	cam.Target = playerPosition
 
 	woodCount = playerData.WoodCount
@@ -81,7 +91,7 @@ func loadPlayerFile() {
 }
 
 func loadPlayer() {
-	player = rl.LoadTexture("assets/images/characters/player.png")
+	player = loadTexture("assets/images/characters/player.png")
 	cam = rl.NewCamera2D(rl.NewVector2(float32(rl.GetScreenWidth()/2), float32(rl.GetScreenHeight()/2)), rl.NewVector2(float32(playerPosition.X), float32(playerPosition.Y)), 0.0, 6.0)
 }
 
