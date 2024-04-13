@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -109,17 +110,43 @@ func loadID() {
 }
 
 func getOdinbitPath() string {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		log.Fatalf("Не удалось получить домашнюю директорию: %v", err)
-	}
-	odinbitPath := filepath.Join(home, "AppData", "Roaming", ".odinbit")
+	var odinbitPath string
 
-	// Проверка существования папки .odinbit и её создание при отсутствии
+	switch runtime.GOOS {
+	case "windows":
+		// Windows: используем AppData\Roaming
+		appData := os.Getenv("APPDATA")
+		if appData == "" {
+			log.Fatal("Переменная окружения APPDATA не установлена")
+		}
+		odinbitPath = filepath.Join(appData, "odinbit")
+	case "darwin":
+		// macOS: используем Library/Application Support
+		home, err := os.UserHomeDir()
+		if err != nil {
+			log.Fatalf("Не удалось получить домашнюю директорию: %v", err)
+		}
+		odinbitPath = filepath.Join(home, "Library", "Application Support", "odinbit")
+	case "linux":
+		// Linux: используем /home/local/.share (обычно это ~/.local/share)
+		xdgDataHome := os.Getenv("XDG_DATA_HOME")
+		if xdgDataHome == "" {
+			home, err := os.UserHomeDir()
+			if err != nil {
+				log.Fatalf("Не удалось получить домашнюю директорию: %v", err)
+			}
+			xdgDataHome = filepath.Join(home, ".local", "share")
+		}
+		odinbitPath = filepath.Join(xdgDataHome, ".local", "share", "odinbit")
+	default:
+		log.Fatalf("Неподдерживаемая операционная система: %s", runtime.GOOS)
+	}
+
+	// Проверка существования папки odinbit и её создание при отсутствии
 	if _, err := os.Stat(odinbitPath); os.IsNotExist(err) {
 		err := os.MkdirAll(odinbitPath, os.ModePerm)
 		if err != nil {
-			log.Fatalf("Не удалось создать папку .odinbit: %v", err)
+			log.Fatalf("Не удалось создать папку odinbit: %v", err)
 		}
 	}
 
