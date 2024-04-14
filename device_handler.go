@@ -2,6 +2,7 @@ package main
 
 import (
 	"math"
+	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -132,58 +133,54 @@ func mouseHandler() {
 }
 
 func keyboardHandler() {
-	if rl.IsKeyPressed(rl.KeyW) && currentScene == GAME {
-		for _, block := range world {
-			if targetPosition.Y-TILE_SIZE == block.rec.Y && targetPosition.X == block.rec.X && !block.passable {
-				canMove = false
-				break
-			} else {
-				canMove = true
-			}
-		}
-		if canMove {
-			targetPosition.Y -= TILE_SIZE
-		}
+	var moveX, moveY float32
+	var shouldMove bool
+
+	if rl.IsKeyDown(rl.KeyW) {
+		moveY = -TILE_SIZE
+		shouldMove = true
+	} else if rl.IsKeyDown(rl.KeyS) {
+		moveY = TILE_SIZE
+		shouldMove = true
 	}
-	if rl.IsKeyPressed(rl.KeyA) && currentScene == GAME {
+	if rl.IsKeyDown(rl.KeyA) {
 		playerDirection = false
-		for _, block := range world {
-			if targetPosition.X-TILE_SIZE == block.rec.X && targetPosition.Y == block.rec.Y && !block.passable {
-				canMove = false
-				break
-			} else {
-				canMove = true
-			}
-		}
-		if canMove {
-			targetPosition.X -= TILE_SIZE
-		}
-	}
-	if rl.IsKeyPressed(rl.KeyS) && currentScene == GAME {
-		for _, block := range world {
-			if targetPosition.Y+TILE_SIZE == block.rec.Y && targetPosition.X == block.rec.X && !block.passable {
-				canMove = false
-				break
-			} else {
-				canMove = true
-			}
-		}
-		if canMove {
-			targetPosition.Y += TILE_SIZE
-		}
-	}
-	if rl.IsKeyPressed(rl.KeyD) && currentScene == GAME {
+		moveX = -TILE_SIZE
+		shouldMove = true
+	} else if rl.IsKeyDown(rl.KeyD) {
 		playerDirection = true
-		for _, block := range world {
-			if targetPosition.X+TILE_SIZE == block.rec.X && targetPosition.Y == block.rec.Y && !block.passable {
-				canMove = false
-				break
-			} else {
-				canMove = true
+		moveX = TILE_SIZE
+		shouldMove = true
+	}
+
+	if shouldMove && canMoveAgain() {
+		// Предполагаем, что движение возможно
+		canMove := true
+		// Проверяем диагональное движение только если оба направления активны
+		if moveX != 0 && moveY != 0 {
+			// Проверяем наличие блоков на диагональных путях
+			for _, block := range world {
+				if (!block.passable) && ((targetPosition.X+moveX == block.rec.X && targetPosition.Y == block.rec.Y) ||
+					(targetPosition.Y+moveY == block.rec.Y && targetPosition.X == block.rec.X) ||
+					(targetPosition.X+moveX == block.rec.X && targetPosition.Y+moveY == block.rec.Y)) {
+					canMove = false
+					break
+				}
+			}
+		} else {
+			// Проверяем наличие блоков на прямом пути
+			for _, block := range world {
+				if (!block.passable) && (targetPosition.X+moveX == block.rec.X && targetPosition.Y+moveY == block.rec.Y) {
+					canMove = false
+					break
+				}
 			}
 		}
+
 		if canMove {
-			targetPosition.X += TILE_SIZE
+			targetPosition.X += moveX
+			targetPosition.Y += moveY
+			lastMoveTime = time.Now()
 		}
 	}
 	if rl.IsKeyPressed(rl.KeyE) && currentScene != TITLE && currentScene != MENU {

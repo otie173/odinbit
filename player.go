@@ -6,6 +6,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -18,8 +19,8 @@ var (
 	playerFlippedRectangle rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, -TILE_SIZE, TILE_SIZE)
 	playerDirection        bool         = false
 	cam                    rl.Camera2D
-	canMove                bool
 	canBuild               bool
+	lastMoveTime           time.Time
 )
 
 type Player struct {
@@ -93,6 +94,7 @@ func loadPlayerFile() {
 func loadPlayer() {
 	player = loadTexture("assets/images/characters/player.png")
 	cam = rl.NewCamera2D(rl.NewVector2(float32(rl.GetScreenWidth()/2), float32(rl.GetScreenHeight()/2)), rl.NewVector2(float32(playerPosition.X), float32(playerPosition.Y)), 0.0, 6.0)
+	lastMoveTime = time.Now()
 }
 
 func unloadPlayer() {
@@ -117,6 +119,11 @@ func updateCameraTarget(cam *rl.Camera2D, playerPosition rl.Vector2, playerRecta
 
 func updatePlayerPosition() {
 	playerPosition = rl.Vector2Lerp(playerPosition, targetPosition, 0.1)
+}
+
+func canMoveAgain() bool {
+	const moveDelay time.Duration = 150 * time.Millisecond
+	return time.Since(lastMoveTime) >= moveDelay
 }
 
 func drawPlayer() {

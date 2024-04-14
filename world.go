@@ -4,6 +4,7 @@ import (
 	"embed"
 	"encoding/json"
 	"log"
+	"math"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -137,7 +138,7 @@ func getOdinbitPath() string {
 			}
 			xdgDataHome = filepath.Join(home, ".local", "share")
 		}
-		odinbitPath = filepath.Join(xdgDataHome, ".local", "share", "odinbit")
+		odinbitPath = filepath.Join(xdgDataHome, "odinbit")
 	default:
 		log.Fatalf("Неподдерживаемая операционная система: %s", runtime.GOOS)
 	}
@@ -395,6 +396,12 @@ func generateTree(x, y float32) {
 	case 3:
 		addBlock(bigTree, float32(x), float32(y), false)
 	}
+}
+
+func distanceInBlocks(x1, y1, x2, y2 float32) float32 {
+	dx := x2 - x1
+	dy := y2 - y1
+	return float32(math.Sqrt(float64(dx*dx + dy*dy)))
 }
 
 func generateStone(x, y float32) {
