@@ -18,6 +18,7 @@ var (
 	playerRectangle        rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, TILE_SIZE, TILE_SIZE)
 	playerFlippedRectangle rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, -TILE_SIZE, TILE_SIZE)
 	playerDirection        bool         = false
+	playerBlockDistance    int          = 3
 	cam                    rl.Camera2D
 	canBuild               bool
 	lastMoveTime           time.Time
@@ -118,7 +119,7 @@ func updateCameraTarget(cam *rl.Camera2D, playerPosition rl.Vector2, playerRecta
 }
 
 func updatePlayerPosition() {
-	playerPosition = rl.Vector2Lerp(playerPosition, targetPosition, 0.1)
+	playerPosition = rl.Vector2Lerp(playerPosition, targetPosition, 0.075)
 }
 
 func canMoveAgain() bool {

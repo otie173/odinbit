@@ -86,7 +86,7 @@ type Block struct {
 }
 
 type WorldInfo struct {
-	Version string `json:"id"`
+	Version string `json:"version"`
 }
 
 func loadID() {
@@ -398,10 +398,11 @@ func generateTree(x, y float32) {
 	}
 }
 
-func distanceInBlocks(x1, y1, x2, y2 float32) float32 {
-	dx := x2 - x1
-	dy := y2 - y1
-	return float32(math.Sqrt(float64(dx*dx + dy*dy)))
+func distanceInBlocks(playerX, playerY, blockX, blockY float32, distance float32) bool {
+	dx := math.Floor(math.Abs(float64(blockX-playerX)) / float64(TILE_SIZE))
+	dy := math.Floor(math.Abs(float64(blockY-playerY)) / float64(TILE_SIZE))
+
+	return dx <= float64(distance) && dy <= float64(distance)
 }
 
 func generateStone(x, y float32) {
