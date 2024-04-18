@@ -47,6 +47,7 @@ func update() {
 	mouseHandler()
 	updateCameraTarget(&cam, playerPosition, playerRectangle)
 	updatePlayerPosition()
+	updateMusic()
 }
 
 func render() {
@@ -59,6 +60,7 @@ func exit() {
 	unloadWorld()
 	unloadPlayer()
 	unloadAudio()
+	unloadMusic()
 	rl.UnloadFont(fontBold)
 	rl.UnloadFont(font)
 	unloadInventory()
@@ -69,11 +71,14 @@ func init() {
 	rl.InitWindow(int32(rl.GetScreenWidth()), int32(rl.GetScreenHeight()), "Odinbit")
 	rl.SetExitKey(0)
 	rl.SetTargetFPS(int32(rl.GetMonitorRefreshRate(rl.GetCurrentMonitor())))
+	//rl.SetTargetFPS(1000)
+	rl.InitAudioDevice()
 	fontBold = loadFont("assets/fonts/pypx/pypx_bold.ttf", 32)
 	font = loadFont("assets/fonts/pypx/pypx.ttf", 32)
 	loadWorld()
 	loadPlayer()
 	loadAudio()
+	loadMusic()
 	loadInventory()
 }
 

@@ -1,11 +1,14 @@
 package main
 
 import (
+	"fmt"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 var (
 	currentScene int = TITLE
+	lastScene    int = -1
 	menuOpen     bool
 )
 
@@ -84,7 +87,7 @@ func drawScene() {
 	case GAME:
 		rl.BeginDrawing()
 		rl.ClearBackground(bkgColor)
-		//rl.DrawText(fmt.Sprintf("FPS: %d", rl.GetFPS()), 0, 0, 24, rl.White)
+		rl.DrawText(fmt.Sprintf("FPS: %d", rl.GetFPS()), 0, 0, 24, rl.White)
 		rl.BeginMode2D(cam)
 		drawWorld()
 		drawPlayer()
