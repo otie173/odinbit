@@ -28,7 +28,7 @@ var (
 )
 
 const (
-	SOUNDTRACK_VOLUME float32 = 0.1
+	SOUNDTRACK_VOLUME float32 = 0.05
 )
 
 func loadSound(fileName string) rl.Sound {
@@ -136,24 +136,30 @@ func playSoundTrack() {
 func updateMusic() {
 	// Проверяем, изменилась ли сцена
 	if lastScene != currentScene {
-		lastScene = currentScene // Обновляем последнюю сцену
-
-		switch currentScene {
-		case TITLE:
-			currentSoundTrack = soundTrack3
-		case GAME:
-			// Генерируем случайное число только между 1 и 2
-			randomSoundTrack := rand.Intn(2) + 1
-			switch randomSoundTrack {
-			case 1:
-				currentSoundTrack = soundTrack1
-			case 2:
-				currentSoundTrack = soundTrack2
+		// Если мы возвращаемся в TITLE или переходим в GAME из TITLE
+		if currentScene == TITLE || (lastScene == TITLE && currentScene == GAME) {
+			switch currentScene {
+			case TITLE:
+				currentSoundTrack = soundTrack3
+			case GAME:
+				// Генерируем случайное число только между 1 и 3 для выбора нового трека
+				randomSoundTrack := rand.Intn(3) + 1
+				switch randomSoundTrack {
+				case 1:
+					currentSoundTrack = soundTrack1
+				case 2:
+					currentSoundTrack = soundTrack2
+				case 3:
+					currentSoundTrack = soundTrack3
+				}
 			}
+			// Сбрасываем флаг активности музыки, чтобы playSoundTrack мог сработать
+			musicActive = false
 		}
-
-		// Сбрасываем флаг активности музыки, чтобы playSoundTrack мог сработать
-		musicActive = false
+		// Обновляем последнюю сцену только если это не переход в MENU или INVENTORY
+		if currentScene != MENU && currentScene != INVENTORY {
+			lastScene = currentScene
+		}
 	}
 
 	rl.UpdateMusicStream(currentSoundTrack) // Обновляем поток музыки
