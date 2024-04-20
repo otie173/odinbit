@@ -1,18 +1,55 @@
 package main
 
 import (
+	"embed"
+	"log"
+	"math/rand"
+	"os"
+	"time"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
+
+//go:embed assets/fonts/pypx/*.ttf
+var fonts embed.FS
 
 var (
 	bkgColor       rl.Color = rl.NewColor(0, 0, 0, 255)
 	fontBold, font rl.Font
 )
 
+func loadFont(fontName string, fontSize int32) rl.Font {
+	fontData, err := fonts.ReadFile(fontName)
+	if err != nil {
+		log.Fatalf("Failed to read embedded font file: %v", err)
+	}
+
+	// Создание временного файла для шрифта
+	tmpFile, err := os.CreateTemp("", "*.ttf")
+	if err != nil {
+		log.Fatalf("Failed to create temp file: %v", err)
+	}
+	defer os.Remove(tmpFile.Name()) // Убедитесь, что временный файл будет удален
+
+	// Запись данных шрифта в временный файл
+	_, err = tmpFile.Write(fontData)
+	if err != nil {
+		log.Fatalf("Failed to write font to temp file: %v", err)
+	}
+	tmpFile.Close()
+
+	// Загрузка шрифта из временного файла
+	font := rl.LoadFontEx(tmpFile.Name(), fontSize, nil, 0)
+
+	return font
+}
+
 func update() {
 	keyboardHandler()
 	mouseHandler()
 	updateCameraTarget(&cam, playerPosition, playerRectangle)
+	updatePlayerPosition()
+	updateMusic()
 }
 
 func render() {
@@ -25,6 +62,7 @@ func exit() {
 	unloadWorld()
 	unloadPlayer()
 	unloadAudio()
+	unloadMusic()
 	rl.UnloadFont(fontBold)
 	rl.UnloadFont(font)
 	unloadInventory()
@@ -35,11 +73,15 @@ func init() {
 	rl.InitWindow(int32(rl.GetScreenWidth()), int32(rl.GetScreenHeight()), "Odinbit")
 	rl.SetExitKey(0)
 	rl.SetTargetFPS(int32(rl.GetMonitorRefreshRate(rl.GetCurrentMonitor())))
-	fontBold = rl.LoadFont("assets/fonts/pypx/pypx_bold.ttf")
-	font = rl.LoadFont("assets/fonts/pypx/pypx.ttf")
+	//rl.SetTargetFPS(1000)
+	rl.InitAudioDevice()
+	rand.Seed(time.Now().UnixNano())
+	fontBold = loadFont("assets/fonts/pypx/pypx_bold.ttf", 32)
+	font = loadFont("assets/fonts/pypx/pypx.ttf", 32)
 	loadWorld()
 	loadPlayer()
 	loadAudio()
+	loadMusic()
 	loadInventory()
 }
 

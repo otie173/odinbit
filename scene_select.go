@@ -1,23 +1,27 @@
 package main
 
 import (
+	"fmt"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 var (
-	currentScene int = TITLE
+	currentScene Scene = TITLE
+	lastScene    Scene = -1
 	menuOpen     bool
 )
 
 const (
-	TITLE int = iota
+	TITLE Scene = iota
 	GENERATE
-	LOAD
 	SAVE
 	GAME
 	INVENTORY
 	MENU
 )
+
+type Scene int
 
 func drawScene() {
 	switch currentScene {
@@ -38,8 +42,15 @@ func drawScene() {
 			mousePos := rl.GetMousePosition()
 			if rl.CheckCollisionPointRec(mousePos, playRectangle) {
 				if checkWorldFile() {
-					currentScene = LOAD
+					loadWorldLabelSize := rl.MeasureTextEx(font, "Load world...", 56, 2)
+					loadWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(loadWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(loadWorldLabelSize.Y))/2)
+
+					rl.BeginDrawing()
+					rl.ClearBackground(bkgColor)
+					rl.DrawTextEx(font, "Load world...", loadWorldLabelPos, 56, 2, rl.White)
+					rl.EndDrawing()
 					world = loadWorldFile()
+					loadPlayerFile()
 					currentScene = GAME
 				} else {
 					currentScene = GENERATE
@@ -62,14 +73,6 @@ func drawScene() {
 		if worldGenerated {
 			currentScene = GAME
 		}
-	case LOAD:
-		loadWorldLabelSize := rl.MeasureTextEx(font, "Load world...", 56, 2)
-		loadWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(loadWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(loadWorldLabelSize.Y))/2)
-
-		rl.BeginDrawing()
-		rl.ClearBackground(bkgColor)
-		rl.DrawTextEx(font, "Load world...", loadWorldLabelPos, 56, 2, rl.White)
-		rl.EndDrawing()
 	case SAVE:
 		saveWorldLabelSize := rl.MeasureTextEx(font, "Save world...", 56, 2)
 		saveWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(saveWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(saveWorldLabelSize.Y))/2)
@@ -80,10 +83,13 @@ func drawScene() {
 		rl.EndDrawing()
 
 		saveWorldFile()
+		saveWorldInfo()
+		savePlayerFile()
 		currentScene = TITLE
 	case GAME:
 		rl.BeginDrawing()
 		rl.ClearBackground(bkgColor)
+		rl.DrawText(fmt.Sprintf("FPS: %d", rl.GetFPS()), 0, 0, 24, rl.White)
 		rl.BeginMode2D(cam)
 		drawWorld()
 		drawPlayer()

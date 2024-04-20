@@ -1,16 +1,26 @@
 package main
 
 import (
+	"embed"
 	"encoding/json"
 	"log"
+	"math"
 	"math/rand"
 	"os"
+	"path/filepath"
+	"runtime"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+//go:embed assets/images/blocks/*.png
+//go:embed assets/images/world/*.png
+//go:embed assets/images/characters/*.png
+//go:embed assets/images/gui/*.png
+//go:embed assets/images/items/*.png
+var assets embed.FS
+
 var (
-	blocksData     []BlockData
 	world          map[rl.Rectangle]Block
 	id             map[int]rl.Texture2D
 	item           int
@@ -38,8 +48,8 @@ var (
 const (
 	// Описание мира
 	TILE_SIZE               float32 = 10.0
-	WORLD_SIZE              int     = 256
-	OBJECT_SPAWN_MULTIPLIER int     = 5
+	WORLD_SIZE              int     = 384
+	OBJECT_SPAWN_MULTIPLIER int     = 6
 
 	// Перечисление для строительных блоков
 	WALL = iota
@@ -76,7 +86,7 @@ type Block struct {
 }
 
 type WorldInfo struct {
-	Version string `json:"id"`
+	Version string `json:"version"`
 }
 
 func loadID() {
@@ -100,9 +110,48 @@ func loadID() {
 	id[BARRIER] = barrier
 }
 
-func checkWorldFile() bool {
-	_, err := os.Stat("./world_data.json")
-	return !os.IsNotExist(err)
+func getOdinbitPath() string {
+	var odinbitPath string
+
+	switch runtime.GOOS {
+	case "windows":
+		// Windows: используем AppData\Roaming
+		appData := os.Getenv("APPDATA")
+		if appData == "" {
+			log.Fatal("Переменная окружения APPDATA не установлена")
+		}
+		odinbitPath = filepath.Join(appData, "odinbit")
+	case "darwin":
+		// macOS: используем Library/Application Support
+		home, err := os.UserHomeDir()
+		if err != nil {
+			log.Fatalf("Не удалось получить домашнюю директорию: %v", err)
+		}
+		odinbitPath = filepath.Join(home, "Library", "Application Support", "odinbit")
+	case "linux":
+		// Linux: используем /home/local/.share (обычно это ~/.local/share)
+		xdgDataHome := os.Getenv("XDG_DATA_HOME")
+		if xdgDataHome == "" {
+			home, err := os.UserHomeDir()
+			if err != nil {
+				log.Fatalf("Не удалось получить домашнюю директорию: %v", err)
+			}
+			xdgDataHome = filepath.Join(home, ".local", "share")
+		}
+		odinbitPath = filepath.Join(xdgDataHome, "odinbit")
+	default:
+		log.Fatalf("Неподдерживаемая операционная система: %s", runtime.GOOS)
+	}
+
+	// Проверка существования папки odinbit и её создание при отсутствии
+	if _, err := os.Stat(odinbitPath); os.IsNotExist(err) {
+		err := os.MkdirAll(odinbitPath, os.ModePerm)
+		if err != nil {
+			log.Fatalf("Не удалось создать папку odinbit: %v", err)
+		}
+	}
+
+	return odinbitPath
 }
 
 func saveWorldInfo() {
@@ -112,41 +161,17 @@ func saveWorldInfo() {
 		log.Fatalf("Не удалось преобразовать информацию мира: %v", err)
 	}
 
-	err = os.WriteFile("world_info.json", jsonData, 0644)
+	odinbitPath := getOdinbitPath()
+	worldInfoPath := filepath.Join(odinbitPath, "world_info.json")
+
+	err = os.WriteFile(worldInfoPath, jsonData, 0644)
 	if err != nil {
 		log.Fatalf("Не удалось сохранить информацию о мире: %v", err)
 	}
 }
 
-func loadWorldFile() map[rl.Rectangle]Block {
-	jsonData, err := os.ReadFile("./world_data.json")
-	if err != nil {
-		log.Fatalf("Ошибка при чтении файла: %v", err)
-	}
-
-	var blocksData []BlockData
-	err = json.Unmarshal(jsonData, &blocksData)
-	if err != nil {
-		log.Fatalf("Ошибка при десериализации данных: %v", err)
-	}
-
-	world := make(map[rl.Rectangle]Block)
-	for _, data := range blocksData {
-		rect := rl.Rectangle{
-			X:      data.X,
-			Y:      data.Y,
-			Width:  10.0,
-			Height: 10.0,
-		}
-		world[rect] = Block{img: id[data.TextureID], rec: rect, passable: data.Passable}
-	}
-
-	loadPlayerFile()
-	return world
-}
-
 func saveWorldFile() {
-	blocksData = []BlockData{}
+	blocksData := []BlockData{}
 	var targetID int
 
 	for rect, block := range world {
@@ -169,36 +194,86 @@ func saveWorldFile() {
 		log.Fatalf("Не удалось преобразовать данные мира: %v", err)
 	}
 
-	err = os.WriteFile("world_data.json", worldData, 0644)
+	odinbitPath := getOdinbitPath()
+	worldDataPath := filepath.Join(odinbitPath, "world_data.json")
+
+	err = os.WriteFile(worldDataPath, worldData, 0644)
 	if err != nil {
 		log.Fatalf("Не удалось сохранить мир: %v", err)
 	}
+}
 
-	saveWorldInfo()
-	savePlayerFile()
+func checkWorldFile() bool {
+	odinbitPath := getOdinbitPath()
+	worldDataPath := filepath.Join(odinbitPath, "world_data.json")
+
+	_, err := os.Stat(worldDataPath)
+	return !os.IsNotExist(err)
+}
+
+func loadWorldFile() map[rl.Rectangle]Block {
+	odinbitPath := getOdinbitPath()
+	worldDataPath := filepath.Join(odinbitPath, "world_data.json")
+
+	jsonData, err := os.ReadFile(worldDataPath)
+	if err != nil {
+		log.Fatalf("Ошибка при чтении файла: %v", err)
+	}
+
+	var blocksData []BlockData
+	err = json.Unmarshal(jsonData, &blocksData)
+	if err != nil {
+		log.Fatalf("Ошибка при десериализации данных: %v", err)
+	}
+
+	world := make(map[rl.Rectangle]Block)
+	for _, data := range blocksData {
+		rect := rl.Rectangle{
+			X:      data.X,
+			Y:      data.Y,
+			Width:  10.0,
+			Height: 10.0,
+		}
+		world[rect] = Block{img: id[data.TextureID], rec: rect, passable: data.Passable}
+	}
+
+	return world
+}
+
+func loadTexture(fileName string) rl.Texture2D {
+	fileBytes, err := assets.ReadFile(fileName)
+	if err != nil {
+		log.Fatalf("Не удалость прочитать embed файл: %v", err)
+	}
+
+	image := rl.LoadImageFromMemory(".png", fileBytes, int32(len(fileBytes)))
+	texture := rl.LoadTextureFromImage(image)
+	rl.UnloadImage(image)
+
+	return texture
 }
 
 func loadWorld() {
 	world = make(map[rl.Rectangle]Block, 65_536)
 	id = make(map[int]rl.Texture2D, 256)
-	wall = rl.LoadTexture("assets/images/blocks/wall.png")
-	floor = rl.LoadTexture("assets/images/blocks/floor.png")
-	door = rl.LoadTexture("assets/images/blocks/door.png")
-	chest = rl.LoadTexture("assets/images/blocks/chest.png")
-	smallTree = rl.LoadTexture("assets/images/world/small_tree.png")
-	stone1 = rl.LoadTexture("assets/images/world/stone1.png")
-	stone2 = rl.LoadTexture("assets/images/world/stone2.png")
-	stone3 = rl.LoadTexture("assets/images/world/stone3.png")
-	stone4 = rl.LoadTexture("assets/images/world/stone4.png")
-	normalTree = rl.LoadTexture("assets/images/world/normal_tree.png")
-	bigTree = rl.LoadTexture("assets/images/world/big_tree.png")
-	grass1 = rl.LoadTexture("assets/images/world/grass1.png")
-	grass2 = rl.LoadTexture("assets/images/world/grass2.png")
-	grass3 = rl.LoadTexture("assets/images/world/grass3.png")
-	grass4 = rl.LoadTexture("assets/images/world/grass4.png")
-	grass5 = rl.LoadTexture("assets/images/world/grass5.png")
-	grass6 = rl.LoadTexture("assets/images/world/grass6.png")
-	barrier = rl.LoadTexture("assets/images/blocks/barrier.png")
+	wall = loadTexture("assets/images/blocks/wall.png")
+	floor = loadTexture("assets/images/blocks/floor.png")
+	door = loadTexture("assets/images/blocks/door.png")
+	chest = loadTexture("assets/images/blocks/chest.png")
+	smallTree = loadTexture("assets/images/world/small_tree.png")
+	stone1 = loadTexture("assets/images/world/stone1.png")
+	stone2 = loadTexture("assets/images/world/stone2.png")
+	stone3 = loadTexture("assets/images/world/stone3.png")
+	stone4 = loadTexture("assets/images/world/stone4.png")
+	normalTree = loadTexture("assets/images/world/normal_tree.png")
+	bigTree = loadTexture("assets/images/world/big_tree.png")
+	grass1 = loadTexture("assets/images/world/grass1.png")
+	grass2 = loadTexture("assets/images/world/grass2.png")
+	grass3 = loadTexture("assets/images/world/grass3.png")
+	grass4 = loadTexture("assets/images/world/grass4.png")
+	grass5 = loadTexture("assets/images/world/grass5.png")
+	grass6 = loadTexture("assets/images/world/grass6.png")
+	barrier = loadTexture("assets/images/blocks/barrier.png")
 
 	rl.SetTextureFilter(smallTree, rl.TextureFilterNearest)
 	rl.SetTextureFilter(stone1, rl.TextureFilterNearest)
@@ -323,6 +398,13 @@ func generateTree(x, y float32) {
 	}
 }
 
+func distanceInBlocks(playerX, playerY, blockX, blockY float32, distance float32) bool {
+	dx := math.Floor(math.Abs(float64(blockX-playerX)) / float64(TILE_SIZE))
+	dy := math.Floor(math.Abs(float64(blockY-playerY)) / float64(TILE_SIZE))
+
+	return dx <= float64(distance) && dy <= float64(distance)
+}
+
 func generateStone(x, y float32) {
 	// Генерация случайного номера изображения камня
 	stoneImg := rand.Intn(4) + 1
@@ -409,28 +491,29 @@ func generateWorld() {
 	worldGenerated = true
 }
 
-func isVisible(block Block, cam rl.Camera2D, screenWidth, screenHeight int) bool {
-	// Границы объекта
-	left := block.rec.X
-	right := block.rec.X + float32(block.rec.Width)
-	top := block.rec.Y
-	bottom := block.rec.Y + float32(block.rec.Height)
+func updateVisibleArea(cam rl.Camera2D, screenWidth, screenHeight int) (left, right, top, bottom float32) {
+	zoomFactor := 1 / cam.Zoom
+	halfScreenWidth := float32(screenWidth) * 0.5 * zoomFactor
+	halfScreenHeight := float32(screenHeight) * 0.5 * zoomFactor
 
-	// Границы видимой части экрана с учетом камеры
-	screenLeft := cam.Target.X - float32(screenWidth)/2/cam.Zoom
-	screenRight := cam.Target.X + float32(screenWidth)/2/cam.Zoom
-	screenTop := cam.Target.Y - float32(screenHeight)/2/cam.Zoom
-	screenBottom := cam.Target.Y + float32(screenHeight)/2/cam.Zoom
-
-	// Проверяем пересечение границ объекта и видимой области экрана
-	return left < screenRight && right > screenLeft && top < screenBottom && bottom > screenTop
+	left = cam.Target.X - halfScreenWidth
+	right = cam.Target.X + halfScreenWidth
+	top = cam.Target.Y - halfScreenHeight
+	bottom = cam.Target.Y + halfScreenHeight
+	return
 }
 
 func drawWorld() {
+	screenWidth, screenHeight := rl.GetScreenWidth(), rl.GetScreenHeight()
+	left, right, top, bottom := updateVisibleArea(cam, screenWidth, screenHeight)
+
 	for _, block := range world {
-		if isVisible(block, cam, rl.GetScreenWidth(), rl.GetScreenHeight()) {
+		blockRight := block.rec.X + block.rec.Width
+		blockBottom := block.rec.Y + block.rec.Height
+
+		if block.rec.X < right && blockRight > left &&
+			block.rec.Y < bottom && blockBottom > top {
 			rl.DrawTextureRec(block.img, block.rec, rl.NewVector2(block.rec.X, block.rec.Y), rl.White)
 		}
 	}
-
 }

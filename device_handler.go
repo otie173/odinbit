@@ -2,6 +2,7 @@ package main
 
 import (
 	"math"
+	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -16,24 +17,33 @@ func mouseHandler() {
 	mouseOnBlock = false
 	if rl.IsMouseButtonPressed(rl.MouseButtonLeft) && currentScene == GAME {
 		mousePos = rl.GetScreenToWorld2D(rl.GetMousePosition(), cam)
+		//mouseX := mousePos.X / TILE_SIZE
+		//mouseY := mousePos.Y / TILE_SIZE
+
+		playerX := int(math.Floor(float64(targetPosition.X / TILE_SIZE)))
+		playerY := int(math.Floor(float64(targetPosition.Y / TILE_SIZE)))
 		for _, block := range world {
+			blockX := block.rec.X / TILE_SIZE
+			blockY := block.rec.Y / TILE_SIZE
 			if rl.CheckCollisionPointRec(mousePos, block.rec) {
+				blockDistance := distanceInBlocks(float32(playerX)*TILE_SIZE, float32(playerY)*TILE_SIZE, blockX*TILE_SIZE, blockY*TILE_SIZE, float32(playerBlockDistance))
+				if blockDistance {
+					// Воспроизведение звука и разрушение объекта в зависимости от текстуры
+					switch block.img {
+					case smallTree, normalTree, bigTree, stone1, stone2, stone3, stone4:
+						removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+						pickupResourceSound()
+						// Генерация травы на месте сломанного блока, чтобы не было просто пустого места
+						generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+					case grass1, grass2, grass3, grass4, grass5, grass6, barrier:
+						break
+					default:
+						removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+						soundBlockAction()
+						// Генерация травы на месте сломанного блока, чтобы не было просто пустого места
+						generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 
-				// Воспроизведение звука и разрушение объекта в зависимости от текстуры
-				switch block.img {
-				case smallTree, normalTree, bigTree, stone1, stone2, stone3, stone4:
-					removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
-					pickupResourceSound()
-					// Генерация травы на месте сломанного блока, чтобы не было просто пустого места
-					generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
-				case grass1, grass2, grass3, grass4, grass5, grass6, barrier:
-					break
-				default:
-					removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
-					soundBlockAction()
-					// Генерация травы на месте сломанного блока, чтобы не было просто пустого места
-					generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
-
+					}
 				}
 				// Открытие слота инвентаря, если блок был неизвестен
 				switch block.img {
@@ -69,7 +79,10 @@ func mouseHandler() {
 		mousePos = rl.GetScreenToWorld2D(rl.GetMousePosition(), cam)
 		mouseX := int(math.Floor(float64(mousePos.X / TILE_SIZE)))
 		mouseY := int(math.Floor(float64(mousePos.Y / TILE_SIZE)))
-		if playerPosition.X == (float32(mouseX)*10) && playerPosition.Y == (float32(mouseY)*10) && item != 2 {
+		playerX := int(math.Floor(float64(targetPosition.X / TILE_SIZE)))
+		playerY := int(math.Floor(float64(targetPosition.Y / TILE_SIZE)))
+		blockDistance := distanceInBlocks(float32(playerX)*TILE_SIZE, float32(playerY)*TILE_SIZE, float32(mouseX)*TILE_SIZE, float32(mouseY)*TILE_SIZE, float32(playerBlockDistance))
+		if targetPosition.X == (float32(mouseX)*TILE_SIZE) && targetPosition.Y == (float32(mouseY)*TILE_SIZE) && item != 2 {
 			canBuild = false
 		} else {
 			canBuild = true
@@ -82,7 +95,7 @@ func mouseHandler() {
 				mouseOnBlock = false
 			}
 		}
-		if !mouseOnBlock && canBuild && mouseX > -(WORLD_SIZE/2) && mouseX < WORLD_SIZE/2 && mouseY > -(WORLD_SIZE/2) && mouseY < WORLD_SIZE/2 {
+		if !mouseOnBlock && canBuild && mouseX > -(WORLD_SIZE/2) && mouseX < WORLD_SIZE/2 && mouseY > -(WORLD_SIZE/2) && mouseY < WORLD_SIZE/2 && blockDistance {
 			switch item {
 			case WALL:
 				if wallIsOpen && wallCount != 0 {
@@ -132,58 +145,54 @@ func mouseHandler() {
 }
 
 func keyboardHandler() {
-	if rl.IsKeyPressed(rl.KeyW) && currentScene == GAME {
-		for _, block := range world {
-			if playerPosition.Y-TILE_SIZE == block.rec.Y && playerPosition.X == block.rec.X && !block.passable {
-				canMove = false
-				break
-			} else {
-				canMove = true
-			}
-		}
-		if canMove {
-			playerPosition.Y -= TILE_SIZE
-		}
+	var moveX, moveY float32
+	var shouldMove bool
+
+	if rl.IsKeyDown(rl.KeyW) {
+		moveY = -TILE_SIZE
+		shouldMove = true
+	} else if rl.IsKeyDown(rl.KeyS) {
+		moveY = TILE_SIZE
+		shouldMove = true
 	}
-	if rl.IsKeyPressed(rl.KeyA) && currentScene == GAME {
+	if rl.IsKeyDown(rl.KeyA) {
 		playerDirection = false
-		for _, block := range world {
-			if playerPosition.X-TILE_SIZE == block.rec.X && playerPosition.Y == block.rec.Y && !block.passable {
-				canMove = false
-				break
-			} else {
-				canMove = true
-			}
-		}
-		if canMove {
-			playerPosition.X -= TILE_SIZE
-		}
-	}
-	if rl.IsKeyPressed(rl.KeyS) && currentScene == GAME {
-		for _, block := range world {
-			if playerPosition.Y+TILE_SIZE == block.rec.Y && playerPosition.X == block.rec.X && !block.passable {
-				canMove = false
-				break
-			} else {
-				canMove = true
-			}
-		}
-		if canMove {
-			playerPosition.Y += TILE_SIZE
-		}
-	}
-	if rl.IsKeyPressed(rl.KeyD) && currentScene == GAME {
+		moveX = -TILE_SIZE
+		shouldMove = true
+	} else if rl.IsKeyDown(rl.KeyD) {
 		playerDirection = true
-		for _, block := range world {
-			if playerPosition.X+TILE_SIZE == block.rec.X && playerPosition.Y == block.rec.Y && !block.passable {
-				canMove = false
-				break
-			} else {
-				canMove = true
+		moveX = TILE_SIZE
+		shouldMove = true
+	}
+
+	if shouldMove && canMoveAgain() {
+		// Предполагаем, что движение возможно
+		canMove := true
+		// Проверяем диагональное движение только если оба направления активны
+		if moveX != 0 && moveY != 0 {
+			// Проверяем наличие блоков на диагональных путях
+			for _, block := range world {
+				if (!block.passable) && ((targetPosition.X+moveX == block.rec.X && targetPosition.Y == block.rec.Y) ||
+					(targetPosition.Y+moveY == block.rec.Y && targetPosition.X == block.rec.X) ||
+					(targetPosition.X+moveX == block.rec.X && targetPosition.Y+moveY == block.rec.Y)) {
+					canMove = false
+					break
+				}
+			}
+		} else {
+			// Проверяем наличие блоков на прямом пути
+			for _, block := range world {
+				if (!block.passable) && (targetPosition.X+moveX == block.rec.X && targetPosition.Y+moveY == block.rec.Y) {
+					canMove = false
+					break
+				}
 			}
 		}
+
 		if canMove {
-			playerPosition.X += TILE_SIZE
+			targetPosition.X += moveX
+			targetPosition.Y += moveY
+			lastMoveTime = time.Now()
 		}
 	}
 	if rl.IsKeyPressed(rl.KeyE) && currentScene != TITLE && currentScene != MENU {

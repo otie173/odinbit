@@ -16,15 +16,15 @@ var (
 	wood          rl.Texture2D
 	stone         rl.Texture2D
 	metal         rl.Texture2D
-	woodCount     int  = 0
-	stoneCount    int  = 0
-	metalCount    int  = 0
-	wallIsOpen    bool = false
+	woodCount     int  = 999
+	stoneCount    int  = 999
+	metalCount    int  = 999
+	wallIsOpen    bool = true
 	floorIsOpen   bool = false
 	doorIsOpen    bool = false
 	chestIsOpen   bool = false
 	question      rl.Texture2D
-	wallCount     int     = 0
+	wallCount     int     = 999
 	floorCount    int     = 0
 	doorCount     int     = 0
 	chestCount    int     = 0
@@ -46,17 +46,17 @@ func createInventoryRow(startX, startY float32, slots, spacing int, inventory *[
 }
 
 func loadInventory() {
-	slotImage = rl.LoadTexture("assets/images/gui/slot.png")
+	slotImage = loadTexture("assets/images/gui/slot.png")
 	inventory = make([]InventorySlot, 3)
 	hotInventory = make([]InventorySlot, 32)
 	textures = make([]rl.Texture2D, 3)
 	otherTextures = make([]rl.Texture2D, 32)
-	wood = rl.LoadTexture("assets/images/items/wood.png")
-	stone = rl.LoadTexture("assets/images/items/stone.png")
-	metal = rl.LoadTexture("assets/images/items/metal.png")
+	wood = loadTexture("assets/images/items/wood.png")
+	stone = loadTexture("assets/images/items/stone.png")
+	metal = loadTexture("assets/images/items/metal.png")
 	textures = []rl.Texture2D{wood, stone, metal}
 	otherTextures = []rl.Texture2D{wall, floor, door, chest}
-	question = rl.LoadTexture("assets/images/gui/question.png")
+	question = loadTexture("assets/images/gui/question.png")
 
 	inventoryLabelSize := rl.MeasureTextEx(fontBold, "Inventory", 72, 2)
 	inventoryLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(inventoryLabelSize.X))/2, 75)
