@@ -7,19 +7,21 @@ import (
 )
 
 var (
-	currentScene int = TITLE
-	lastScene    int = -1
+	currentScene Scene = TITLE
+	lastScene    Scene = -1
 	menuOpen     bool
 )
 
 const (
-	TITLE int = iota
+	TITLE Scene = iota
 	GENERATE
 	SAVE
 	GAME
 	INVENTORY
 	MENU
 )
+
+type Scene int
 
 func drawScene() {
 	switch currentScene {

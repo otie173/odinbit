@@ -2,9 +2,11 @@ package main
 
 import (
 	"embed"
+	"fmt"
 	"log"
 	"math/rand"
 	"os"
+	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -16,19 +18,23 @@ var sounds embed.FS
 var music embed.FS
 
 var (
-	blockAction        rl.Sound
-	pickupAction       rl.Sound
-	musicPaused        bool
-	musicActive        bool
-	currentSoundTrack  rl.Music
-	previousSoundTrack rl.Music
-	soundTrack1        rl.Music
-	soundTrack2        rl.Music
-	soundTrack3        rl.Music
+	blockAction         rl.Sound
+	pickupAction        rl.Sound
+	musicPaused         bool
+	musicActive         bool
+	currentSoundTrack   rl.Music
+	previousSoundTrack  rl.Music
+	lastSoundTrackIndex int = -1
+	lastTrackEndTime    time.Time
+	pauseDuration       time.Duration
+	soundTrack1         rl.Music
+	soundTrack2         rl.Music
+	soundTrack3         rl.Music
 )
 
 const (
 	SOUNDTRACK_VOLUME float32 = 0.05
+	MENU_TARCK_INDEX  int     = 2
 )
 
 func loadSound(fileName string) rl.Sound {
@@ -121,6 +127,23 @@ func pickupResourceSound() {
 }
 
 func playSoundTrack() {
+	// Это сделано для того чтобы, если в сцене GAME играл soundTrack3, то
+	// при выходе в сцену TITLE - soundTrack3 мог звучать снова
+	if !musicActive || currentSoundTrack == soundTrack3 && currentScene == TITLE {
+		fmt.Println("Я здесь")
+		if currentSoundTrack != previousSoundTrack {
+			rl.StopMusicStream(previousSoundTrack)
+		}
+		previousSoundTrack = currentSoundTrack
+
+		rl.SetMusicVolume(currentSoundTrack, SOUNDTRACK_VOLUME)
+		rl.PlayMusicStream(currentSoundTrack)
+		musicActive = true
+		musicPaused = false
+		// Обновляем время окончания трека, учитывая длительность трека
+		lastTrackEndTime = time.Now().Add(time.Second * time.Duration(rl.GetMusicTimeLength(currentSoundTrack)))
+	}
+
 	if !musicActive || currentSoundTrack != previousSoundTrack {
 		if currentSoundTrack != previousSoundTrack {
 			rl.StopMusicStream(previousSoundTrack)
@@ -130,38 +153,91 @@ func playSoundTrack() {
 		rl.SetMusicVolume(currentSoundTrack, SOUNDTRACK_VOLUME)
 		rl.PlayMusicStream(currentSoundTrack)
 		musicActive = true
+		musicPaused = false
+		// Обновляем время окончания трека, учитывая длительность трека
+		lastTrackEndTime = time.Now().Add(time.Second * time.Duration(rl.GetMusicTimeLength(currentSoundTrack)))
 	}
 }
 
-func updateMusic() {
-	// Проверяем, изменилась ли сцена
-	if lastScene != currentScene {
-		// Если мы возвращаемся в TITLE или переходим в GAME из TITLE
-		if currentScene == TITLE || (lastScene == TITLE && currentScene == GAME) {
-			switch currentScene {
-			case TITLE:
-				currentSoundTrack = soundTrack3
-			case GAME:
-				// Генерируем случайное число только между 1 и 3 для выбора нового трека
-				randomSoundTrack := rand.Intn(3) + 1
-				switch randomSoundTrack {
-				case 1:
-					currentSoundTrack = soundTrack1
-				case 2:
-					currentSoundTrack = soundTrack2
-				case 3:
-					currentSoundTrack = soundTrack3
-				}
-			}
-			// Сбрасываем флаг активности музыки, чтобы playSoundTrack мог сработать
-			musicActive = false
+func pauseMusic() {
+	if musicActive && !musicPaused {
+		rl.PauseMusicStream(currentSoundTrack)
+		musicPaused = true
+	}
+}
+
+func resumeMusic() {
+	if musicActive && musicPaused {
+		rl.ResumeMusicStream(currentSoundTrack)
+		musicPaused = false
+	}
+}
+
+func selectNewTrackForGame() {
+	var newTrackIndex int
+	for {
+		newTrackIndex = rand.Intn(3) // Предполагается, что индексы треков начинаются с 0
+		if newTrackIndex != lastSoundTrackIndex {
+			break
 		}
-		// Обновляем последнюю сцену только если это не переход в MENU или INVENTORY
-		if currentScene != MENU && currentScene != INVENTORY {
+	}
+
+	fmt.Printf("Новый трек: %d\n", newTrackIndex)
+	switch newTrackIndex {
+	case 0:
+		currentSoundTrack = soundTrack1
+	case 1:
+		currentSoundTrack = soundTrack2
+	case 2:
+		currentSoundTrack = soundTrack3
+	}
+
+	lastSoundTrackIndex = newTrackIndex
+	musicActive = false           // Сбрасываем флаг активности музыки для запуска нового трека
+	lastTrackEndTime = time.Now() // Сбрасываем время, чтобы начать отсчет нового трека
+}
+
+func updateMusic() {
+	now := time.Now()
+
+	switch currentScene {
+	case MENU, INVENTORY:
+		if lastScene != currentScene {
+			// При первом переходе в MENU или INVENTORY ставим музыку на паузу
+			if !musicPaused {
+				pauseMusic()
+			}
 			lastScene = currentScene
+		}
+	case GAME:
+		if lastScene == MENU || lastScene == INVENTORY {
+			// Возвращаемся из MENU или INVENTORY, возобновляем музыку, не выбирая новый трек
+			if musicPaused {
+				resumeMusic()
+			}
+			lastScene = currentScene
+		} else {
+			// Обрабатываем логику для сцены GAME
+			if lastScene != currentScene || now.After(lastTrackEndTime.Add(pauseDuration)) {
+				// Если мы только что перешли в GAME или прошло достаточно времени после последнего трека
+				selectNewTrackForGame()
+				playSoundTrack()
+				lastScene = currentScene
+				pauseDuration = 5 * time.Minute
+			}
+		}
+	case TITLE:
+		if lastScene != currentScene {
+			// При переходе в TITLE всегда играем трек для TITLE
+			currentSoundTrack = soundTrack3
+			playSoundTrack()
+			lastScene = currentScene
+			pauseDuration = 30 * time.Second
+		} else if now.After(lastTrackEndTime.Add(pauseDuration)) {
+			// Повторяем трек TITLE каждые 30 секунд
+			playSoundTrack()
 		}
 	}
 
 	rl.UpdateMusicStream(currentSoundTrack) // Обновляем поток музыки
-	playSoundTrack()                        // Воспроизводим саундтрек, если нужно
 }

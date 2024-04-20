@@ -3,7 +3,9 @@ package main
 import (
 	"embed"
 	"log"
+	"math/rand"
 	"os"
+	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -73,6 +75,7 @@ func init() {
 	rl.SetTargetFPS(int32(rl.GetMonitorRefreshRate(rl.GetCurrentMonitor())))
 	//rl.SetTargetFPS(1000)
 	rl.InitAudioDevice()
+	rand.Seed(time.Now().UnixNano())
 	fontBold = loadFont("assets/fonts/pypx/pypx_bold.ttf", 32)
 	font = loadFont("assets/fonts/pypx/pypx.ttf", 32)
 	loadWorld()
