@@ -22,6 +22,7 @@ var assets embed.FS
 
 var (
 	world          map[rl.Rectangle]Block
+	visibleBlocks  map[rl.Rectangle]Block
 	id             map[int]rl.Texture2D
 	item           int
 	wall           rl.Texture2D
@@ -48,7 +49,7 @@ var (
 const (
 	// Описание мира
 	TILE_SIZE               float32 = 10.0
-	WORLD_SIZE              int     = 384
+	WORLD_SIZE              int     = 320
 	OBJECT_SPAWN_MULTIPLIER int     = 6
 
 	// Перечисление для строительных блоков
@@ -321,10 +322,12 @@ func addBlock(img rl.Texture2D, x, y float32, passable bool) {
 		passable: passable,
 	}
 	world[block.rec] = block
+	updateVisibleBlocks(cam)
 }
 
 func removeBlock(x, y float32) {
 	delete(world, rl.NewRectangle(x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE, TILE_SIZE))
+	updateVisibleBlocks(cam)
 }
 
 func generateBarrier() {
@@ -491,29 +494,56 @@ func generateWorld() {
 	worldGenerated = true
 }
 
-func updateVisibleArea(cam rl.Camera2D, screenWidth, screenHeight int) (left, right, top, bottom float32) {
-	zoomFactor := 1 / cam.Zoom
-	halfScreenWidth := float32(screenWidth) * 0.5 * zoomFactor
-	halfScreenHeight := float32(screenHeight) * 0.5 * zoomFactor
-
-	left = cam.Target.X - halfScreenWidth
-	right = cam.Target.X + halfScreenWidth
-	top = cam.Target.Y - halfScreenHeight
-	bottom = cam.Target.Y + halfScreenHeight
-	return
+func isCameraMoved(cam rl.Camera2D) bool {
+	moved := cam.Target.X != prevCamPosition.X || cam.Target.Y != prevCamPosition.Y
+	if moved {
+		prevCamPosition = cam.Target
+	}
+	return moved
 }
 
-func drawWorld() {
+func updateVisibleBlocks(cam rl.Camera2D) {
 	screenWidth, screenHeight := rl.GetScreenWidth(), rl.GetScreenHeight()
 	left, right, top, bottom := updateVisibleArea(cam, screenWidth, screenHeight)
 
-	for _, block := range world {
-		blockRight := block.rec.X + block.rec.Width
-		blockBottom := block.rec.Y + block.rec.Height
+	// Очистите мапу видимых блоков перед заполнением
+	for k := range visibleBlocks {
+		delete(visibleBlocks, k)
+	}
 
-		if block.rec.X < right && blockRight > left &&
-			block.rec.Y < bottom && blockBottom > top {
-			rl.DrawTextureRec(block.img, block.rec, rl.NewVector2(block.rec.X, block.rec.Y), rl.White)
+	// Заполните мапу видимыми блоками
+	for _, block := range world {
+		if block.rec.X+block.rec.Width > left && block.rec.X < right &&
+			block.rec.Y+block.rec.Height > top && block.rec.Y < bottom {
+			visibleBlocks[block.rec] = block
 		}
+	}
+}
+
+func updateVisibleArea(cam rl.Camera2D, screenWidth, screenHeight int) (left, right, top, bottom float32) {
+	// Вычисляем центральную точку камеры
+	camCenter := cam.Target
+
+	// Вычисляем размеры видимой области на основе зума камеры и размеров экрана
+	// Предполагаем, что cam.Zoom равен 1.0 при стандартном масштабе
+	halfWidth := float32(screenWidth) / 2.0 / cam.Zoom
+	halfHeight := float32(screenHeight) / 2.0 / cam.Zoom
+
+	// Определяем границы видимой области
+	left = camCenter.X - halfWidth
+	right = camCenter.X + halfWidth
+	top = camCenter.Y - halfHeight
+	bottom = camCenter.Y + halfHeight
+
+	return left, right, top, bottom
+}
+
+func drawWorld(cam rl.Camera2D) {
+	if isCameraMoved(cam) {
+		updateVisibleBlocks(cam)
+	}
+
+	for _, block := range visibleBlocks {
+		rl.DrawTextureRec(block.img, block.rec, rl.NewVector2(block.rec.X, block.rec.Y), rl.White)
 	}
 }
