@@ -20,6 +20,7 @@ var (
 	playerDirection        bool         = false
 	playerBlockDistance    int          = 3
 	cam                    rl.Camera2D
+	prevCamPosition        rl.Vector2
 	canBuild               bool
 	lastMoveTime           time.Time
 )

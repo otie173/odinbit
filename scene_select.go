@@ -89,7 +89,7 @@ func drawScene() {
 		rl.ClearBackground(bkgColor)
 		//rl.DrawText(fmt.Sprintf("FPS: %d", rl.GetFPS()), 0, 0, 24, rl.White)
 		rl.BeginMode2D(cam)
-		drawWorld()
+		drawWorld(cam)
 		drawPlayer()
 		rl.EndMode2D()
 		rl.EndDrawing()

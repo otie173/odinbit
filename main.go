@@ -12,8 +12,9 @@ import (
 var fonts embed.FS
 
 var (
-	bkgColor       rl.Color = rl.NewColor(0, 0, 0, 255)
-	fontBold, font rl.Font
+	bkgColor                  rl.Color = rl.NewColor(0, 0, 0, 255)
+	fontBold, font            rl.Font
+	screenWidth, screenHeight int32
 )
 
 func loadFont(fontName string, fontSize int32) rl.Font {
@@ -68,11 +69,14 @@ func exit() {
 
 func init() {
 	rl.SetConfigFlags(rl.FlagFullscreenMode)
-	rl.InitWindow(int32(rl.GetScreenWidth()), int32(rl.GetScreenHeight()), "Odinbit")
+	screenWidth, screenHeight = int32(rl.GetScreenWidth()), int32(rl.GetScreenHeight())
+	rl.InitWindow(screenWidth, screenHeight, "Odinbit")
 	rl.SetExitKey(0)
 	rl.SetTargetFPS(int32(rl.GetMonitorRefreshRate(rl.GetCurrentMonitor())))
 	//rl.SetTargetFPS(1000)
 	rl.InitAudioDevice()
+	visibleBlocks = make(map[rl.Rectangle]Block)
+	prevCamPosition = rl.NewVector2(-1, -1)
 	fontBold = loadFont("assets/fonts/pypx/pypx_bold.ttf", 32)
 	font = loadFont("assets/fonts/pypx/pypx.ttf", 32)
 	loadWorld()
