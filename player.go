@@ -23,28 +23,33 @@ var (
 	prevCamPosition        rl.Vector2
 	canBuild               bool
 	lastMoveTime           time.Time
+	playerHealth           int = 3
 )
 
 type Player struct {
-	X          float32 `json:"x"`
-	Y          float32 `json:"y"`
-	TargetX    float32 `json:"target_x"`
-	TargetY    float32 `json:"target_y"`
-	WoodCount  int     `json:"wood"`
-	StoneCount int     `json:"stone"`
-	MetalCount int     `json:"metal"`
-	WallOpen   bool    `json:"wall_open"`
-	FloorOpen  bool    `json:"floor_open"`
-	DoorOpen   bool    `json:"door_open"`
-	ChestOpen  bool    `json:"chest_open"`
-	WallCount  int     `json:"wall_count"`
-	FloorCount int     `json:"floor_count"`
-	DoorCount  int     `json:"door_count"`
-	ChestCount int     `json:"chest_count"`
+	X           float32 `json:"x"`
+	Y           float32 `json:"y"`
+	TargetX     float32 `json:"target_x"`
+	TargetY     float32 `json:"target_y"`
+	Health      int     `json:"health"`
+	WoodCount   int     `json:"wood"`
+	StoneCount  int     `json:"stone"`
+	MetalCount  int     `json:"metal"`
+	PickaxeOpen bool    `json:"pickaxe_open"`
+	AxeOpen     bool    `json:"axe_open"`
+	ShovelOpen  bool    `json:"shovel_open"`
+	WallOpen    bool    `json:"wall_open"`
+	FloorOpen   bool    `json:"floor_open"`
+	DoorOpen    bool    `json:"door_open"`
+	ChestOpen   bool    `json:"chest_open"`
+	WallCount   int     `json:"wall_count"`
+	FloorCount  int     `json:"floor_count"`
+	DoorCount   int     `json:"door_count"`
+	ChestCount  int     `json:"chest_count"`
 }
 
 func savePlayerFile() {
-	playerData := Player{playerPosition.X, playerPosition.Y, targetPosition.X, targetPosition.Y, woodCount, stoneCount, metalCount, wallIsOpen, floorIsOpen, doorIsOpen, chestIsOpen, wallCount, floorCount, doorCount, chestCount}
+	playerData := Player{playerPosition.X, playerPosition.Y, targetPosition.X, targetPosition.Y, playerHealth, woodCount, stoneCount, metalCount, pickaxeIsOpen, axeIsOpen, shovelIsOpen, wallIsOpen, floorIsOpen, doorIsOpen, chestIsOpen, wallCount, floorCount, doorCount, chestCount}
 	jsonData, err := json.Marshal(playerData)
 	if err != nil {
 		log.Fatalf("Не удалось преобразовать информацию игрока: %v", err)
@@ -77,10 +82,15 @@ func loadPlayerFile() {
 	playerPosition = rl.NewVector2(playerData.X, playerData.Y)
 	targetPosition = rl.NewVector2(playerData.TargetX, playerData.TargetY)
 	cam.Target = playerPosition
+	playerHealth = playerData.Health
 
 	woodCount = playerData.WoodCount
 	stoneCount = playerData.StoneCount
 	metalCount = playerData.MetalCount
+
+	pickaxeIsOpen = playerData.PickaxeOpen
+	axeIsOpen = playerData.AxeOpen
+	shovelIsOpen = playerData.ShovelOpen
 
 	wallIsOpen = playerData.WallOpen
 	floorIsOpen = playerData.FloorOpen

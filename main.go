@@ -84,6 +84,7 @@ func init() {
 	loadAudio()
 	loadMusic()
 	loadInventory()
+	loadUI()
 }
 
 func main() {
