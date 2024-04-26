@@ -156,7 +156,7 @@ func getOdinbitPath() string {
 }
 
 func saveWorldInfo() {
-	worldInfo := WorldInfo{Version: "indev06042024"}
+	worldInfo := WorldInfo{Version: "indev26042024"}
 	jsonData, err := json.Marshal(worldInfo)
 	if err != nil {
 		log.Fatalf("Не удалось преобразовать информацию мира: %v", err)

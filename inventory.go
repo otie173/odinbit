@@ -29,6 +29,9 @@ var (
 	doorCount     int     = 0
 	chestCount    int     = 0
 	inventoryZoom float32 = 5.0
+	shovelIsOpen  bool    = false
+	pickaxeIsOpen bool    = false
+	axeIsOpen     bool    = false
 )
 
 type InventorySlot struct {
