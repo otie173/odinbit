@@ -7,33 +7,41 @@ import (
 )
 
 var (
-	inventoryOpen    bool
-	slotImage        rl.Texture2D
-	inventory        []InventorySlot
-	hotInventory     []InventorySlot
-	textures         []rl.Texture2D
-	otherTextures    []rl.Texture2D
-	wood             rl.Texture2D
-	stone            rl.Texture2D
-	metal            rl.Texture2D
-	woodCount        int  = 0
-	stoneCount       int  = 0
-	metalCount       int  = 0
-	wallIsOpen       bool = false
-	wallWindowIsOpen bool = false
-	floorIsOpen      bool = false
-	doorIsOpen       bool = false
-	chestIsOpen      bool = false
-	question         rl.Texture2D
-	wallCount        int     = 0
-	wallWindowCount  int     = 5
-	floorCount       int     = 0
-	doorCount        int     = 0
-	chestCount       int     = 0
-	inventoryZoom    float32 = 5.0
-	shovelIsOpen     bool    = false
-	pickaxeIsOpen    bool    = false
-	axeIsOpen        bool    = false
+	inventoryOpen      bool
+	slotImage          rl.Texture2D
+	inventory          []InventorySlot
+	hotInventory       []InventorySlot
+	textures           []rl.Texture2D
+	otherTextures      []rl.Texture2D
+	wood               rl.Texture2D
+	stone              rl.Texture2D
+	metal              rl.Texture2D
+	leftArrow          rl.Texture2D
+	rightArrow         rl.Texture2D
+	woodCount          int  = 0
+	stoneCount         int  = 0
+	metalCount         int  = 0
+	wallIsOpen         bool = false
+	wallWindowIsOpen   bool = false
+	floorIsOpen        bool = false
+	doorIsOpen         bool = false
+	chestIsOpen        bool = false
+	question           rl.Texture2D
+	wallCount          int        = 0
+	wallWindowCount    int        = 0
+	floorCount         int        = 0
+	doorCount          int        = 0
+	chestCount         int        = 0
+	inventoryZoom      float32    = 5.0
+	shovelIsOpen       bool       = false
+	pickaxeIsOpen      bool       = false
+	axeIsOpen          bool       = false
+	leftArrowPosition  rl.Vector2 = rl.NewVector2(0, 485)
+	rightArrowPosition rl.Vector2 = rl.NewVector2(0, 485)
+	arrowScale         float32    = 9.0
+	currentPage        int        = 1
+	maxPage            int        = 1
+	pageLabelPos       rl.Vector2 = rl.NewVector2(0, 0)
 )
 
 type InventorySlot struct {
@@ -50,10 +58,41 @@ func createInventoryRow(startX, startY float32, slots, spacing int, inventory *[
 	}
 }
 
+func createInventoryRow2(startX, startY float32, slots, spacing int, inventory *[]InventorySlot, slotNum *int) {
+	// Расчет ширины слота с учетом масштаба
+	slotWidth := float32(slotImage.Width) * inventoryZoom
+
+	// Расчет координаты X для центрального слота
+	centerX := startX
+
+	// Добавление центрального слота
+	(*inventory)[*slotNum] = newInventorySlot(centerX, startY, *slotNum)
+	*slotNum++
+
+	// Расчет координаты X для левого слота
+	leftX := centerX - slotWidth - float32(spacing)
+
+	// Добавление левого слота
+	(*inventory)[*slotNum] = newInventorySlot(leftX, startY, *slotNum)
+	*slotNum++
+
+	// Расчет координаты X для правого слота
+	rightX := centerX + slotWidth + float32(spacing)
+
+	// Добавление правого слота
+	(*inventory)[*slotNum] = newInventorySlot(rightX, startY, *slotNum)
+	*slotNum++
+
+	if startY == 495.0 {
+		leftArrowPosition.X = (float32(rl.GetScreenWidth())-float32(leftArrow.Width)*arrowScale)/2.0 - 200
+		rightArrowPosition.X = (float32(rl.GetScreenWidth())-float32(rightArrow.Width)*arrowScale)/2.0 + 200
+	}
+}
+
 func loadInventory() {
 	slotImage = loadTexture("assets/images/gui/slot.png")
 	inventory = make([]InventorySlot, 3)
-	hotInventory = make([]InventorySlot, 32)
+	hotInventory = make([]InventorySlot, 9)
 	textures = make([]rl.Texture2D, 3)
 	otherTextures = make([]rl.Texture2D, 32)
 	wood = loadTexture("assets/images/items/wood.png")
@@ -62,17 +101,20 @@ func loadInventory() {
 	textures = []rl.Texture2D{wood, stone, metal}
 	otherTextures = []rl.Texture2D{wall, floor, door, chest, wallWindow}
 	question = loadTexture("assets/images/gui/question.png")
+	leftArrow = loadTexture("assets/images/gui/left_arrow.png")
+	rightArrow = loadTexture("assets/images/gui/right_arrow.png")
 
 	inventoryLabelSize := rl.MeasureTextEx(fontBold, "Inventory", 72, 2)
 	inventoryLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(inventoryLabelSize.X))/2, 75)
 	startX1 := inventoryLabelPos.X + 50
+	startX2 := (float32(rl.GetMonitorWidth(rl.GetCurrentMonitor())) - float32(slotImage.Width)*inventoryZoom) / 2.0
 	inventorySlotNum := 0
 	hotInventorySlotNum := 0
 
 	createInventoryRow(startX1, 182.0, 3, 110, &inventory, &inventorySlotNum)
-	yPositions := []float32{395.0, 495.0, 595.0, 695.0}
+	yPositions := []float32{395.0, 495.0, 595.0}
 	for _, yPos := range yPositions {
-		createInventoryRow(startX1-200, yPos, 8, 32, &hotInventory, &hotInventorySlotNum)
+		createInventoryRow2(startX2, yPos, 3, 32, &hotInventory, &hotInventorySlotNum)
 	}
 }
 
@@ -81,7 +123,12 @@ func unloadInventory() {
 	for i := range textures {
 		rl.UnloadTexture(textures[i])
 	}
+	for i := range otherTextures {
+		rl.UnloadTexture(otherTextures[i])
+	}
 	rl.UnloadTexture(question)
+	rl.UnloadTexture(leftArrow)
+	rl.UnloadTexture(rightArrow)
 
 }
 

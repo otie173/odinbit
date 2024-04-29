@@ -52,7 +52,6 @@ func drawScene() {
 					world = loadWorldFile()
 					worldInfo = loadWorldInfo()
 					updateWorld()
-					fmt.Println(worldInfo)
 					loadPlayerFile()
 					currentScene = GAME
 				} else {
@@ -120,6 +119,11 @@ func drawScene() {
 
 		}
 		drawItems()
+		rl.DrawTextureEx(leftArrow, leftArrowPosition, 0, arrowScale, rl.White)
+		rl.DrawTextureEx(rightArrow, rightArrowPosition, 0, arrowScale, rl.White)
+		pageLabelSize := rl.MeasureTextEx(font, fmt.Sprintf("Page %d/%d", currentPage, maxPage), 24, 2)
+		pageLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(pageLabelSize.X))/2, float32(rl.GetScreenHeight())/2+155)
+		rl.DrawTextEx(font, fmt.Sprintf("Page %d/%d", currentPage, maxPage), pageLabelPos, 24, 2, rl.White)
 		rl.EndDrawing()
 	case MENU:
 		menuLabelSize := rl.MeasureTextEx(fontBold, "Game menu", 72, 2)
