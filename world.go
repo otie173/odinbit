@@ -26,6 +26,7 @@ var (
 	id             map[int]rl.Texture2D
 	item           int
 	wall           rl.Texture2D
+	wallWindow     rl.Texture2D
 	floor          rl.Texture2D
 	door           rl.Texture2D
 	chest          rl.Texture2D
@@ -33,6 +34,11 @@ var (
 	stone2         rl.Texture2D
 	stone3         rl.Texture2D
 	stone4         rl.Texture2D
+	bigStone1      rl.Texture2D
+	bigStone2      rl.Texture2D
+	bigStone3      rl.Texture2D
+	bigStone4      rl.Texture2D
+	bigStone5      rl.Texture2D
 	smallTree      rl.Texture2D
 	normalTree     rl.Texture2D
 	bigTree        rl.Texture2D
@@ -43,7 +49,14 @@ var (
 	grass5         rl.Texture2D
 	grass6         rl.Texture2D
 	barrier        rl.Texture2D
+	lootbox        rl.Texture2D
+	bones1         rl.Texture2D
+	bones2         rl.Texture2D
+	bones3         rl.Texture2D
+	bones4         rl.Texture2D
+	bones5         rl.Texture2D
 	worldGenerated bool
+	worldInfo      WorldInfo
 )
 
 const (
@@ -54,6 +67,7 @@ const (
 
 	// Перечисление для строительных блоков
 	WALL = iota
+	WALLWINDOW
 	FLOOR
 	DOOR
 	CHEST
@@ -64,6 +78,11 @@ const (
 	STONE2
 	STONE3
 	STONE4
+	BIGSTONE1
+	BIGSTONE2
+	BIGSTONE3
+	BIGSTONE4
+	BIGSTONE5
 	GRASS1
 	GRASS2
 	GRASS3
@@ -71,6 +90,15 @@ const (
 	GRASS5
 	GRASS6
 	BARRIER
+	LOOTBOX
+	BONES1
+	BONES2
+	BONES3
+	BONES4
+	BONES5
+	PICKAXE
+	AXE
+	SHOVEL
 )
 
 type BlockData struct {
@@ -87,11 +115,13 @@ type Block struct {
 }
 
 type WorldInfo struct {
-	Version string `json:"version"`
+	StructuresGenerated bool `json:"structures_generated"`
+	BonesGenerated      bool `json:"bones_generated"`
 }
 
 func loadID() {
 	id[WALL] = wall
+	id[WALLWINDOW] = wallWindow
 	id[FLOOR] = floor
 	id[DOOR] = door
 	id[CHEST] = chest
@@ -102,6 +132,11 @@ func loadID() {
 	id[STONE2] = stone2
 	id[STONE3] = stone3
 	id[STONE4] = stone4
+	id[BIGSTONE1] = bigStone1
+	id[BIGSTONE2] = bigStone2
+	id[BIGSTONE3] = bigStone3
+	id[BIGSTONE4] = bigStone4
+	id[BIGSTONE5] = bigStone5
 	id[GRASS1] = grass1
 	id[GRASS2] = grass2
 	id[GRASS3] = grass3
@@ -109,6 +144,15 @@ func loadID() {
 	id[GRASS5] = grass5
 	id[GRASS6] = grass6
 	id[BARRIER] = barrier
+	id[LOOTBOX] = lootbox
+	id[BONES1] = bones1
+	id[BONES2] = bones2
+	id[BONES3] = bones3
+	id[BONES4] = bones4
+	id[BONES5] = bones5
+	id[PICKAXE] = pickaxe
+	id[AXE] = axe
+	id[SHOVEL] = shovel
 }
 
 func getOdinbitPath() string {
@@ -156,7 +200,6 @@ func getOdinbitPath() string {
 }
 
 func saveWorldInfo() {
-	worldInfo := WorldInfo{Version: "indev26042024"}
 	jsonData, err := json.Marshal(worldInfo)
 	if err != nil {
 		log.Fatalf("Не удалось преобразовать информацию мира: %v", err)
@@ -238,7 +281,26 @@ func loadWorldFile() map[rl.Rectangle]Block {
 		world[rect] = Block{img: id[data.TextureID], rec: rect, passable: data.Passable}
 	}
 
+	worldGenerated = true
 	return world
+}
+
+func loadWorldInfo() WorldInfo {
+	odinbitPath := getOdinbitPath()
+	worldInfoPath := filepath.Join(odinbitPath, "world_info.json")
+
+	jsonData, err := os.ReadFile(worldInfoPath)
+	if err != nil {
+		log.Fatalf("Ошибка при чтении файла: %v", err)
+	}
+
+	var worldInfoFile WorldInfo
+	err = json.Unmarshal(jsonData, &worldInfoFile)
+	if err != nil {
+		log.Fatalf("Ошибка при десериализации данных: %v", err)
+	}
+
+	return worldInfoFile
 }
 
 func loadTexture(fileName string) rl.Texture2D {
@@ -258,6 +320,7 @@ func loadWorld() {
 	world = make(map[rl.Rectangle]Block, 65_536)
 	id = make(map[int]rl.Texture2D, 256)
 	wall = loadTexture("assets/images/blocks/wall.png")
+	wallWindow = loadTexture("assets/images/blocks/wall_window.png")
 	floor = loadTexture("assets/images/blocks/floor.png")
 	door = loadTexture("assets/images/blocks/door.png")
 	chest = loadTexture("assets/images/blocks/chest.png")
@@ -275,21 +338,17 @@ func loadWorld() {
 	grass5 = loadTexture("assets/images/world/grass5.png")
 	grass6 = loadTexture("assets/images/world/grass6.png")
 	barrier = loadTexture("assets/images/blocks/barrier.png")
-
-	rl.SetTextureFilter(smallTree, rl.TextureFilterNearest)
-	rl.SetTextureFilter(stone1, rl.TextureFilterNearest)
-	rl.SetTextureFilter(stone2, rl.TextureFilterNearest)
-	rl.SetTextureFilter(stone3, rl.TextureFilterNearest)
-	rl.SetTextureFilter(stone4, rl.TextureFilterNearest)
-	rl.SetTextureFilter(normalTree, rl.TextureFilterNearest)
-	rl.SetTextureFilter(bigTree, rl.TextureFilterNearest)
-	rl.SetTextureFilter(grass1, rl.TextureFilterNearest)
-	rl.SetTextureFilter(grass2, rl.TextureFilterNearest)
-	rl.SetTextureFilter(grass3, rl.TextureFilterNearest)
-	rl.SetTextureFilter(grass4, rl.TextureFilterNearest)
-	rl.SetTextureFilter(grass5, rl.TextureFilterNearest)
-	rl.SetTextureFilter(grass6, rl.TextureFilterNearest)
-	rl.SetTextureFilter(barrier, rl.TextureFilterNearest)
+	bigStone1 = loadTexture("assets/images/world/big_stone1.png")
+	bigStone2 = loadTexture("assets/images/world/big_stone2.png")
+	bigStone3 = loadTexture("assets/images/world/big_stone3.png")
+	bigStone4 = loadTexture("assets/images/world/big_stone4.png")
+	bigStone5 = loadTexture("assets/images/world/big_stone5.png")
+	lootbox = loadTexture("assets/images/world/lootbox.png")
+	bones1 = loadTexture("assets/images/world/bones1.png")
+	bones2 = loadTexture("assets/images/world/bones2.png")
+	bones3 = loadTexture("assets/images/world/bones3.png")
+	bones4 = loadTexture("assets/images/world/bones4.png")
+	bones5 = loadTexture("assets/images/world/bones5.png")
 
 	// Установка id для блоков
 	loadID()
@@ -322,12 +381,18 @@ func addBlock(img rl.Texture2D, x, y float32, passable bool) {
 		passable: passable,
 	}
 	world[block.rec] = block
-	updateVisibleBlocks(cam)
+
+	if worldGenerated {
+		updateVisibleBlocks(cam)
+	}
 }
 
 func removeBlock(x, y float32) {
 	delete(world, rl.NewRectangle(x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE, TILE_SIZE))
-	updateVisibleBlocks(cam)
+
+	if worldGenerated {
+		updateVisibleBlocks(cam)
+	}
 }
 
 func generateBarrier() {
@@ -385,6 +450,8 @@ func generateStructure(x, y, structure int) {
 		addBlock(wall, float32(x+3), float32(y+3), false)
 
 	}
+
+	worldInfo.StructuresGenerated = true
 }
 
 func generateTree(x, y float32) {
@@ -424,11 +491,24 @@ func generateStone(x, y float32) {
 	}
 }
 
-func generateGrass(x, y float32) {
-	// Генерация шанса спавна травы
-	chance := rand.Intn(100) + 1
+func generateBigStone(x, y float32) {
+	stoneImg := rand.Intn(5) + 1
+	switch stoneImg {
+	case 1:
+		addBlock(bigStone1, float32(x), float32(y), false)
+	case 2:
+		addBlock(bigStone2, float32(x), float32(y), false)
+	case 3:
+		addBlock(bigStone3, float32(x), float32(y), false)
+	case 4:
+		addBlock(bigStone4, float32(x), float32(y), false)
+	case 5:
+		addBlock(bigStone5, float32(x), float32(y), false)
+	}
+}
 
-	// Генерация случайного номера изображения травы
+func generateGrass(x, y float32) {
+	chance := rand.Intn(100) + 1
 	if chance < 20 {
 		grassImage := rand.Intn(6) + 1
 		switch grassImage {
@@ -446,52 +526,76 @@ func generateGrass(x, y float32) {
 			addBlock(grass6, x, y, true)
 		}
 	}
-	// Поставновка травы на карту в зависимости от номера текстуры
 
 }
 
+func generateBones(x, y float32, bonesPattern int) {
+	switch bonesPattern {
+	case 1:
+		addBlock(bones1, x, y, false)      // 0 0
+		addBlock(bones2, x-1, y, false)    // -1 0
+		addBlock(bones2, x-1, y+1, false)  // -1 -1
+		addBlock(bones4, x-2, y-1, false)  // -2 1
+		addBlock(pickaxe, x-1, y-1, false) // -1 1
+	case 2:
+		addBlock(bones3, x, y, false)     // 0 0
+		addBlock(bones2, x-1, y, false)   // -1 0
+		addBlock(bones4, x-1, y+1, false) // -1 -1
+		addBlock(bones2, x, y+1, false)   // 0 -1
+		addBlock(axe, x+1, y+1, false)    // 1 -1
+	case 3:
+		addBlock(bones3, x, y, false)   // 0 0
+		addBlock(bones2, x, y+1, false) // 0 -1
+		addBlock(shovel, x-1, y, false) // -1 0
+	}
+
+	worldInfo.BonesGenerated = true
+}
+
 func generateWorld() {
-	// Генерация травы
 	for x := -WORLD_SIZE / 2; x <= WORLD_SIZE/2; x++ {
 		for y := -WORLD_SIZE / 2; y <= WORLD_SIZE/2; y++ {
 			generateGrass(float32(x), float32(y))
 		}
 	}
-
-	// Генерация данжа1
-	x1 := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
-	y1 := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
-	generateStructure(x1, y1, 1)
-
-	//Генерация данжа2
-	x2 := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
-	y2 := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
-	generateStructure(x2, y2, 2)
-
-	// Генерация данжа3
-	x3 := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
-	y3 := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
-	generateStructure(x3, y3, 3)
-
-	// Генерация деревьев
-	for i := 0; i < WORLD_SIZE*OBJECT_SPAWN_MULTIPLIER; i++ {
-		x := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
-		y := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
-		generateTree(float32(x), float32(y))
+	for i := 0; i <= 8; i++ {
+		generateStructure(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, 1)
+		generateStructure(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, 2)
+		generateStructure(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, 3)
 	}
-
-	// Генерация камней
 	for i := 0; i < WORLD_SIZE*OBJECT_SPAWN_MULTIPLIER; i++ {
-		x := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
-		y := rand.Intn(WORLD_SIZE+1) - WORLD_SIZE/2
-		generateStone(float32(x), float32(y))
+		generateTree(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2))
 	}
-
-	// Генерация барьера вокруг мира
+	for i := 0; i < WORLD_SIZE*(OBJECT_SPAWN_MULTIPLIER-4); i++ {
+		generateStone(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2))
+	}
+	for i := 0; i < WORLD_SIZE*(OBJECT_SPAWN_MULTIPLIER-3); i++ {
+		generateBigStone(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2))
+	}
+	for i := 0; i <= 8; i++ {
+		generateBones(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), 1)
+		generateBones(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), 2)
+		generateBones(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), 3)
+	}
 	generateBarrier()
-
-	// Установка флага о завершении генерации мира в значение true
 	worldGenerated = true
+}
+
+func updateWorld() {
+	if !worldInfo.StructuresGenerated {
+		for i := 0; i <= 8; i++ {
+			generateStructure(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, 1)
+			generateStructure(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, 2)
+			generateStructure(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, 3)
+		}
+	}
+	if !worldInfo.BonesGenerated {
+		for i := 0; i <= 8; i++ {
+			generateBones(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), 1)
+			generateBones(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), 2)
+			generateBones(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), 3)
+		}
+	}
 }
 
 func isCameraMoved(cam rl.Camera2D) bool {

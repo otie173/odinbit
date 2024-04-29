@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -48,6 +50,9 @@ func drawScene() {
 					rl.DrawTextEx(font, "Load world...", loadWorldLabelPos, 56, 2, rl.White)
 					rl.EndDrawing()
 					world = loadWorldFile()
+					worldInfo = loadWorldInfo()
+					updateWorld()
+					fmt.Println(worldInfo)
 					loadPlayerFile()
 					currentScene = GAME
 				} else {
@@ -87,12 +92,15 @@ func drawScene() {
 	case GAME:
 		rl.BeginDrawing()
 		rl.ClearBackground(bkgColor)
-		//rl.DrawText(fmt.Sprintf("FPS: %d", rl.GetFPS()), 0, 0, 24, rl.White)
-		drawUI()
 		rl.BeginMode2D(cam)
 		drawWorld(cam)
 		drawPlayer()
 		rl.EndMode2D()
+		rl.DrawRectangleV(rl.NewVector2(0, 0), rl.NewVector2(240, 130), rl.ColorAlpha(rl.Black, 0.65))
+		rl.DrawRectangleLinesEx(rl.NewRectangle(0, 0, 240, 130), 5, rl.White)
+		drawUI()
+		rl.DrawTextEx(font, fmt.Sprintf("X: %d Y: %d", int(targetPosition.X)/10, int(targetPosition.Y)/10), rl.NewVector2(50, 100), 16, 2, rl.White)
+		//rl.DrawText(fmt.Sprintf("FPS: %d", rl.GetFPS()), 5, 180, 24, rl.White)
 		rl.EndDrawing()
 	case INVENTORY:
 		inventoryLabelSize := rl.MeasureTextEx(fontBold, "Resources", 72, 2)

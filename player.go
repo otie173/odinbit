@@ -27,29 +27,31 @@ var (
 )
 
 type Player struct {
-	X           float32 `json:"x"`
-	Y           float32 `json:"y"`
-	TargetX     float32 `json:"target_x"`
-	TargetY     float32 `json:"target_y"`
-	Health      int     `json:"health"`
-	WoodCount   int     `json:"wood"`
-	StoneCount  int     `json:"stone"`
-	MetalCount  int     `json:"metal"`
-	PickaxeOpen bool    `json:"pickaxe_open"`
-	AxeOpen     bool    `json:"axe_open"`
-	ShovelOpen  bool    `json:"shovel_open"`
-	WallOpen    bool    `json:"wall_open"`
-	FloorOpen   bool    `json:"floor_open"`
-	DoorOpen    bool    `json:"door_open"`
-	ChestOpen   bool    `json:"chest_open"`
-	WallCount   int     `json:"wall_count"`
-	FloorCount  int     `json:"floor_count"`
-	DoorCount   int     `json:"door_count"`
-	ChestCount  int     `json:"chest_count"`
+	X               float32 `json:"x"`
+	Y               float32 `json:"y"`
+	TargetX         float32 `json:"target_x"`
+	TargetY         float32 `json:"target_y"`
+	Health          int     `json:"health"`
+	WoodCount       int     `json:"wood"`
+	StoneCount      int     `json:"stone"`
+	MetalCount      int     `json:"metal"`
+	PickaxeOpen     bool    `json:"pickaxe_open"`
+	AxeOpen         bool    `json:"axe_open"`
+	ShovelOpen      bool    `json:"shovel_open"`
+	WallOpen        bool    `json:"wall_open"`
+	WallWindowOpen  bool    `json:"wall_window_open"`
+	FloorOpen       bool    `json:"floor_open"`
+	DoorOpen        bool    `json:"door_open"`
+	ChestOpen       bool    `json:"chest_open"`
+	WallCount       int     `json:"wall_count"`
+	WallWindowCount int     `json:"wall_window_count"`
+	FloorCount      int     `json:"floor_count"`
+	DoorCount       int     `json:"door_count"`
+	ChestCount      int     `json:"chest_count"`
 }
 
 func savePlayerFile() {
-	playerData := Player{playerPosition.X, playerPosition.Y, targetPosition.X, targetPosition.Y, playerHealth, woodCount, stoneCount, metalCount, pickaxeIsOpen, axeIsOpen, shovelIsOpen, wallIsOpen, floorIsOpen, doorIsOpen, chestIsOpen, wallCount, floorCount, doorCount, chestCount}
+	playerData := Player{playerPosition.X, playerPosition.Y, targetPosition.X, targetPosition.Y, playerHealth, woodCount, stoneCount, metalCount, pickaxeIsOpen, axeIsOpen, shovelIsOpen, wallIsOpen, wallWindowIsOpen, floorIsOpen, doorIsOpen, chestIsOpen, wallCount, wallWindowCount, floorCount, doorCount, chestCount}
 	jsonData, err := json.Marshal(playerData)
 	if err != nil {
 		log.Fatalf("Не удалось преобразовать информацию игрока: %v", err)
@@ -93,11 +95,13 @@ func loadPlayerFile() {
 	shovelIsOpen = playerData.ShovelOpen
 
 	wallIsOpen = playerData.WallOpen
+	wallWindowIsOpen = playerData.WallWindowOpen
 	floorIsOpen = playerData.FloorOpen
 	doorIsOpen = playerData.DoorOpen
 	chestIsOpen = playerData.ChestOpen
 
 	wallCount = playerData.WallCount
+	wallWindowCount = playerData.WallWindowCount
 	floorCount = playerData.FloorCount
 	doorCount = playerData.DoorCount
 	chestCount = playerData.ChestCount
@@ -122,15 +126,15 @@ func updateCameraTarget(cam *rl.Camera2D, playerPosition rl.Vector2, playerRecta
 	targetX := playerPosition.X + playerRectangle.Width/2
 	targetY := playerPosition.Y + playerRectangle.Height/2
 
-	newX := rl.Vector2Lerp(cam.Target, rl.NewVector2(targetX, cam.Target.Y), 0.05).X
-	newY := rl.Vector2Lerp(cam.Target, rl.NewVector2(cam.Target.X, targetY), 0.05).Y
+	newX := rl.Vector2Lerp(cam.Target, rl.NewVector2(targetX, cam.Target.Y), 0.05*rl.GetFrameTime()*float32(monitorFPS)).X
+	newY := rl.Vector2Lerp(cam.Target, rl.NewVector2(cam.Target.X, targetY), 0.05*rl.GetFrameTime()*float32(monitorFPS)).Y
 
 	cam.Target.X = roundToFixed(newX, 1)
 	cam.Target.Y = roundToFixed(newY, 1)
 }
 
 func updatePlayerPosition() {
-	playerPosition = rl.Vector2Lerp(playerPosition, targetPosition, 0.075)
+	playerPosition = rl.Vector2Lerp(playerPosition, targetPosition, 0.075*rl.GetFrameTime()*float32(monitorFPS))
 }
 
 func canMoveAgain() bool {

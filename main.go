@@ -15,6 +15,7 @@ var (
 	bkgColor                  rl.Color = rl.NewColor(0, 0, 0, 255)
 	fontBold, font            rl.Font
 	screenWidth, screenHeight int32
+	monitorFPS, currentFPS    int32
 )
 
 func loadFont(fontName string, fontSize int32) rl.Font {
@@ -72,19 +73,19 @@ func init() {
 	screenWidth, screenHeight = int32(rl.GetScreenWidth()), int32(rl.GetScreenHeight())
 	rl.InitWindow(screenWidth, screenHeight, "Odinbit")
 	rl.SetExitKey(0)
-	rl.SetTargetFPS(int32(rl.GetMonitorRefreshRate(rl.GetCurrentMonitor())))
-	//rl.SetTargetFPS(1000)
+	monitorFPS = int32(rl.GetMonitorRefreshRate(rl.GetCurrentMonitor()))
+	rl.SetTargetFPS(monitorFPS)
 	rl.InitAudioDevice()
 	visibleBlocks = make(map[rl.Rectangle]Block)
 	prevCamPosition = rl.NewVector2(-1, -1)
 	fontBold = loadFont("assets/fonts/pypx/pypx_bold.ttf", 32)
 	font = loadFont("assets/fonts/pypx/pypx.ttf", 32)
+	loadUI()
 	loadWorld()
 	loadPlayer()
 	loadAudio()
 	loadMusic()
 	loadInventory()
-	loadUI()
 }
 
 func main() {

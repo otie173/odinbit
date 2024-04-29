@@ -7,31 +7,33 @@ import (
 )
 
 var (
-	inventoryOpen bool
-	slotImage     rl.Texture2D
-	inventory     []InventorySlot
-	hotInventory  []InventorySlot
-	textures      []rl.Texture2D
-	otherTextures []rl.Texture2D
-	wood          rl.Texture2D
-	stone         rl.Texture2D
-	metal         rl.Texture2D
-	woodCount     int  = 0
-	stoneCount    int  = 0
-	metalCount    int  = 0
-	wallIsOpen    bool = false
-	floorIsOpen   bool = false
-	doorIsOpen    bool = false
-	chestIsOpen   bool = false
-	question      rl.Texture2D
-	wallCount     int     = 0
-	floorCount    int     = 0
-	doorCount     int     = 0
-	chestCount    int     = 0
-	inventoryZoom float32 = 5.0
-	shovelIsOpen  bool    = false
-	pickaxeIsOpen bool    = false
-	axeIsOpen     bool    = false
+	inventoryOpen    bool
+	slotImage        rl.Texture2D
+	inventory        []InventorySlot
+	hotInventory     []InventorySlot
+	textures         []rl.Texture2D
+	otherTextures    []rl.Texture2D
+	wood             rl.Texture2D
+	stone            rl.Texture2D
+	metal            rl.Texture2D
+	woodCount        int  = 0
+	stoneCount       int  = 0
+	metalCount       int  = 0
+	wallIsOpen       bool = false
+	wallWindowIsOpen bool = false
+	floorIsOpen      bool = false
+	doorIsOpen       bool = false
+	chestIsOpen      bool = false
+	question         rl.Texture2D
+	wallCount        int     = 0
+	wallWindowCount  int     = 5
+	floorCount       int     = 0
+	doorCount        int     = 0
+	chestCount       int     = 0
+	inventoryZoom    float32 = 5.0
+	shovelIsOpen     bool    = false
+	pickaxeIsOpen    bool    = false
+	axeIsOpen        bool    = false
 )
 
 type InventorySlot struct {
@@ -58,7 +60,7 @@ func loadInventory() {
 	stone = loadTexture("assets/images/items/stone.png")
 	metal = loadTexture("assets/images/items/metal.png")
 	textures = []rl.Texture2D{wood, stone, metal}
-	otherTextures = []rl.Texture2D{wall, floor, door, chest}
+	otherTextures = []rl.Texture2D{wall, floor, door, chest, wallWindow}
 	question = loadTexture("assets/images/gui/question.png")
 
 	inventoryLabelSize := rl.MeasureTextEx(fontBold, "Inventory", 72, 2)
@@ -152,6 +154,12 @@ func drawItems() {
 		drawItemCount(hotInventory[3].x, hotInventory[3].y, chestCount, slotImage.Width, slotImage.Height)
 	} else {
 		drawSlot(3, false)
+	}
+	if wallWindowIsOpen {
+		drawSlot(4, true)
+		drawItemCount(hotInventory[4].x, hotInventory[4].y, wallWindowCount, slotImage.Width, slotImage.Height)
+	} else {
+		drawSlot(4, false)
 	}
 
 }

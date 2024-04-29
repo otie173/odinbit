@@ -17,8 +17,6 @@ func mouseHandler() {
 	mouseOnBlock = false
 	if rl.IsMouseButtonPressed(rl.MouseButtonLeft) && currentScene == GAME {
 		mousePos = rl.GetScreenToWorld2D(rl.GetMousePosition(), cam)
-		//mouseX := mousePos.X / TILE_SIZE
-		//mouseY := mousePos.Y / TILE_SIZE
 
 		playerX := int(math.Floor(float64(targetPosition.X / TILE_SIZE)))
 		playerY := int(math.Floor(float64(targetPosition.Y / TILE_SIZE)))
@@ -28,49 +26,73 @@ func mouseHandler() {
 			if rl.CheckCollisionPointRec(mousePos, block.rec) {
 				blockDistance := distanceInBlocks(float32(playerX)*TILE_SIZE, float32(playerY)*TILE_SIZE, blockX*TILE_SIZE, blockY*TILE_SIZE, float32(playerBlockDistance))
 				if blockDistance {
-					// Воспроизведение звука и разрушение объекта в зависимости от текстуры
 					switch block.img {
-					case smallTree, normalTree, bigTree, stone1, stone2, stone3, stone4:
-						removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
-						pickupResourceSound()
-						// Генерация травы на месте сломанного блока, чтобы не было просто пустого места
-						generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+					case smallTree, normalTree, bigTree:
+						if axeIsOpen {
+							removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+							pickupResourceSound()
+							generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+							woodCount += 5
+						}
+					case stone1, stone2, stone3, stone4, bigStone1, bigStone2, bigStone3, bigStone4, bigStone5:
+						if pickaxeIsOpen {
+							removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+							pickupResourceSound()
+							generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+							stoneCount += 5
+						}
 					case grass1, grass2, grass3, grass4, grass5, grass6, barrier:
 						break
-					default:
-						removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
-						soundBlockAction()
-						// Генерация травы на месте сломанного блока, чтобы не было просто пустого места
-						generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+					case wall:
+						if pickaxeIsOpen {
+							removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+							soundBlockAction()
+							generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 
+							if block.img == wall {
+								wallIsOpen = true
+								wallCount++
+							}
+						}
+					case floor, door, chest:
+						if axeIsOpen {
+							removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+							soundBlockAction()
+							generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+
+							if block.img == floor {
+								floorIsOpen = true
+								floorCount++
+							}
+							if block.img == door {
+								doorIsOpen = true
+								doorCount++
+							}
+							if block.img == chest {
+								chestIsOpen = true
+								chestCount++
+							}
+						}
+					case bones1, bones2, bones3, bones4, bones5:
+						removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+						pickupResourceSound()
+						generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+					case pickaxe:
+						pickaxeIsOpen = true
+						removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+						pickupResourceSound()
+						generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+					case axe:
+						axeIsOpen = true
+						removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+						pickupResourceSound()
+						generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+					case shovel:
+						shovelIsOpen = true
+						removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+						pickupResourceSound()
+						generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 					}
-				}
-				// Открытие слота инвентаря, если блок был неизвестен
-				switch block.img {
-				case wall:
-					if !wallIsOpen {
-						wallIsOpen = true
-					}
-					wallCount++
-				case floor:
-					if !floorIsOpen {
-						floorIsOpen = true
-					}
-					floorCount++
-				case door:
-					if !doorIsOpen {
-						doorIsOpen = true
-					}
-					doorCount++
-				case chest:
-					if !chestIsOpen {
-						chestIsOpen = true
-					}
-					chestCount++
-				case smallTree, normalTree, bigTree:
-					woodCount += 1
-				case stone1, stone2, stone3, stone4:
-					stoneCount += 1
 				}
 			}
 		}
@@ -121,6 +143,12 @@ func mouseHandler() {
 					soundBlockAction()
 					chestCount--
 				}
+			case WALLWINDOW:
+				if wallWindowIsOpen && wallWindowCount != 0 {
+					addBlock(wallWindow, float32(mouseX), float32(mouseY), false)
+					soundBlockAction()
+					wallWindowCount--
+				}
 			}
 		}
 	}
@@ -129,16 +157,30 @@ func mouseHandler() {
 		mousePos := rl.GetMousePosition()
 		// Крафт стены
 		if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[0].x, hotInventory[0].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
-			if wallIsOpen && stoneCount-9 >= 0 {
+			if wallIsOpen && stoneCount-20 >= 0 {
 				wallCount++
-				stoneCount -= 9
+				stoneCount -= 20
 			}
 		}
 		//Крафт пола
 		if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[1].x, hotInventory[1].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
-			if floorIsOpen && woodCount-9 >= 0 {
+			if floorIsOpen && woodCount-20 >= 0 {
 				floorCount++
-				woodCount -= 9
+				woodCount -= 20
+			}
+		}
+		//Крафт двери
+		if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[2].x, hotInventory[2].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+			if doorIsOpen && woodCount-20 >= 0 {
+				doorCount++
+				woodCount -= 20
+			}
+		}
+		//Крафт сундука
+		if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[3].x, hotInventory[3].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+			if chestIsOpen && woodCount-20 >= 0 {
+				chestCount++
+				woodCount -= 20
 			}
 		}
 	}
@@ -166,11 +208,8 @@ func keyboardHandler() {
 	}
 
 	if shouldMove && canMoveAgain() {
-		// Предполагаем, что движение возможно
 		canMove := true
-		// Проверяем диагональное движение только если оба направления активны
 		if moveX != 0 && moveY != 0 {
-			// Проверяем наличие блоков на диагональных путях
 			for _, block := range world {
 				if (!block.passable) && ((targetPosition.X+moveX == block.rec.X && targetPosition.Y == block.rec.Y) ||
 					(targetPosition.Y+moveY == block.rec.Y && targetPosition.X == block.rec.X) ||
@@ -180,7 +219,6 @@ func keyboardHandler() {
 				}
 			}
 		} else {
-			// Проверяем наличие блоков на прямом пути
 			for _, block := range world {
 				if (!block.passable) && (targetPosition.X+moveX == block.rec.X && targetPosition.Y+moveY == block.rec.Y) {
 					canMove = false
@@ -220,8 +258,8 @@ func keyboardHandler() {
 	if rl.IsKeyPressed(rl.KeyFour) {
 		item = CHEST
 	}
-	if rl.IsKeyPressed(rl.KeyI) {
-		saveWorldFile()
+	if rl.IsKeyPressed(rl.KeyFive) {
+		item = WALLWINDOW
 	}
 	if rl.IsKeyPressed(rl.KeyEscape) && currentScene != TITLE && currentScene != INVENTORY {
 		switch menuOpen {

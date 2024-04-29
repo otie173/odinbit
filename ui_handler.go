@@ -29,15 +29,17 @@ func loadUI() {
 
 func drawUI() {
 	// Keep It Simple Stupid :)
-	switch item {
-	case WALL:
+	switch {
+	case item == WALL && wallIsOpen:
 		rl.DrawTextureEx(id[WALL], rl.NewVector2(blockX, blockY), 0, blockScale, rl.White)
-	case FLOOR:
+	case item == FLOOR && floorIsOpen:
 		rl.DrawTextureEx(id[FLOOR], rl.NewVector2(blockX, blockY), 0, blockScale, rl.White)
-	case DOOR:
+	case item == DOOR && doorIsOpen:
 		rl.DrawTextureEx(id[DOOR], rl.NewVector2(blockX, blockY), 0, blockScale, rl.White)
-	case CHEST:
+	case item == CHEST && chestIsOpen:
 		rl.DrawTextureEx(id[CHEST], rl.NewVector2(blockX, blockY), 0, blockScale, rl.White)
+	case item == WALLWINDOW && wallWindowIsOpen:
+		rl.DrawTextureEx(id[WALLWINDOW], rl.NewVector2(blockX, blockY), 0, blockScale, rl.White)
 	default:
 		rl.DrawTextureEx(question, rl.NewVector2(blockX, blockY), 0, blockScale, rl.White)
 	}
