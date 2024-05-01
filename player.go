@@ -27,33 +27,79 @@ var (
 )
 
 type Player struct {
-	X               float32 `json:"x"`
-	Y               float32 `json:"y"`
-	TargetX         float32 `json:"target_x"`
-	TargetY         float32 `json:"target_y"`
-	Health          int     `json:"health"`
-	WoodCount       int     `json:"wood"`
-	StoneCount      int     `json:"stone"`
-	MetalCount      int     `json:"metal"`
-	PickaxeOpen     bool    `json:"pickaxe_open"`
-	AxeOpen         bool    `json:"axe_open"`
-	ShovelOpen      bool    `json:"shovel_open"`
-	WallOpen        bool    `json:"wall_open"`
-	WallWindowOpen  bool    `json:"wall_window_open"`
-	FloorOpen       bool    `json:"floor_open"`
-	DoorOpen        bool    `json:"door_open"`
-	DoorOpenOpen    bool    `json:"door_open_open"`
-	ChestOpen       bool    `json:"chest_open"`
-	WallCount       int     `json:"wall_count"`
-	WallWindowCount int     `json:"wall_window_count"`
-	FloorCount      int     `json:"floor_count"`
-	DoorCount       int     `json:"door_count"`
-	ChestCount      int     `json:"chest_count"`
-	DoorOpenCount   int     `json:"door_open_count"`
+	X                float32 `json:"x"`
+	Y                float32 `json:"y"`
+	TargetX          float32 `json:"target_x"`
+	TargetY          float32 `json:"target_y"`
+	Health           int     `json:"health"`
+	WoodCount        int     `json:"wood"`
+	StoneCount       int     `json:"stone"`
+	MetalCount       int     `json:"metal"`
+	PickaxeOpen      bool    `json:"pickaxe_open"`
+	AxeOpen          bool    `json:"axe_open"`
+	ShovelOpen       bool    `json:"shovel_open"`
+	WallOpen         bool    `json:"wall_open"`
+	WallWindowOpen   bool    `json:"wall_window_open"`
+	FloorOpen        bool    `json:"floor_open"`
+	DoorOpen         bool    `json:"door_open"`
+	DoorOpenOpen     bool    `json:"door_open_open"`
+	ChestOpen        bool    `json:"chest_open"`
+	WallCount        int     `json:"wall_count"`
+	WallWindowCount  int     `json:"wall_window_count"`
+	FloorCount       int     `json:"floor_count"`
+	DoorCount        int     `json:"door_count"`
+	ChestCount       int     `json:"chest_count"`
+	DoorOpenCount    int     `json:"door_open_count"`
+	BigBarrelOpen    bool    `json:"big_barrel_open"`
+	BookshelfOpen    bool    `json:"bookshelf_open"`
+	ChairOpen        bool    `json:"chair_open"`
+	ClosetOpen       bool    `json:"closet_open"`
+	Fence1Open       bool    `json:"fence1_open"`
+	Fence2Open       bool    `json:"fence2_open"`
+	Floor2Open       bool    `json:"floor2_open"`
+	Floor4Open       bool    `json:"floor4_open"`
+	LampOpen         bool    `json:"lamp_open"`
+	ShelfOpen        bool    `json:"shelf_open"`
+	SignOpen         bool    `json:"sign_open"`
+	SmallBarrelOpen  bool    `json:"small_barrel_open"`
+	TableOpen        bool    `json:"table_open"`
+	TrashOpen        bool    `json:"trash_open"`
+	BigBarrelCount   int     `json:"big_barrel_count"`
+	BookshelfCount   int     `json:"bookshelf_count"`
+	ChairCount       int     `json:"chair_count"`
+	ClosetCount      int     `json:"closet_count"`
+	Fence1Count      int     `json:"fence1_count"`
+	Fence2Count      int     `json:"fence2_count"`
+	Floor2Count      int     `json:"floor2_count"`
+	Floor4Count      int     `json:"floor4_count"`
+	LampCount        int     `json:"lamp_count"`
+	ShelfCount       int     `json:"shelf_count"`
+	SignCount        int     `json:"sign_count"`
+	SmallBarrelCount int     `json:"small_barrel_count"`
+	TableCount       int     `json:"table_count"`
+	TrashCount       int     `json:"trash_count"`
 }
 
 func savePlayerFile() {
-	playerData := Player{playerPosition.X, playerPosition.Y, targetPosition.X, targetPosition.Y, playerHealth, woodCount, stoneCount, metalCount, pickaxeIsOpen, axeIsOpen, shovelIsOpen, wallIsOpen, wallWindowIsOpen, floorIsOpen, doorIsOpen, doorOpenIsOpen, chestIsOpen, wallCount, wallWindowCount, floorCount, doorCount, chestCount, doorOpenCount}
+	playerData := Player{
+		X: playerPosition.X, Y: playerPosition.Y, TargetX: targetPosition.X, TargetY: targetPosition.Y,
+		Health: playerHealth, WoodCount: woodCount, StoneCount: stoneCount, MetalCount: metalCount,
+		PickaxeOpen: pickaxeIsOpen, AxeOpen: axeIsOpen, ShovelOpen: shovelIsOpen,
+		WallOpen: wallIsOpen, WallWindowOpen: wallWindowIsOpen, FloorOpen: floorIsOpen,
+		DoorOpen: doorIsOpen, DoorOpenOpen: doorOpenIsOpen, ChestOpen: chestIsOpen,
+		WallCount: wallCount, WallWindowCount: wallWindowCount, FloorCount: floorCount,
+		DoorCount: doorCount, ChestCount: chestCount, DoorOpenCount: doorOpenCount,
+		BigBarrelOpen: bigBarrelIsOpen, BookshelfOpen: bookshelfIsOpen, ChairOpen: chairIsOpen,
+		ClosetOpen: closetIsOpen, Fence1Open: fence1IsOpen, Fence2Open: fence2IsOpen,
+		Floor2Open: floor2IsOpen, Floor4Open: floor4IsOpen, LampOpen: lampIsOpen,
+		ShelfOpen: shelfIsOpen, SignOpen: signIsOpen, SmallBarrelOpen: smallBarrelIsOpen,
+		TableOpen: tableIsOpen, TrashOpen: trashIsOpen,
+		BigBarrelCount: bigBarrelCount, BookshelfCount: bookshelfCount, ChairCount: chairCount,
+		ClosetCount: closetCount, Fence1Count: fence1Count, Fence2Count: fence2Count,
+		Floor2Count: floor2Count, Floor4Count: floor4Count, LampCount: lampCount,
+		ShelfCount: shelfCount, SignCount: signCount, SmallBarrelCount: smallBarrelCount,
+		TableCount: tableCount, TrashCount: trashCount,
+	}
 	jsonData, err := json.Marshal(playerData)
 	if err != nil {
 		log.Fatalf("Не удалось преобразовать информацию игрока: %v", err)
@@ -109,6 +155,36 @@ func loadPlayerFile() {
 	doorCount = playerData.DoorCount
 	doorOpenCount = playerData.DoorOpenCount
 	chestCount = playerData.ChestCount
+
+	bigBarrelIsOpen = playerData.BigBarrelOpen
+	bookshelfIsOpen = playerData.BookshelfOpen
+	chairIsOpen = playerData.ChairOpen
+	closetIsOpen = playerData.ClosetOpen
+	fence1IsOpen = playerData.Fence1Open
+	fence2IsOpen = playerData.Fence2Open
+	floor2IsOpen = playerData.Floor2Open
+	floor4IsOpen = playerData.Floor4Open
+	lampIsOpen = playerData.LampOpen
+	shelfIsOpen = playerData.ShelfOpen
+	signIsOpen = playerData.SignOpen
+	smallBarrelIsOpen = playerData.SmallBarrelOpen
+	tableIsOpen = playerData.TableOpen
+	trashIsOpen = playerData.TrashOpen
+
+	bigBarrelCount = playerData.BigBarrelCount
+	bookshelfCount = playerData.BookshelfCount
+	chairCount = playerData.ChairCount
+	closetCount = playerData.ClosetCount
+	fence1Count = playerData.Fence1Count
+	fence2Count = playerData.Fence2Count
+	floor2Count = playerData.Floor2Count
+	floor4Count = playerData.Floor4Count
+	lampCount = playerData.LampCount
+	shelfCount = playerData.ShelfCount
+	signCount = playerData.SignCount
+	smallBarrelCount = playerData.SmallBarrelCount
+	tableCount = playerData.TableCount
+	trashCount = playerData.TrashCount
 }
 
 func loadPlayer() {
