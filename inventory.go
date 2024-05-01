@@ -21,27 +21,57 @@ var (
 	woodCount          int  = 0
 	stoneCount         int  = 0
 	metalCount         int  = 0
-	wallIsOpen         bool = false
-	wallWindowIsOpen   bool = false
-	floorIsOpen        bool = false
-	doorIsOpen         bool = false
-	chestIsOpen        bool = false
+	wallIsOpen         bool = true
+	wallWindowIsOpen   bool = true
+	floorIsOpen        bool = true
+	doorIsOpen         bool = true
+	doorOpenIsOpen     bool = true
+	chestIsOpen        bool = true
 	question           rl.Texture2D
-	wallCount          int        = 0
-	wallWindowCount    int        = 0
-	floorCount         int        = 0
-	doorCount          int        = 0
-	chestCount         int        = 0
+	wallCount          int        = 1
+	wallWindowCount    int        = 1
+	floorCount         int        = 1
+	doorCount          int        = 1
+	doorOpenCount      int        = 1
+	chestCount         int        = 1
 	inventoryZoom      float32    = 5.0
-	shovelIsOpen       bool       = false
-	pickaxeIsOpen      bool       = false
-	axeIsOpen          bool       = false
+	shovelIsOpen       bool       = true
+	pickaxeIsOpen      bool       = true
+	axeIsOpen          bool       = true
 	leftArrowPosition  rl.Vector2 = rl.NewVector2(0, 485)
 	rightArrowPosition rl.Vector2 = rl.NewVector2(0, 485)
 	arrowScale         float32    = 9.0
 	currentPage        int        = 1
-	maxPage            int        = 1
+	maxPage            int        = 2
 	pageLabelPos       rl.Vector2 = rl.NewVector2(0, 0)
+	bigBarrelIsOpen    bool       = false
+	bookshelfIsOpen    bool       = false
+	chairIsOpen        bool       = false
+	closetIsOpen       bool       = false
+	fence1IsOpen       bool       = false
+	fence2IsOpen       bool       = false
+	floor2IsOpen       bool       = false
+	floor4IsOpen       bool       = false
+	lampIsOpen         bool       = false
+	shelfIsOpen        bool       = false
+	signIsOpen         bool       = false
+	smallBarrelIsOpen  bool       = false
+	tableIsOpen        bool       = false
+	trashIsOpen        bool       = false
+	bigBarrelCount     int        = 0
+	bookshelfCount     int        = 0
+	chairCount         int        = 0
+	closetCount        int        = 0
+	fence1Count        int        = 0
+	fence2Count        int        = 0
+	floor2Count        int        = 0
+	floor4Count        int        = 0
+	lampCount          int        = 0
+	shelfCount         int        = 0
+	signCount          int        = 0
+	smallBarrelCount   int        = 0
+	tableCount         int        = 0
+	trashCount         int        = 0
 )
 
 type InventorySlot struct {
@@ -65,19 +95,19 @@ func createInventoryRow2(startX, startY float32, slots, spacing int, inventory *
 	// Расчет координаты X для центрального слота
 	centerX := startX
 
-	// Добавление центрального слота
-	(*inventory)[*slotNum] = newInventorySlot(centerX, startY, *slotNum)
-	*slotNum++
-
 	// Расчет координаты X для левого слота
 	leftX := centerX - slotWidth - float32(spacing)
+
+	// Расчет координаты X для правого слота
+	rightX := centerX + slotWidth + float32(spacing)
 
 	// Добавление левого слота
 	(*inventory)[*slotNum] = newInventorySlot(leftX, startY, *slotNum)
 	*slotNum++
 
-	// Расчет координаты X для правого слота
-	rightX := centerX + slotWidth + float32(spacing)
+	// Добавление центрального слота
+	(*inventory)[*slotNum] = newInventorySlot(centerX, startY, *slotNum)
+	*slotNum++
 
 	// Добавление правого слота
 	(*inventory)[*slotNum] = newInventorySlot(rightX, startY, *slotNum)
@@ -99,7 +129,7 @@ func loadInventory() {
 	stone = loadTexture("assets/images/items/stone.png")
 	metal = loadTexture("assets/images/items/metal.png")
 	textures = []rl.Texture2D{wood, stone, metal}
-	otherTextures = []rl.Texture2D{wall, floor, door, chest, wallWindow}
+	otherTextures = []rl.Texture2D{wall, floor, door, chest, wallWindow, doorOpen}
 	question = loadTexture("assets/images/gui/question.png")
 	leftArrow = loadTexture("assets/images/gui/left_arrow.png")
 	rightArrow = loadTexture("assets/images/gui/right_arrow.png")
@@ -177,36 +207,44 @@ func drawItems() {
 			drawItemCount(slot.x, slot.y, itemCount, slotImage.Width, slotImage.Height)
 		}
 	}
-
-	if wallIsOpen {
-		drawSlot(0, true)
-		drawItemCount(hotInventory[0].x, hotInventory[0].y, wallCount, slotImage.Width, slotImage.Height)
-	} else {
-		drawSlot(0, false)
-	}
-	if floorIsOpen {
-		drawSlot(1, true)
-		drawItemCount(hotInventory[1].x, hotInventory[1].y, floorCount, slotImage.Width, slotImage.Height)
-	} else {
-		drawSlot(1, false)
-	}
-	if doorIsOpen {
-		drawSlot(2, true)
-		drawItemCount(hotInventory[2].x, hotInventory[2].y, doorCount, slotImage.Width, slotImage.Height)
-	} else {
-		drawSlot(2, false)
-	}
-	if chestIsOpen {
-		drawSlot(3, true)
-		drawItemCount(hotInventory[3].x, hotInventory[3].y, chestCount, slotImage.Width, slotImage.Height)
-	} else {
-		drawSlot(3, false)
-	}
-	if wallWindowIsOpen {
-		drawSlot(4, true)
-		drawItemCount(hotInventory[4].x, hotInventory[4].y, wallWindowCount, slotImage.Width, slotImage.Height)
-	} else {
-		drawSlot(4, false)
+	switch currentPage {
+	case 1:
+		if wallIsOpen {
+			drawSlot(0, true)
+			drawItemCount(hotInventory[0].x, hotInventory[0].y, wallCount, slotImage.Width, slotImage.Height)
+		} else {
+			drawSlot(0, false)
+		}
+		if floorIsOpen {
+			drawSlot(1, true)
+			drawItemCount(hotInventory[1].x, hotInventory[1].y, floorCount, slotImage.Width, slotImage.Height)
+		} else {
+			drawSlot(1, false)
+		}
+		if doorIsOpen {
+			drawSlot(2, true)
+			drawItemCount(hotInventory[2].x, hotInventory[2].y, doorCount, slotImage.Width, slotImage.Height)
+		} else {
+			drawSlot(2, false)
+		}
+		if chestIsOpen {
+			drawSlot(3, true)
+			drawItemCount(hotInventory[3].x, hotInventory[3].y, chestCount, slotImage.Width, slotImage.Height)
+		} else {
+			drawSlot(3, false)
+		}
+		if wallWindowIsOpen {
+			drawSlot(4, true)
+			drawItemCount(hotInventory[4].x, hotInventory[4].y, wallWindowCount, slotImage.Width, slotImage.Height)
+		} else {
+			drawSlot(4, false)
+		}
+		if doorOpenIsOpen {
+			drawSlot(5, true)
+			drawItemCount(hotInventory[5].x, hotInventory[5].y, doorOpenCount, slotImage.Width, slotImage.Height)
+		} else {
+			drawSlot(5, false)
+		}
 	}
 
 }

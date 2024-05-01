@@ -1,0 +1,39 @@
+name: Build Game
+
+on:
+  push:
+    branches:
+      - dev
+      - release
+  pull_request:
+    branches:
+      - dev
+      - release
+
+jobs:
+  build-windows-386:
+    name: Build for Windows 386
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.22.2'  # Указываем версию Go
+
+    - name: Set GOOS and GOARCH
+      run: |
+        echo "GOOS=windows" >> $GITHUB_ENV
+        echo "GOARCH=386" >> $GITHUB_ENV
+
+    - name: Build game
+      run: go build -o mygame.exe .
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: mygame-windows-386
+        path: mygame.exe

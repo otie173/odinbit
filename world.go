@@ -57,6 +57,20 @@ var (
 	bones5         rl.Texture2D
 	worldGenerated bool
 	worldInfo      WorldInfo
+	doorOpen       rl.Texture2D
+	bigBarrel      rl.Texture2D
+	bookshelf      rl.Texture2D
+	chair          rl.Texture2D
+	closet         rl.Texture2D
+	fence1, fence2 rl.Texture2D
+	floor2, floor4 rl.Texture2D
+	lamp           rl.Texture2D
+	shelf          rl.Texture2D
+	sign           rl.Texture2D
+	smallBarrel    rl.Texture2D
+	table          rl.Texture2D
+	tombstone      rl.Texture2D
+	trash          rl.Texture2D
 )
 
 const (
@@ -99,6 +113,22 @@ const (
 	PICKAXE
 	AXE
 	SHOVEL
+	DOOROPEN
+	BIGBARREL
+	BOOKSHELF
+	CHAIR
+	CLOSET
+	FENCE1
+	FENCE2
+	FLOOR2
+	FLOOR4
+	LAMP
+	SHELF
+	SIGN
+	SMALLBARREL
+	TABLE
+	TOMBSTONE
+	TRASH
 )
 
 type BlockData struct {
@@ -153,11 +183,26 @@ func loadID() {
 	id[PICKAXE] = pickaxe
 	id[AXE] = axe
 	id[SHOVEL] = shovel
+	id[DOOROPEN] = doorOpen
+	id[BIGBARREL] = bigBarrel
+	id[BOOKSHELF] = bookshelf
+	id[CHAIR] = chair
+	id[CLOSET] = closet
+	id[FENCE1] = fence1
+	id[FENCE2] = fence2
+	id[FLOOR2] = floor2
+	id[FLOOR4] = floor4
+	id[LAMP] = lamp
+	id[SHELF] = shelf
+	id[SIGN] = sign
+	id[SMALLBARREL] = smallBarrel
+	id[TABLE] = table
+	id[TOMBSTONE] = tombstone
+	id[TRASH] = trash
 }
 
 func getOdinbitPath() string {
 	var odinbitPath string
-
 	switch runtime.GOOS {
 	case "windows":
 		// Windows: используем AppData\Roaming
@@ -343,12 +388,27 @@ func loadWorld() {
 	bigStone3 = loadTexture("assets/images/world/big_stone3.png")
 	bigStone4 = loadTexture("assets/images/world/big_stone4.png")
 	bigStone5 = loadTexture("assets/images/world/big_stone5.png")
-	lootbox = loadTexture("assets/images/world/lootbox.png")
+	lootbox = loadTexture("assets/images/blocks/lootbox.png")
 	bones1 = loadTexture("assets/images/world/bones1.png")
 	bones2 = loadTexture("assets/images/world/bones2.png")
 	bones3 = loadTexture("assets/images/world/bones3.png")
 	bones4 = loadTexture("assets/images/world/bones4.png")
 	bones5 = loadTexture("assets/images/world/bones5.png")
+	doorOpen = loadTexture("assets/images/blocks/door_open.png")
+	bigBarrel = loadTexture("assets/images/blocks/big_barrel1.png")
+	bookshelf = loadTexture("assets/images/blocks/bookshelf1.png")
+	chair = loadTexture("assets/images/blocks/chair.png")
+	closet = loadTexture("assets/images/blocks/closet.png")
+	fence1 = loadTexture("assets/images/blocks/fence1.png")
+	fence2 = loadTexture("assets/images/blocks/fence2.png")
+	floor2 = loadTexture("assets/images/blocks/floor2.png")
+	floor4 = loadTexture("assets/images/blocks/floor4.png")
+	lamp = loadTexture("assets/images/blocks/lamp.png")
+	sign = loadTexture("assets/images/blocks/sign.png")
+	smallBarrel = loadTexture("assets/images/blocks/small_barrel1.png")
+	table = loadTexture("assets/images/blocks/table.png")
+	tombstone = loadTexture("assets/images/blocks/tombstone1.png")
+	trash = loadTexture("assets/images/blocks/trash.png")
 
 	// Установка id для блоков
 	loadID()
@@ -372,6 +432,32 @@ func unloadWorld() {
 	rl.UnloadTexture(grass5)
 	rl.UnloadTexture(grass6)
 	rl.UnloadTexture(barrier)
+	rl.UnloadTexture(bigStone1)
+	rl.UnloadTexture(bigStone2)
+	rl.UnloadTexture(bigStone3)
+	rl.UnloadTexture(bigStone4)
+	rl.UnloadTexture(bigStone5)
+	rl.UnloadTexture(bones1)
+	rl.UnloadTexture(bones2)
+	rl.UnloadTexture(bones3)
+	rl.UnloadTexture(bones4)
+	rl.UnloadTexture(bones5)
+	rl.UnloadTexture(doorOpen)
+	rl.UnloadTexture(bigBarrel)
+	rl.UnloadTexture(bookshelf)
+	rl.UnloadTexture(chair)
+	rl.UnloadTexture(closet)
+	rl.UnloadTexture(fence1)
+	rl.UnloadTexture(fence2)
+	rl.UnloadTexture(floor2)
+	rl.UnloadTexture(floor4)
+	rl.UnloadTexture(lamp)
+	rl.UnloadTexture(shelf)
+	rl.UnloadTexture(sign)
+	rl.UnloadTexture(smallBarrel)
+	rl.UnloadTexture(table)
+	rl.UnloadTexture(tombstone)
+	rl.UnloadTexture(trash)
 }
 
 func addBlock(img rl.Texture2D, x, y float32, passable bool) {

@@ -43,7 +43,7 @@ func mouseHandler() {
 						}
 					case grass1, grass2, grass3, grass4, grass5, grass6, barrier:
 						break
-					case wall:
+					case wall, wallWindow:
 						if pickaxeIsOpen {
 							removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 							soundBlockAction()
@@ -53,8 +53,12 @@ func mouseHandler() {
 								wallIsOpen = true
 								wallCount++
 							}
+							if block.img == wallWindow {
+								wallWindowIsOpen = true
+								wallWindowCount++
+							}
 						}
-					case floor, door, chest:
+					case floor, door, chest, doorOpen:
 						if axeIsOpen {
 							removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 							soundBlockAction()
@@ -71,6 +75,10 @@ func mouseHandler() {
 							if block.img == chest {
 								chestIsOpen = true
 								chestCount++
+							}
+							if block.img == doorOpen {
+								doorOpenIsOpen = true
+								doorOpenCount++
 							}
 						}
 					case bones1, bones2, bones3, bones4, bones5:
@@ -149,38 +157,61 @@ func mouseHandler() {
 					soundBlockAction()
 					wallWindowCount--
 				}
+			case DOOROPEN:
+				if doorOpenIsOpen && doorOpenCount != 0 {
+					addBlock(doorOpen, float32(mouseX), float32(mouseY), true)
+					soundBlockAction()
+					doorOpenCount--
+				}
 			}
 		}
 	}
 	// Крафт блоков из материалов
 	if rl.IsMouseButtonPressed(rl.MouseButtonLeft) && currentScene == INVENTORY {
 		mousePos := rl.GetMousePosition()
-		// Крафт стены
-		if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[0].x, hotInventory[0].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
-			if wallIsOpen && stoneCount-20 >= 0 {
-				wallCount++
-				stoneCount -= 20
+		switch currentPage {
+		case 1:
+			// Крафт стены
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[0].x, hotInventory[0].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if wallIsOpen && stoneCount-20 >= 0 {
+					wallCount++
+					stoneCount -= 20
+				}
 			}
-		}
-		//Крафт пола
-		if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[1].x, hotInventory[1].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
-			if floorIsOpen && woodCount-20 >= 0 {
-				floorCount++
-				woodCount -= 20
+			//Крафт пола
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[1].x, hotInventory[1].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if floorIsOpen && woodCount-20 >= 0 {
+					floorCount++
+					woodCount -= 20
+				}
 			}
-		}
-		//Крафт двери
-		if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[2].x, hotInventory[2].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
-			if doorIsOpen && woodCount-20 >= 0 {
-				doorCount++
-				woodCount -= 20
+			//Крафт двери
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[2].x, hotInventory[2].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if doorIsOpen && woodCount-20 >= 0 {
+					doorCount++
+					woodCount -= 20
+				}
 			}
-		}
-		//Крафт сундука
-		if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[3].x, hotInventory[3].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
-			if chestIsOpen && woodCount-20 >= 0 {
-				chestCount++
-				woodCount -= 20
+			//Крафт сундука
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[3].x, hotInventory[3].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if chestIsOpen && woodCount-20 >= 0 {
+					chestCount++
+					woodCount -= 20
+				}
+			}
+			// Крафт окна
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[4].x, hotInventory[4].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if wallWindowIsOpen && stoneCount-20 >= 0 {
+					wallWindowCount++
+					stoneCount -= 20
+				}
+			}
+			// Крафт дверного проёма
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[5].x, hotInventory[5].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if doorOpenIsOpen && woodCount-20 >= 0 {
+					doorOpenCount++
+					woodCount -= 20
+				}
 			}
 		}
 	}
@@ -246,20 +277,26 @@ func keyboardHandler() {
 			currentScene = GAME
 		}
 	}
-	if rl.IsKeyPressed(rl.KeyOne) {
-		item = WALL
-	}
-	if rl.IsKeyPressed(rl.KeyTwo) {
-		item = FLOOR
-	}
-	if rl.IsKeyPressed(rl.KeyThree) {
-		item = DOOR
-	}
-	if rl.IsKeyPressed(rl.KeyFour) {
-		item = CHEST
-	}
-	if rl.IsKeyPressed(rl.KeyFive) {
-		item = WALLWINDOW
+	switch currentPage {
+	case 1:
+		if rl.IsKeyPressed(rl.KeyOne) {
+			item = WALL
+		}
+		if rl.IsKeyPressed(rl.KeyTwo) {
+			item = FLOOR
+		}
+		if rl.IsKeyPressed(rl.KeyThree) {
+			item = DOOR
+		}
+		if rl.IsKeyPressed(rl.KeyFour) {
+			item = CHEST
+		}
+		if rl.IsKeyPressed(rl.KeyFive) {
+			item = WALLWINDOW
+		}
+		if rl.IsKeyPressed(rl.KeySix) {
+			item = DOOROPEN
+		}
 	}
 	if rl.IsKeyPressed(rl.KeyEscape) && currentScene != TITLE && currentScene != INVENTORY {
 		switch menuOpen {

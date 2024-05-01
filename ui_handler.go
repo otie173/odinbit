@@ -40,6 +40,8 @@ func drawUI() {
 		rl.DrawTextureEx(id[CHEST], rl.NewVector2(blockX, blockY), 0, blockScale, rl.White)
 	case item == WALLWINDOW && wallWindowIsOpen:
 		rl.DrawTextureEx(id[WALLWINDOW], rl.NewVector2(blockX, blockY), 0, blockScale, rl.White)
+	case item == DOOROPEN && doorOpenIsOpen:
+		rl.DrawTextureEx(id[DOOROPEN], rl.NewVector2(blockX, blockY), 0, blockScale, rl.White)
 	default:
 		rl.DrawTextureEx(question, rl.NewVector2(blockX, blockY), 0, blockScale, rl.White)
 	}

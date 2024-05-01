@@ -42,16 +42,18 @@ type Player struct {
 	WallWindowOpen  bool    `json:"wall_window_open"`
 	FloorOpen       bool    `json:"floor_open"`
 	DoorOpen        bool    `json:"door_open"`
+	DoorOpenOpen    bool    `json:"door_open_open"`
 	ChestOpen       bool    `json:"chest_open"`
 	WallCount       int     `json:"wall_count"`
 	WallWindowCount int     `json:"wall_window_count"`
 	FloorCount      int     `json:"floor_count"`
 	DoorCount       int     `json:"door_count"`
 	ChestCount      int     `json:"chest_count"`
+	DoorOpenCount   int     `json:"door_open_count"`
 }
 
 func savePlayerFile() {
-	playerData := Player{playerPosition.X, playerPosition.Y, targetPosition.X, targetPosition.Y, playerHealth, woodCount, stoneCount, metalCount, pickaxeIsOpen, axeIsOpen, shovelIsOpen, wallIsOpen, wallWindowIsOpen, floorIsOpen, doorIsOpen, chestIsOpen, wallCount, wallWindowCount, floorCount, doorCount, chestCount}
+	playerData := Player{playerPosition.X, playerPosition.Y, targetPosition.X, targetPosition.Y, playerHealth, woodCount, stoneCount, metalCount, pickaxeIsOpen, axeIsOpen, shovelIsOpen, wallIsOpen, wallWindowIsOpen, floorIsOpen, doorIsOpen, doorOpenIsOpen, chestIsOpen, wallCount, wallWindowCount, floorCount, doorCount, chestCount, doorOpenCount}
 	jsonData, err := json.Marshal(playerData)
 	if err != nil {
 		log.Fatalf("Не удалось преобразовать информацию игрока: %v", err)
@@ -99,11 +101,13 @@ func loadPlayerFile() {
 	floorIsOpen = playerData.FloorOpen
 	doorIsOpen = playerData.DoorOpen
 	chestIsOpen = playerData.ChestOpen
+	doorOpenIsOpen = playerData.DoorOpen
 
 	wallCount = playerData.WallCount
 	wallWindowCount = playerData.WallWindowCount
 	floorCount = playerData.FloorCount
 	doorCount = playerData.DoorCount
+	doorOpenCount = playerData.DoorOpenCount
 	chestCount = playerData.ChestCount
 }
 

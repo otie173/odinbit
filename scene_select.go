@@ -119,12 +119,30 @@ func drawScene() {
 
 		}
 		drawItems()
+		rightArrowRec := rl.NewRectangle(rightArrowPosition.X+15, rightArrowPosition.Y+5, 85, 90)
+		leftArrowRec := rl.NewRectangle(leftArrowPosition.X-15, leftArrowPosition.Y+5, 85, 90)
+		//rl.DrawRectangle(int32(rightArrowRec.X), int32(rightArrowRec.Y), int32(rightArrowRec.Width), int32(rightArrowRec.Height), rl.Red)
+		//rl.DrawRectangle(int32(leftArrowRec.X), int32(leftArrowRec.Y), int32(leftArrowRec.Width), int32(leftArrowRec.Height), rl.Red)
 		rl.DrawTextureEx(leftArrow, leftArrowPosition, 0, arrowScale, rl.White)
 		rl.DrawTextureEx(rightArrow, rightArrowPosition, 0, arrowScale, rl.White)
 		pageLabelSize := rl.MeasureTextEx(font, fmt.Sprintf("Page %d/%d", currentPage, maxPage), 24, 2)
 		pageLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(pageLabelSize.X))/2, float32(rl.GetScreenHeight())/2+155)
 		rl.DrawTextEx(font, fmt.Sprintf("Page %d/%d", currentPage, maxPage), pageLabelPos, 24, 2, rl.White)
 		rl.EndDrawing()
+
+		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
+			mousePos := rl.GetMousePosition()
+			if rl.CheckCollisionPointRec(mousePos, rightArrowRec) {
+				if currentPage+1 <= maxPage {
+					currentPage++
+				}
+			}
+			if rl.CheckCollisionPointRec(mousePos, leftArrowRec) {
+				if currentPage-1 >= 1 {
+					currentPage--
+				}
+			}
+		}
 	case MENU:
 		menuLabelSize := rl.MeasureTextEx(fontBold, "Game menu", 72, 2)
 		menuLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(menuLabelSize.X))/2, float32(rl.GetScreenHeight()-int(menuLabelSize.Y))/2-175)
