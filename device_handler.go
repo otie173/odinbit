@@ -221,47 +221,49 @@ func keyboardHandler() {
 	var moveX, moveY float32
 	var shouldMove bool
 
-	if rl.IsKeyDown(rl.KeyW) {
-		moveY = -TILE_SIZE
-		shouldMove = true
-	} else if rl.IsKeyDown(rl.KeyS) {
-		moveY = TILE_SIZE
-		shouldMove = true
-	}
-	if rl.IsKeyDown(rl.KeyA) {
-		playerDirection = false
-		moveX = -TILE_SIZE
-		shouldMove = true
-	} else if rl.IsKeyDown(rl.KeyD) {
-		playerDirection = true
-		moveX = TILE_SIZE
-		shouldMove = true
-	}
-
-	if shouldMove && canMoveAgain() {
-		canMove := true
-		if moveX != 0 && moveY != 0 {
-			for _, block := range world {
-				if (!block.passable) && ((targetPosition.X+moveX == block.rec.X && targetPosition.Y == block.rec.Y) ||
-					(targetPosition.Y+moveY == block.rec.Y && targetPosition.X == block.rec.X) ||
-					(targetPosition.X+moveX == block.rec.X && targetPosition.Y+moveY == block.rec.Y)) {
-					canMove = false
-					break
-				}
-			}
-		} else {
-			for _, block := range world {
-				if (!block.passable) && (targetPosition.X+moveX == block.rec.X && targetPosition.Y+moveY == block.rec.Y) {
-					canMove = false
-					break
-				}
-			}
+	if currentScene == GAME {
+		if rl.IsKeyDown(rl.KeyW) {
+			moveY = -TILE_SIZE
+			shouldMove = true
+		} else if rl.IsKeyDown(rl.KeyS) {
+			moveY = TILE_SIZE
+			shouldMove = true
+		}
+		if rl.IsKeyDown(rl.KeyA) {
+			playerDirection = false
+			moveX = -TILE_SIZE
+			shouldMove = true
+		} else if rl.IsKeyDown(rl.KeyD) {
+			playerDirection = true
+			moveX = TILE_SIZE
+			shouldMove = true
 		}
 
-		if canMove {
-			targetPosition.X += moveX
-			targetPosition.Y += moveY
-			lastMoveTime = time.Now()
+		if shouldMove && canMoveAgain() {
+			canMove := true
+			if moveX != 0 && moveY != 0 {
+				for _, block := range world {
+					if (!block.passable) && ((targetPosition.X+moveX == block.rec.X && targetPosition.Y == block.rec.Y) ||
+						(targetPosition.Y+moveY == block.rec.Y && targetPosition.X == block.rec.X) ||
+						(targetPosition.X+moveX == block.rec.X && targetPosition.Y+moveY == block.rec.Y)) {
+						canMove = false
+						break
+					}
+				}
+			} else {
+				for _, block := range world {
+					if (!block.passable) && (targetPosition.X+moveX == block.rec.X && targetPosition.Y+moveY == block.rec.Y) {
+						canMove = false
+						break
+					}
+				}
+			}
+
+			if canMove {
+				targetPosition.X += moveX
+				targetPosition.Y += moveY
+				lastMoveTime = time.Now()
+			}
 		}
 	}
 	if rl.IsKeyPressed(rl.KeyE) && currentScene != TITLE && currentScene != MENU {
@@ -279,23 +281,56 @@ func keyboardHandler() {
 	}
 	switch currentPage {
 	case 1:
-		if rl.IsKeyPressed(rl.KeyOne) {
-			item = WALL
+		itemMap := map[int32]int{
+			rl.KeyOne:   WALL,
+			rl.KeyTwo:   FLOOR,
+			rl.KeyThree: DOOR,
+			rl.KeyFour:  CHEST,
+			rl.KeyFive:  WALLWINDOW,
+			rl.KeySix:   DOOROPEN,
+			rl.KeySeven: BIGBARREL,
+			rl.KeyEight: BOOKSHELF,
+			rl.KeyNine:  CHAIR,
 		}
-		if rl.IsKeyPressed(rl.KeyTwo) {
-			item = FLOOR
+
+		for key, value := range itemMap {
+			if rl.IsKeyPressed(key) {
+				item = value
+				break
+			}
 		}
-		if rl.IsKeyPressed(rl.KeyThree) {
-			item = DOOR
+	case 2:
+		itemMap := map[int32]int{
+			rl.KeyOne:   CLOSET,
+			rl.KeyTwo:   FENCE1,
+			rl.KeyThree: FENCE2,
+			rl.KeyFour:  FLOOR2,
+			rl.KeyFive:  FLOOR4,
+			rl.KeySix:   LAMP,
+			rl.KeySeven: LOOTBOX,
+			rl.KeyEight: SHELF,
+			rl.KeyNine:  SIGN,
 		}
-		if rl.IsKeyPressed(rl.KeyFour) {
-			item = CHEST
+
+		for key, value := range itemMap {
+			if rl.IsKeyPressed(key) {
+				item = value
+				break
+			}
 		}
-		if rl.IsKeyPressed(rl.KeyFive) {
-			item = WALLWINDOW
+	case 3:
+		itemMap := map[int32]int{
+			rl.KeyOne:   SMALLBARREL,
+			rl.KeyTwo:   TABLE,
+			rl.KeyThree: TOMBSTONE,
+			rl.KeyFour:  TRASH,
 		}
-		if rl.IsKeyPressed(rl.KeySix) {
-			item = DOOROPEN
+
+		for key, value := range itemMap {
+			if rl.IsKeyPressed(key) {
+				item = value
+				break
+			}
 		}
 	}
 	if rl.IsKeyPressed(rl.KeyEscape) && currentScene != TITLE && currentScene != INVENTORY {

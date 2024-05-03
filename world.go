@@ -409,6 +409,7 @@ func loadWorld() {
 	table = loadTexture("assets/images/blocks/table.png")
 	tombstone = loadTexture("assets/images/blocks/tombstone1.png")
 	trash = loadTexture("assets/images/blocks/trash.png")
+	shelf = loadTexture("assets/images/blocks/shelf.png")
 
 	// Установка id для блоков
 	loadID()

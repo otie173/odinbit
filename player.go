@@ -64,6 +64,8 @@ type Player struct {
 	SmallBarrelOpen  bool    `json:"small_barrel_open"`
 	TableOpen        bool    `json:"table_open"`
 	TrashOpen        bool    `json:"trash_open"`
+	LootboxOpen      bool    `json:"lootbox_open"`
+	TombstoneOpen    bool    `json:"tombstone_open"`
 	BigBarrelCount   int     `json:"big_barrel_count"`
 	BookshelfCount   int     `json:"bookshelf_count"`
 	ChairCount       int     `json:"chair_count"`
@@ -78,6 +80,8 @@ type Player struct {
 	SmallBarrelCount int     `json:"small_barrel_count"`
 	TableCount       int     `json:"table_count"`
 	TrashCount       int     `json:"trash_count"`
+	LootboxCount     int     `json:"lootbox_count"`
+	TombstoneCount   int     `json:"tombstone_count"`
 }
 
 func savePlayerFile() {
@@ -93,12 +97,12 @@ func savePlayerFile() {
 		ClosetOpen: closetIsOpen, Fence1Open: fence1IsOpen, Fence2Open: fence2IsOpen,
 		Floor2Open: floor2IsOpen, Floor4Open: floor4IsOpen, LampOpen: lampIsOpen,
 		ShelfOpen: shelfIsOpen, SignOpen: signIsOpen, SmallBarrelOpen: smallBarrelIsOpen,
-		TableOpen: tableIsOpen, TrashOpen: trashIsOpen,
+		TableOpen: tableIsOpen, TrashOpen: trashIsOpen, LootboxOpen: lootboxIsOpen, TombstoneOpen: tombstoneIsOpen,
 		BigBarrelCount: bigBarrelCount, BookshelfCount: bookshelfCount, ChairCount: chairCount,
 		ClosetCount: closetCount, Fence1Count: fence1Count, Fence2Count: fence2Count,
 		Floor2Count: floor2Count, Floor4Count: floor4Count, LampCount: lampCount,
 		ShelfCount: shelfCount, SignCount: signCount, SmallBarrelCount: smallBarrelCount,
-		TableCount: tableCount, TrashCount: trashCount,
+		TableCount: tableCount, TrashCount: trashCount, LootboxCount: lootboxCount, TombstoneCount: tombstoneCount,
 	}
 	jsonData, err := json.Marshal(playerData)
 	if err != nil {
@@ -170,6 +174,8 @@ func loadPlayerFile() {
 	smallBarrelIsOpen = playerData.SmallBarrelOpen
 	tableIsOpen = playerData.TableOpen
 	trashIsOpen = playerData.TrashOpen
+	lootboxIsOpen = playerData.LootboxOpen
+	tombstoneIsOpen = playerData.TombstoneOpen
 
 	bigBarrelCount = playerData.BigBarrelCount
 	bookshelfCount = playerData.BookshelfCount
@@ -185,6 +191,8 @@ func loadPlayerFile() {
 	smallBarrelCount = playerData.SmallBarrelCount
 	tableCount = playerData.TableCount
 	trashCount = playerData.TrashCount
+	lootboxCount = playerData.LootboxCount
+	tombstoneCount = playerData.TombstoneCount
 }
 
 func loadPlayer() {
