@@ -126,7 +126,7 @@ func drawScene() {
 		rl.DrawTextureEx(leftArrow, leftArrowPosition, 0, arrowScale, rl.White)
 		rl.DrawTextureEx(rightArrow, rightArrowPosition, 0, arrowScale, rl.White)
 		pageLabelSize := rl.MeasureTextEx(font, fmt.Sprintf("Page %d/%d", currentPage, maxPage), 24, 2)
-		pageLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(pageLabelSize.X))/2, float32(rl.GetScreenHeight())/2+155)
+		pageLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(pageLabelSize.X))/2, 690.0)
 		rl.DrawTextEx(font, fmt.Sprintf("Page %d/%d", currentPage, maxPage), pageLabelPos, 24, 2, rl.White)
 		rl.EndDrawing()
 
