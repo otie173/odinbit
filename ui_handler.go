@@ -29,20 +29,34 @@ func loadUI() {
 
 func drawUI() {
 	// Keep It Simple Stupid :)
-	switch {
-	case item == WALL && wallIsOpen:
-		rl.DrawTextureEx(id[WALL], rl.NewVector2(blockX, blockY), 0, blockScale, rl.White)
-	case item == FLOOR && floorIsOpen:
-		rl.DrawTextureEx(id[FLOOR], rl.NewVector2(blockX, blockY), 0, blockScale, rl.White)
-	case item == DOOR && doorIsOpen:
-		rl.DrawTextureEx(id[DOOR], rl.NewVector2(blockX, blockY), 0, blockScale, rl.White)
-	case item == CHEST && chestIsOpen:
-		rl.DrawTextureEx(id[CHEST], rl.NewVector2(blockX, blockY), 0, blockScale, rl.White)
-	case item == WALLWINDOW && wallWindowIsOpen:
-		rl.DrawTextureEx(id[WALLWINDOW], rl.NewVector2(blockX, blockY), 0, blockScale, rl.White)
-	case item == DOOROPEN && doorOpenIsOpen:
-		rl.DrawTextureEx(id[DOOROPEN], rl.NewVector2(blockX, blockY), 0, blockScale, rl.White)
-	default:
+	itemStates := map[int]bool{
+		WALL:        wallIsOpen,
+		FLOOR:       floorIsOpen,
+		DOOR:        doorIsOpen,
+		CHEST:       chestIsOpen,
+		WALLWINDOW:  wallWindowIsOpen,
+		DOOROPEN:    doorOpenIsOpen,
+		BIGBARREL:   bigBarrelIsOpen,
+		BOOKSHELF:   bookshelfIsOpen,
+		CHAIR:       chairIsOpen,
+		CLOSET:      closetIsOpen,
+		FENCE1:      fence1IsOpen,
+		FENCE2:      fence2IsOpen,
+		FLOOR2:      floor2IsOpen,
+		FLOOR4:      floor4IsOpen,
+		LAMP:        lampIsOpen,
+		LOOTBOX:     lootboxIsOpen,
+		SHELF:       shelfIsOpen,
+		SIGN:        signIsOpen,
+		SMALLBARREL: smallBarrelIsOpen,
+		TABLE:       tableIsOpen,
+		TOMBSTONE:   tombstoneIsOpen,
+		TRASH:       trashIsOpen,
+	}
+
+	if state, ok := itemStates[item]; ok && state {
+		rl.DrawTextureEx(id[item], rl.NewVector2(blockX, blockY), 0, blockScale, rl.White)
+	} else {
 		rl.DrawTextureEx(question, rl.NewVector2(blockX, blockY), 0, blockScale, rl.White)
 	}
 
