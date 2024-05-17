@@ -43,7 +43,7 @@ func mouseHandler() {
 						}
 					case grass1, grass2, grass3, grass4, grass5, grass6, barrier:
 						break
-					case wall, wallWindow:
+					case wall, wallWindow, tombstone, trash, lamp, floor4, lootbox:
 						if pickaxeIsOpen {
 							removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 							soundBlockAction()
@@ -57,8 +57,28 @@ func mouseHandler() {
 								wallWindowIsOpen = true
 								wallWindowCount++
 							}
+							if block.img == tombstone {
+								tombstoneIsOpen = true
+								tombstoneCount++
+							}
+							if block.img == trash {
+								trashIsOpen = true
+								trashCount++
+							}
+							if block.img == lamp {
+								lampIsOpen = true
+								lampCount++
+							}
+							if block.img == floor4 {
+								floor4IsOpen = true
+								floor4Count++
+							}
+							if block.img == lootbox {
+								lootboxIsOpen = true
+								lootboxCount++
+							}
 						}
-					case floor, door, chest, doorOpen:
+					case floor, door, chest, doorOpen, bigBarrel, bookshelf, chair, closet, fence1, fence2, floor2, shelf, sign, smallBarrel, table:
 						if axeIsOpen {
 							removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 							soundBlockAction()
@@ -79,6 +99,50 @@ func mouseHandler() {
 							if block.img == doorOpen {
 								doorOpenIsOpen = true
 								doorOpenCount++
+							}
+							if block.img == bigBarrel {
+								bigBarrelIsOpen = true
+								bigBarrelCount++
+							}
+							if block.img == bookshelf {
+								bookshelfIsOpen = true
+								bookshelfCount++
+							}
+							if block.img == chair {
+								chairIsOpen = true
+								chairCount++
+							}
+							if block.img == closet {
+								closetIsOpen = true
+								closetCount++
+							}
+							if block.img == fence1 {
+								fence1IsOpen = true
+								fence1Count++
+							}
+							if block.img == fence2 {
+								fence2IsOpen = true
+								fence2Count++
+							}
+							if block.img == floor2 {
+								floor2IsOpen = true
+								floor2Count++
+							}
+							if block.img == shelf {
+								shelfIsOpen = true
+								shelfCount++
+							}
+							if block.img == sign {
+								signIsOpen = true
+								signCount++
+							}
+							if block.img == smallBarrel {
+								smallBarrelIsOpen = true
+								smallBarrelCount++
+							}
+							if block.img == table {
+								tableIsOpen = true
+								tableCount++
 							}
 						}
 					case bones1, bones2, bones3, bones4, bones5:
