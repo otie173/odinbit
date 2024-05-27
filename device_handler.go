@@ -12,6 +12,10 @@ var (
 	mouseOnBlock bool
 )
 
+const (
+	MATERIAL_FOR_CRAFT int = 25
+)
+
 func mouseHandler() {
 	canBuild = true
 	mouseOnBlock = false
@@ -334,44 +338,321 @@ func mouseHandler() {
 		case 1:
 			// Крафт стены
 			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[0].x, hotInventory[0].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
-				if wallIsOpen && stoneCount-20 >= 0 {
+				if wallIsOpen && stoneCount-MATERIAL_FOR_CRAFT >= 0 {
 					wallCount++
-					stoneCount -= 20
+					stoneCount -= MATERIAL_FOR_CRAFT
 				}
 			}
 			//Крафт пола
 			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[1].x, hotInventory[1].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
-				if floorIsOpen && woodCount-20 >= 0 {
+				if floorIsOpen && woodCount-MATERIAL_FOR_CRAFT >= 0 {
 					floorCount++
-					woodCount -= 20
+					woodCount -= MATERIAL_FOR_CRAFT
 				}
 			}
 			//Крафт двери
 			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[2].x, hotInventory[2].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
-				if doorIsOpen && woodCount-20 >= 0 {
+				if doorIsOpen && woodCount-MATERIAL_FOR_CRAFT >= 0 {
 					doorCount++
-					woodCount -= 20
+					woodCount -= MATERIAL_FOR_CRAFT
 				}
 			}
 			//Крафт сундука
 			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[3].x, hotInventory[3].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
-				if chestIsOpen && woodCount-20 >= 0 {
+				if chestIsOpen && woodCount-MATERIAL_FOR_CRAFT >= 0 {
 					chestCount++
-					woodCount -= 20
+					woodCount -= MATERIAL_FOR_CRAFT
 				}
 			}
 			// Крафт окна
 			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[4].x, hotInventory[4].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
-				if wallWindowIsOpen && stoneCount-20 >= 0 {
+				if wallWindowIsOpen && stoneCount-MATERIAL_FOR_CRAFT >= 0 {
 					wallWindowCount++
-					stoneCount -= 20
+					stoneCount -= MATERIAL_FOR_CRAFT
 				}
 			}
 			// Крафт дверного проёма
 			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[5].x, hotInventory[5].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
-				if doorOpenIsOpen && woodCount-20 >= 0 {
+				if doorOpenIsOpen && woodCount-MATERIAL_FOR_CRAFT >= 0 {
 					doorOpenCount++
-					woodCount -= 20
+					woodCount -= MATERIAL_FOR_CRAFT
+				}
+			}
+			// Крафт большой бочки
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[6].x, hotInventory[6].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if bigBarrelIsOpen && woodCount-MATERIAL_FOR_CRAFT >= 0 {
+					bigBarrelCount++
+					woodCount -= MATERIAL_FOR_CRAFT
+				}
+			}
+			// Крафт книжной полки
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[7].x, hotInventory[7].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if bookshelfIsOpen && woodCount-MATERIAL_FOR_CRAFT >= 0 {
+					bookshelfCount++
+					woodCount -= MATERIAL_FOR_CRAFT
+				}
+			}
+			// Крафт стула
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[8].x, hotInventory[8].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if chairIsOpen && woodCount-MATERIAL_FOR_CRAFT >= 0 {
+					chairCount++
+					woodCount -= MATERIAL_FOR_CRAFT
+				}
+			}
+		case 2:
+			// Крафт шкафа
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[0].x, hotInventory[0].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if closetIsOpen && woodCount-MATERIAL_FOR_CRAFT >= 0 {
+					closetCount++
+					woodCount -= MATERIAL_FOR_CRAFT
+				}
+			}
+			// Крафт забора1
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[1].x, hotInventory[1].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if fence1IsOpen && woodCount-MATERIAL_FOR_CRAFT >= 0 {
+					fence1Count++
+					woodCount -= MATERIAL_FOR_CRAFT
+				}
+			}
+			// Крафт забора2
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[2].x, hotInventory[2].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if fence2IsOpen && woodCount-MATERIAL_FOR_CRAFT >= 0 {
+					fence2Count++
+					woodCount -= MATERIAL_FOR_CRAFT
+				}
+			}
+			// Крафт пол2
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[3].x, hotInventory[3].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if floor2IsOpen && woodCount-MATERIAL_FOR_CRAFT >= 0 {
+					floor2Count++
+					woodCount -= MATERIAL_FOR_CRAFT
+				}
+			}
+			// Крафт пол4
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[4].x, hotInventory[4].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if floor4IsOpen && stoneCount-MATERIAL_FOR_CRAFT >= 0 {
+					floor4Count++
+					stoneCount -= MATERIAL_FOR_CRAFT
+				}
+			}
+			// Крафт лампы
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[5].x, hotInventory[5].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if lampIsOpen && metalCount-MATERIAL_FOR_CRAFT >= 0 {
+					lampCount++
+					metalCount -= MATERIAL_FOR_CRAFT
+				}
+			}
+			// Крафт кувшина
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[6].x, hotInventory[6].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if lootboxIsOpen && stoneCount-MATERIAL_FOR_CRAFT >= 0 {
+					lootboxCount++
+					stoneCount -= MATERIAL_FOR_CRAFT
+				}
+			}
+			// Крафт полки
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[7].x, hotInventory[7].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if shelfIsOpen && woodCount-MATERIAL_FOR_CRAFT >= 0 {
+					shelfCount++
+					woodCount -= MATERIAL_FOR_CRAFT
+				}
+			}
+			// Крафт таблички
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[8].x, hotInventory[8].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if signIsOpen && woodCount-MATERIAL_FOR_CRAFT >= 0 {
+					signCount++
+					woodCount -= MATERIAL_FOR_CRAFT
+				}
+			}
+		case 3:
+			// Крафт маленькой бочки
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[0].x, hotInventory[0].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if smallBarrelIsOpen && woodCount-MATERIAL_FOR_CRAFT >= 0 {
+					smallBarrelCount++
+					woodCount -= MATERIAL_FOR_CRAFT
+				}
+			}
+			// Крафт стола
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[1].x, hotInventory[1].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if tableIsOpen && woodCount-MATERIAL_FOR_CRAFT >= 0 {
+					tableCount++
+					woodCount -= MATERIAL_FOR_CRAFT
+				}
+			}
+			// Крафт надгробия
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[2].x, hotInventory[2].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if tombstoneIsOpen && stoneCount-MATERIAL_FOR_CRAFT >= 0 {
+					tombstoneCount++
+					stoneCount -= MATERIAL_FOR_CRAFT
+				}
+			}
+			// Крафт мусорки
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[3].x, hotInventory[3].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if trashIsOpen && metalCount-MATERIAL_FOR_CRAFT >= 0 {
+					trashCount++
+					metalCount -= MATERIAL_FOR_CRAFT
+				}
+			}
+		}
+	}
+
+	if rl.IsMouseButtonPressed(rl.MouseButtonRight) && currentScene == INVENTORY {
+		mousePos := rl.GetMousePosition()
+		switch currentPage {
+		case 1:
+			// Декрафт стены
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[0].x, hotInventory[0].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if wallIsOpen && wallCount > 0 {
+					wallCount--
+					stoneCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			//Декрафт пола
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[1].x, hotInventory[1].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if floorIsOpen && floorCount > 0 {
+					floorCount--
+					woodCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			//Декрафт двери
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[2].x, hotInventory[2].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if doorIsOpen && doorCount > 0 {
+					doorCount--
+					woodCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			//Декрафт сундука
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[3].x, hotInventory[3].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if chestIsOpen && chestCount > 0 {
+					chestCount--
+					woodCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			// Декрафт окна
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[4].x, hotInventory[4].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if wallWindowIsOpen && wallWindowCount > 0 {
+					wallWindowCount--
+					stoneCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			// Декрафт дверного проёма
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[5].x, hotInventory[5].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if doorOpenIsOpen && doorOpenCount > 0 {
+					doorOpenCount--
+					woodCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			// Декрафт большой бочки
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[6].x, hotInventory[6].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if bigBarrelIsOpen && bigBarrelCount > 0 {
+					bigBarrelCount--
+					woodCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			// Декрафт книжной полки
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[7].x, hotInventory[7].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if bookshelfIsOpen && bookshelfCount > 0 {
+					bookshelfCount--
+					woodCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			// Декрафт стула
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[8].x, hotInventory[8].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if chairIsOpen && chairCount > 0 {
+					chairCount--
+					woodCount += MATERIAL_FOR_CRAFT
+				}
+			}
+		case 2:
+			// Декрафт шкафа
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[0].x, hotInventory[0].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if closetIsOpen && closetCount > 0 {
+					closetCount--
+					woodCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			// Декрафт забора1
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[1].x, hotInventory[1].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if fence1IsOpen && fence1Count > 0 {
+					fence1Count--
+					woodCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			// Декрафт забора2
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[2].x, hotInventory[2].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if fence2IsOpen && fence2Count > 0 {
+					fence2Count--
+					woodCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			// Декрафт пол2
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[3].x, hotInventory[3].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if floor2IsOpen && floor2Count > 0 {
+					floor2Count--
+					woodCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			// Декрафт пол4
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[4].x, hotInventory[4].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if floor4IsOpen && floor4Count > 0 {
+					floor4Count--
+					stoneCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			// Декрафт лампы
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[5].x, hotInventory[5].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if lampIsOpen && lampCount > 0 {
+					lampCount--
+					metalCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			// Декрафт кувшина
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[6].x, hotInventory[6].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if lootboxIsOpen && lootboxCount > 0 {
+					lootboxCount--
+					stoneCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			// Декрафт полки
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[7].x, hotInventory[7].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if shelfIsOpen && shelfCount > 0 {
+					shelfCount--
+					woodCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			// Декрафт таблички
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[8].x, hotInventory[8].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if signIsOpen && signCount > 0 {
+					signCount--
+					woodCount += MATERIAL_FOR_CRAFT
+				}
+			}
+		case 3:
+			// Декрафт маленькой бочки
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[0].x, hotInventory[0].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if smallBarrelIsOpen && smallBarrelCount > 0 {
+					smallBarrelCount--
+					woodCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			// Декрафт стола
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[1].x, hotInventory[1].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if tableIsOpen && tableCount > 0 {
+					tableCount--
+					woodCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			// Декрафт надгробия
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[2].x, hotInventory[2].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if tombstoneIsOpen && tombstoneCount > 0 {
+					tombstoneCount--
+					stoneCount += MATERIAL_FOR_CRAFT
+				}
+			}
+			// Декрафт мусорки
+			if rl.CheckCollisionPointRec(mousePos, rl.NewRectangle(hotInventory[3].x, hotInventory[3].y, float32(slotImage.Width)*inventoryZoom, float32(slotImage.Height)*cam.Zoom)) {
+				if trashIsOpen && trashCount > 0 {
+					trashCount--
+					metalCount += MATERIAL_FOR_CRAFT
 				}
 			}
 		}
