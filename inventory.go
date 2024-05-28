@@ -21,23 +21,23 @@ var (
 	woodCount          int  = 0
 	stoneCount         int  = 0
 	metalCount         int  = 0
-	wallIsOpen         bool = true
-	wallWindowIsOpen   bool = true
-	floorIsOpen        bool = true
-	doorIsOpen         bool = true
-	doorOpenIsOpen     bool = true
-	chestIsOpen        bool = true
+	wallIsOpen         bool = false
+	wallWindowIsOpen   bool = false
+	floorIsOpen        bool = false
+	doorIsOpen         bool = false
+	doorOpenIsOpen     bool = false
+	chestIsOpen        bool = false
 	question           rl.Texture2D
-	wallCount          int        = 1
-	wallWindowCount    int        = 1
-	floorCount         int        = 1
-	doorCount          int        = 1
-	doorOpenCount      int        = 1
-	chestCount         int        = 1
+	wallCount          int        = 0
+	wallWindowCount    int        = 0
+	floorCount         int        = 0
+	doorCount          int        = 0
+	doorOpenCount      int        = 0
+	chestCount         int        = 0
 	inventoryZoom      float32    = 5.0
-	shovelIsOpen       bool       = true
-	pickaxeIsOpen      bool       = true
-	axeIsOpen          bool       = true
+	shovelIsOpen       bool       = false
+	pickaxeIsOpen      bool       = false
+	axeIsOpen          bool       = false
 	leftArrowPosition  rl.Vector2 = rl.NewVector2(0, 485)
 	rightArrowPosition rl.Vector2 = rl.NewVector2(0, 485)
 	arrowScale         float32    = 9.0
@@ -240,6 +240,9 @@ func drawItems() {
 				drawSlot(i, true, slot.textureIndex)
 				drawItemCount(slot.x, slot.y, slot.count, slotImage.Width, slotImage.Height)
 			}
+			if !slot.isOpen {
+				drawSlot(i, false, slot.textureIndex)
+			}
 		}
 
 		// Сбросить состояние неиспользуемых слотов
@@ -264,6 +267,9 @@ func drawItems() {
 				drawSlot(i, true, slot.textureIndex)
 				drawItemCount(slot.x, slot.y, slot.count, slotImage.Width, slotImage.Height)
 			}
+			if !slot.isOpen {
+				drawSlot(i, false, slot.textureIndex)
+			}
 		}
 
 		// Сбросить состояние неиспользуемых слотов
@@ -282,6 +288,9 @@ func drawItems() {
 			if slot.isOpen {
 				drawSlot(i, true, slot.textureIndex)
 				drawItemCount(slot.x, slot.y, slot.count, slotImage.Width, slotImage.Height)
+			}
+			if !slot.isOpen {
+				drawSlot(i, false, slot.textureIndex)
 			}
 		}
 

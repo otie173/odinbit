@@ -498,44 +498,51 @@ func generateBarrier() {
 func generateStructure(x, y, structure int) {
 	switch structure {
 	case 1:
+		// генерация дома 5x5
 		addBlock(wall, float32(x), float32(y), false)
-		addBlock(wall, float32(x+1), float32(y), false)
-		addBlock(wall, float32(x), float32(y+1), false)
+		addBlock(wallWindow, float32(x+3), float32(y), false)
 		addBlock(floor, float32(x+1), float32(y+1), true)
-		addBlock(floor, float32(x+1), float32(y+2), true)
+		addBlock(floor, float32(x+4), float32(y+1), true)
 		addBlock(chest, float32(x+2), float32(y+2), false)
-		addBlock(floor, float32(x+3), float32(y+2), true)
-		addBlock(wall, float32(x+4), float32(y+1), false)
-		addBlock(floor, float32(x+3), float32(y+4), true)
-	case 2:
-		addBlock(wall, float32(x), float32(y), false)
-		addBlock(door, float32(x+1), float32(y), true)
-		addBlock(wall, float32(x+2), float32(y), false)
-		addBlock(wall, float32(x), float32(y+1), false)
-		addBlock(floor, float32(x+1), float32(y+1), true)
-		addBlock(floor, float32(x+2), float32(y+1), true)
-		addBlock(floor, float32(x), float32(y+2), true)
-		addBlock(floor, float32(x+1), float32(y+2), true)
-		addBlock(chest, float32(x+2), float32(y+2), false)
-		addBlock(wall, float32(x+1), float32(y+3), false)
-		addBlock(floor, float32(x+2), float32(y+3), true)
-	case 3:
-		addBlock(floor, float32(x), float32(y), true)
-		addBlock(floor, float32(x+1), float32(y), true)
-		addBlock(floor, float32(x+3), float32(y), true)
-		addBlock(wall, float32(x), float32(y+1), false)
-		addBlock(floor, float32(x+1), float32(y+1), true)
-		addBlock(floor, float32(x+2), float32(y+1), true)
-		addBlock(wall, float32(x+3), float32(y+1), false)
-		addBlock(wall, float32(x), float32(y+2), false)
-		addBlock(floor, float32(x+1), float32(y+2), true)
-		addBlock(chest, float32(x+2), float32(y+2), false)
-		addBlock(door, float32(x+3), float32(y+2), true)
 		addBlock(floor, float32(x+4), float32(y+2), true)
 		addBlock(wall, float32(x+1), float32(y+3), false)
-		addBlock(wall, float32(x+2), float32(y+3), false)
-		addBlock(wall, float32(x+3), float32(y+3), false)
-
+		addBlock(door, float32(x+3), float32(y+3), true)
+		addBlock(fence1, float32(x), float32(y+4), false)
+		addBlock(fence1, float32(x+4), float32(y+4), false)
+	case 2:
+		// генерация домика 6x6
+		addBlock(wall, float32(x), float32(y), false)
+		addBlock(wall, float32(x+4), float32(y), false)
+		addBlock(floor, float32(x+1), float32(y+1), true)
+		addBlock(shelf, float32(x+5), float32(y+1), false)
+		addBlock(floor, float32(x+2), float32(y+2), true)
+		addBlock(floor, float32(x+4), float32(y+2), true)
+		addBlock(table, float32(x), float32(y+3), false)
+		addBlock(chair, float32(x+3), float32(y+3), false)
+		addBlock(closet, float32(x+5), float32(y+3), false)
+		addBlock(floor, float32(x+1), float32(y+4), true)
+		addBlock(trash, float32(x+4), float32(y+4), false)
+		addBlock(lootbox, float32(x+2), float32(y+5), false)
+		addBlock(wall, float32(x+5), float32(y+5), false)
+	case 3:
+		// генерация кладбища
+		addBlock(fence2, float32(x), float32(y), false)
+		addBlock(bones1, float32(x+3), float32(y), false)
+		addBlock(fence2, float32(x+6), float32(y), false)
+		addBlock(tombstone, float32(x+1), float32(y+1), false)
+		addBlock(wall, float32(x+4), float32(y+1), false)
+		addBlock(bones3, float32(x+2), float32(y+2), false)
+		addBlock(sign, float32(x+5), float32(y+2), false)
+		addBlock(fence2, float32(x), float32(y+3), false)
+		addBlock(smallBarrel, float32(x+3), float32(y+3), false)
+		addBlock(fence2, float32(x+6), float32(y+3), false)
+		addBlock(bones4, float32(x+1), float32(y+4), false)
+		addBlock(lamp, float32(x+4), float32(y+4), false)
+		addBlock(shovel, float32(x+2), float32(y+5), false)
+		addBlock(tombstone, float32(x+5), float32(y+5), false)
+		addBlock(fence2, float32(x), float32(y+6), false)
+		addBlock(bones2, float32(x+3), float32(y+6), false)
+		addBlock(fence2, float32(x+6), float32(y+6), false)
 	}
 
 	worldInfo.StructuresGenerated = true
@@ -645,7 +652,7 @@ func generateWorld() {
 			generateGrass(float32(x), float32(y))
 		}
 	}
-	for i := 0; i <= 8; i++ {
+	for i := 0; i <= 6; i++ {
 		generateStructure(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, 1)
 		generateStructure(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, 2)
 		generateStructure(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, 3)
@@ -670,7 +677,7 @@ func generateWorld() {
 
 func updateWorld() {
 	if !worldInfo.StructuresGenerated {
-		for i := 0; i <= 8; i++ {
+		for i := 0; i <= 6; i++ {
 			generateStructure(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, 1)
 			generateStructure(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, 2)
 			generateStructure(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, 3)

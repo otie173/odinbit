@@ -74,7 +74,6 @@ func mouseHandler() {
 								lampCount++
 							}
 							if block.img == floor4 {
-								floor4IsOpen = true
 								floor4Count++
 							}
 							if block.img == lootbox {
@@ -90,10 +89,13 @@ func mouseHandler() {
 
 							if block.img == floor {
 								floorIsOpen = true
+								floor4IsOpen = true
+								floor2IsOpen = true
 								floorCount++
 							}
 							if block.img == door {
 								doorIsOpen = true
+								doorOpenIsOpen = true
 								doorCount++
 							}
 							if block.img == chest {
@@ -101,15 +103,12 @@ func mouseHandler() {
 								chestCount++
 							}
 							if block.img == doorOpen {
-								doorOpenIsOpen = true
 								doorOpenCount++
 							}
 							if block.img == bigBarrel {
-								bigBarrelIsOpen = true
 								bigBarrelCount++
 							}
 							if block.img == bookshelf {
-								bookshelfIsOpen = true
 								bookshelfCount++
 							}
 							if block.img == chair {
@@ -122,6 +121,7 @@ func mouseHandler() {
 							}
 							if block.img == fence1 {
 								fence1IsOpen = true
+								fence2IsOpen = true
 								fence1Count++
 							}
 							if block.img == fence2 {
@@ -129,11 +129,11 @@ func mouseHandler() {
 								fence2Count++
 							}
 							if block.img == floor2 {
-								floor2IsOpen = true
 								floor2Count++
 							}
 							if block.img == shelf {
 								shelfIsOpen = true
+								bookshelfIsOpen = true
 								shelfCount++
 							}
 							if block.img == sign {
@@ -142,6 +142,7 @@ func mouseHandler() {
 							}
 							if block.img == smallBarrel {
 								smallBarrelIsOpen = true
+								bigBarrelIsOpen = true
 								smallBarrelCount++
 							}
 							if block.img == table {
