@@ -129,6 +129,8 @@ const (
 	TABLE
 	TOMBSTONE
 	TRASH
+	STAIRSDOWN
+	STAIRSUP
 )
 
 type BlockData struct {
@@ -362,7 +364,7 @@ func loadTexture(fileName string) rl.Texture2D {
 }
 
 func loadWorld() {
-	world = make(map[rl.Rectangle]Block, 65_536)
+	world = make(map[rl.Rectangle]Block, 102_400)
 	id = make(map[int]rl.Texture2D, 256)
 	wall = loadTexture("assets/images/blocks/wall.png")
 	wallWindow = loadTexture("assets/images/blocks/wall_window.png")
@@ -500,15 +502,18 @@ func generateStructure(x, y, structure int) {
 	case 1:
 		// генерация дома 5x5
 		addBlock(wall, float32(x), float32(y), false)
-		addBlock(wallWindow, float32(x+3), float32(y), false)
-		addBlock(floor, float32(x+1), float32(y+1), true)
-		addBlock(floor, float32(x+4), float32(y+1), true)
-		addBlock(chest, float32(x+2), float32(y+2), false)
-		addBlock(floor, float32(x+4), float32(y+2), true)
-		addBlock(wall, float32(x+1), float32(y+3), false)
+		addBlock(floor, float32(x+2), float32(y), true)
+		addBlock(floor, float32(x+4), float32(y), true)
+		addBlock(floor, float32(x), float32(y+1), true)
+		addBlock(wallWindow, float32(x+3), float32(y+1), false)
+		addBlock(wall, float32(x), float32(y+2), false)
+		addBlock(floor, float32(x+2), float32(y+2), true)
+		addBlock(chest, float32(x+4), float32(y+2), false)
+		addBlock(floor, float32(x+1), float32(y+3), true)
 		addBlock(door, float32(x+3), float32(y+3), true)
 		addBlock(fence1, float32(x), float32(y+4), false)
-		addBlock(fence1, float32(x+4), float32(y+4), false)
+		addBlock(floor, float32(x+2), float32(y+4), true)
+		addBlock(floor, float32(x+4), float32(y+4), true)
 	case 2:
 		// генерация домика 6x6
 		addBlock(wall, float32(x), float32(y), false)

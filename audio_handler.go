@@ -33,7 +33,7 @@ var (
 )
 
 const (
-	SOUNDTRACK_VOLUME float32 = 0.025
+	SOUNDTRACK_VOLUME float32 = 0.12
 )
 
 func loadSound(fileName string) rl.Sound {
