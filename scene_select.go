@@ -1,23 +1,27 @@
 package main
 
 import (
+	"fmt"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 var (
-	currentScene int = TITLE
+	currentScene Scene = TITLE
+	lastScene    Scene = -1
 	menuOpen     bool
 )
 
 const (
-	TITLE int = iota
+	TITLE Scene = iota
 	GENERATE
-	LOAD
 	SAVE
 	GAME
 	INVENTORY
 	MENU
 )
+
+type Scene int
 
 func drawScene() {
 	switch currentScene {
@@ -38,8 +42,17 @@ func drawScene() {
 			mousePos := rl.GetMousePosition()
 			if rl.CheckCollisionPointRec(mousePos, playRectangle) {
 				if checkWorldFile() {
-					currentScene = LOAD
+					loadWorldLabelSize := rl.MeasureTextEx(font, "Load world...", 56, 2)
+					loadWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(loadWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(loadWorldLabelSize.Y))/2)
+
+					rl.BeginDrawing()
+					rl.ClearBackground(bkgColor)
+					rl.DrawTextEx(font, "Load world...", loadWorldLabelPos, 56, 2, rl.White)
+					rl.EndDrawing()
 					world = loadWorldFile()
+					worldInfo = loadWorldInfo()
+					updateWorld()
+					loadPlayerFile()
 					currentScene = GAME
 				} else {
 					currentScene = GENERATE
@@ -62,14 +75,6 @@ func drawScene() {
 		if worldGenerated {
 			currentScene = GAME
 		}
-	case LOAD:
-		loadWorldLabelSize := rl.MeasureTextEx(font, "Load world...", 56, 2)
-		loadWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(loadWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(loadWorldLabelSize.Y))/2)
-
-		rl.BeginDrawing()
-		rl.ClearBackground(bkgColor)
-		rl.DrawTextEx(font, "Load world...", loadWorldLabelPos, 56, 2, rl.White)
-		rl.EndDrawing()
 	case SAVE:
 		saveWorldLabelSize := rl.MeasureTextEx(font, "Save world...", 56, 2)
 		saveWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(saveWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(saveWorldLabelSize.Y))/2)
@@ -80,14 +85,21 @@ func drawScene() {
 		rl.EndDrawing()
 
 		saveWorldFile()
+		saveWorldInfo()
+		savePlayerFile()
 		currentScene = TITLE
 	case GAME:
 		rl.BeginDrawing()
 		rl.ClearBackground(bkgColor)
 		rl.BeginMode2D(cam)
-		drawWorld()
+		drawWorld(cam)
 		drawPlayer()
 		rl.EndMode2D()
+		rl.DrawRectangleV(rl.NewVector2(0, 0), rl.NewVector2(240, 130), rl.ColorAlpha(rl.Black, 0.65))
+		rl.DrawRectangleLinesEx(rl.NewRectangle(0, 0, 240, 130), 5, rl.White)
+		drawUI()
+		rl.DrawTextEx(font, fmt.Sprintf("X: %d Y: %d", int(targetPosition.X)/10, int(targetPosition.Y)/10), rl.NewVector2(50, 100), 16, 2, rl.White)
+		//rl.DrawText(fmt.Sprintf("FPS: %d", rl.GetFPS()), 5, 180, 24, rl.White)
 		rl.EndDrawing()
 	case INVENTORY:
 		inventoryLabelSize := rl.MeasureTextEx(fontBold, "Resources", 72, 2)
@@ -107,7 +119,30 @@ func drawScene() {
 
 		}
 		drawItems()
+		rightArrowRec := rl.NewRectangle(rightArrowPosition.X+15, rightArrowPosition.Y+5, 85, 90)
+		leftArrowRec := rl.NewRectangle(leftArrowPosition.X-15, leftArrowPosition.Y+5, 85, 90)
+		//rl.DrawRectangle(int32(rightArrowRec.X), int32(rightArrowRec.Y), int32(rightArrowRec.Width), int32(rightArrowRec.Height), rl.Red)
+		//rl.DrawRectangle(int32(leftArrowRec.X), int32(leftArrowRec.Y), int32(leftArrowRec.Width), int32(leftArrowRec.Height), rl.Red)
+		rl.DrawTextureEx(leftArrow, leftArrowPosition, 0, arrowScale, rl.White)
+		rl.DrawTextureEx(rightArrow, rightArrowPosition, 0, arrowScale, rl.White)
+		pageLabelSize := rl.MeasureTextEx(font, fmt.Sprintf("Page %d/%d", currentPage, maxPage), 24, 2)
+		pageLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(pageLabelSize.X))/2, 690.0)
+		rl.DrawTextEx(font, fmt.Sprintf("Page %d/%d", currentPage, maxPage), pageLabelPos, 24, 2, rl.White)
 		rl.EndDrawing()
+
+		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
+			mousePos := rl.GetMousePosition()
+			if rl.CheckCollisionPointRec(mousePos, rightArrowRec) {
+				if currentPage+1 <= maxPage {
+					currentPage++
+				}
+			}
+			if rl.CheckCollisionPointRec(mousePos, leftArrowRec) {
+				if currentPage-1 >= 1 {
+					currentPage--
+				}
+			}
+		}
 	case MENU:
 		menuLabelSize := rl.MeasureTextEx(fontBold, "Game menu", 72, 2)
 		menuLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(menuLabelSize.X))/2, float32(rl.GetScreenHeight()-int(menuLabelSize.Y))/2-175)
