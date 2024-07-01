@@ -39,13 +39,16 @@ func mouseHandler() {
 							generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 							woodCount += 5
 
-							// выпадение ростков из дерева
 							if rand.Intn(4) == 3 {
 								if !saplingIsOpen {
 									saplingIsOpen = true
 								}
 								saplingCount += 3
 							}
+						}
+					case sapling:
+						if shovelIsOpen {
+							saplingCount += 3
 						}
 					case stone1, stone2, stone3, stone4, bigStone1, bigStone2, bigStone3, bigStone4, bigStone5:
 						if pickaxeIsOpen {
