@@ -142,7 +142,7 @@ func loadInventory() {
 	stone = loadTexture("assets/images/items/stone.png")
 	metal = loadTexture("assets/images/items/metal.png")
 	textures = []rl.Texture2D{wood, stone, metal}
-	otherTextures = []rl.Texture2D{wall, floor, door, chest, wallWindow, doorOpen, bigBarrel, bookshelf, chair, closet, fence1, fence2, floor2, floor4, lamp, lootbox, shelf, sign, smallBarrel, table, tombstone, trash}
+	otherTextures = []rl.Texture2D{wall, floor, door, chest, wallWindow, doorOpen, bigBarrel, bookshelf, chair, closet, fence1, fence2, floor2, floor4, lamp, lootbox, shelf, sign, smallBarrel, table, tombstone, trash, sapling}
 	question = loadTexture("assets/images/gui/question.png")
 	leftArrow = loadTexture("assets/images/gui/left_arrow.png")
 	rightArrow = loadTexture("assets/images/gui/right_arrow.png")
