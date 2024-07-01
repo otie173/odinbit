@@ -48,7 +48,7 @@ func mouseHandler() {
 						}
 					case sapling:
 						if shovelIsOpen {
-							saplingCount += 3
+							saplingCount += 1
 						}
 					case stone1, stone2, stone3, stone4, bigStone1, bigStone2, bigStone3, bigStone4, bigStone5:
 						if pickaxeIsOpen {
