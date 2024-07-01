@@ -71,6 +71,7 @@ var (
 	table          rl.Texture2D
 	tombstone      rl.Texture2D
 	trash          rl.Texture2D
+	sapling        rl.Texture2D
 )
 
 const (
@@ -131,6 +132,7 @@ const (
 	TRASH
 	STAIRSDOWN
 	STAIRSUP
+	SAPLING
 )
 
 type BlockData struct {
@@ -201,6 +203,7 @@ func loadID() {
 	id[TABLE] = table
 	id[TOMBSTONE] = tombstone
 	id[TRASH] = trash
+	id[SAPLING] = sapling
 }
 
 func getOdinbitPath() string {
@@ -412,6 +415,7 @@ func loadWorld() {
 	tombstone = loadTexture("assets/images/blocks/tombstone1.png")
 	trash = loadTexture("assets/images/blocks/trash.png")
 	shelf = loadTexture("assets/images/blocks/shelf.png")
+	sapling = loadTexture("assets/images/world/sapling.png")
 
 	// Установка id для блоков
 	loadID()
@@ -461,6 +465,7 @@ func unloadWorld() {
 	rl.UnloadTexture(table)
 	rl.UnloadTexture(tombstone)
 	rl.UnloadTexture(trash)
+	rl.UnloadTexture(sapling)
 }
 
 func addBlock(img rl.Texture2D, x, y float32, passable bool) {

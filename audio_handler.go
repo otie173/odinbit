@@ -24,7 +24,6 @@ var (
 	currentSoundTrack   rl.Music
 	previousSoundTrack  rl.Music
 	lastSoundTrackIndex int = -1
-	lastTrackEndTime    time.Time
 	soundTrack1         rl.Music
 	soundTrack2         rl.Music
 	soundTrack3         rl.Music
