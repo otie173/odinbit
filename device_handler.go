@@ -48,7 +48,10 @@ func mouseHandler() {
 						}
 					case sapling:
 						if shovelIsOpen {
-							saplingCount += 1
+							removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+							pickupResourceSound()
+							generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+							saplingCount++
 						}
 					case stone1, stone2, stone3, stone4, bigStone1, bigStone2, bigStone3, bigStone4, bigStone5:
 						if pickaxeIsOpen {
@@ -339,6 +342,12 @@ func mouseHandler() {
 					addBlock(trash, float32(mouseX), float32(mouseY), false)
 					soundBlockAction()
 					trashCount--
+				}
+			case SAPLING:
+				if saplingIsOpen && saplingCount != 0 {
+					addBlock(sapling, float32(mouseX), float32(mouseY), false)
+					plantSeedSound()
+					saplingCount--
 				}
 			}
 
@@ -779,6 +788,7 @@ func keyboardHandler() {
 			rl.KeyTwo:   TABLE,
 			rl.KeyThree: TOMBSTONE,
 			rl.KeyFour:  TRASH,
+			rl.KeyFive:  SAPLING,
 		}
 
 		for key, value := range itemMap {

@@ -19,6 +19,7 @@ var music embed.FS
 var (
 	blockAction         rl.Sound
 	pickupAction        rl.Sound
+	plantAction         rl.Sound
 	musicPaused         bool
 	musicActive         bool
 	currentSoundTrack   rl.Music
@@ -98,11 +99,13 @@ func loadSoundTrack(fileName string) rl.Music {
 func loadAudio() {
 	blockAction = loadSound("assets/audio/block_action.ogg")
 	pickupAction = loadSound("assets/audio/pick_up.ogg")
+	plantAction = loadSound("assets/audio/plant_seed.ogg")
 }
 
 func unloadAudio() {
 	rl.UnloadSound(blockAction)
 	rl.UnloadSound(pickupAction)
+	rl.UnloadSound(plantAction)
 }
 
 func loadMusic() {
@@ -126,6 +129,10 @@ func soundBlockAction() {
 
 func pickupResourceSound() {
 	rl.PlaySound(pickupAction)
+}
+
+func plantSeedSound() {
+	rl.PlaySound(plantAction)
 }
 
 func playSoundTrack() {
