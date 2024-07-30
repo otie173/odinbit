@@ -50,6 +50,7 @@ func update() {
 	updateCameraTarget(&cam, playerPosition, playerRectangle)
 	updatePlayerPosition()
 	updateMusic()
+	doTick()
 }
 
 func render() {
