@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -13,5 +14,6 @@ func doTick() {
 		lastTickTime = time.Now()
 
 		// логика роста деревьев
+		fmt.Println("Я тикнул")
 	}
 }
