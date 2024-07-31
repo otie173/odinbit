@@ -148,6 +148,20 @@ func generateBones(x, y float32, bonesPattern int) {
 	worldInfo.BonesGenerated = true
 }
 
+func generateTree(x, y float32) {
+	// Генерация случайного номера изображения дерева
+	treeImg := rand.Intn(3) + 1
+	// Постановка дерева на карту в зависимости от номера текстуры
+	switch treeImg {
+	case 1:
+		addBlock(smallTree, float32(x), float32(y), false)
+	case 2:
+		addBlock(normalTree, float32(x), float32(y), false)
+	case 3:
+		addBlock(bigTree, float32(x), float32(y), false)
+	}
+}
+
 func generateWorld() {
 	for x := -WORLD_SIZE / 2; x <= WORLD_SIZE/2; x++ {
 		for y := -WORLD_SIZE / 2; y <= WORLD_SIZE/2; y++ {
