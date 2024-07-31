@@ -15,7 +15,7 @@ var (
 	bkgColor                  rl.Color = rl.NewColor(0, 0, 0, 255)
 	fontBold, font            rl.Font
 	screenWidth, screenHeight int32
-	monitorFPS, currentFPS    int32
+	monitorFPS                int32
 )
 
 func loadFont(fontName string, fontSize int32) rl.Font {
@@ -50,6 +50,7 @@ func update() {
 	updateCameraTarget(&cam, playerPosition, playerRectangle)
 	updatePlayerPosition()
 	updateMusic()
+	doTick()
 }
 
 func render() {

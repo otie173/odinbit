@@ -52,6 +52,7 @@ func drawUI() {
 		TABLE:       tableIsOpen,
 		TOMBSTONE:   tombstoneIsOpen,
 		TRASH:       trashIsOpen,
+		SAPLING:     saplingIsOpen,
 	}
 
 	if state, ok := itemStates[item]; ok && state {

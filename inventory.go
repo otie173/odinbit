@@ -43,7 +43,6 @@ var (
 	arrowScale         float32    = 9.0
 	currentPage        int        = 1
 	maxPage            int        = 3
-	pageLabelPos       rl.Vector2 = rl.NewVector2(0, 0)
 	bigBarrelIsOpen    bool       = false
 	bookshelfIsOpen    bool       = false
 	chairIsOpen        bool       = false
@@ -76,6 +75,8 @@ var (
 	lootboxCount       int        = 0
 	tombstoneCount     int        = 0
 	tombstoneIsOpen    bool       = false
+	saplingIsOpen      bool       = false
+	saplingCount       int        = 0
 )
 
 type InventorySlot struct {
@@ -100,7 +101,7 @@ func createInventoryRow(startX, startY float32, slots, spacing int, inventory *[
 	}
 }
 
-func createInventoryRow2(startX, startY float32, slots, spacing int, inventory *[]InventorySlot, slotNum *int) {
+func createInventoryRow2(startX, startY float32, spacing int, inventory *[]InventorySlot, slotNum *int) {
 	// Расчет ширины слота с учетом масштаба
 	slotWidth := float32(slotImage.Width) * inventoryZoom
 
@@ -141,7 +142,7 @@ func loadInventory() {
 	stone = loadTexture("assets/images/items/stone.png")
 	metal = loadTexture("assets/images/items/metal.png")
 	textures = []rl.Texture2D{wood, stone, metal}
-	otherTextures = []rl.Texture2D{wall, floor, door, chest, wallWindow, doorOpen, bigBarrel, bookshelf, chair, closet, fence1, fence2, floor2, floor4, lamp, lootbox, shelf, sign, smallBarrel, table, tombstone, trash}
+	otherTextures = []rl.Texture2D{wall, floor, door, chest, wallWindow, doorOpen, bigBarrel, bookshelf, chair, closet, fence1, fence2, floor2, floor4, lamp, lootbox, shelf, sign, smallBarrel, table, tombstone, trash, sapling}
 	question = loadTexture("assets/images/gui/question.png")
 	leftArrow = loadTexture("assets/images/gui/left_arrow.png")
 	rightArrow = loadTexture("assets/images/gui/right_arrow.png")
@@ -156,7 +157,7 @@ func loadInventory() {
 	createInventoryRow(startX1, 182.0, 3, 110, &inventory, &inventorySlotNum)
 	yPositions := []float32{395.0, 495.0, 595.0}
 	for _, yPos := range yPositions {
-		createInventoryRow2(startX2, yPos, 3, 32, &hotInventory, &hotInventorySlotNum)
+		createInventoryRow2(startX2, yPos, 32, &hotInventory, &hotInventorySlotNum)
 	}
 }
 
@@ -282,6 +283,7 @@ func drawItems() {
 			{isOpen: tableIsOpen, count: tableCount, x: hotInventory[1].x, y: hotInventory[1].y, textureIndex: 19},
 			{isOpen: tombstoneIsOpen, count: tombstoneCount, x: hotInventory[2].x, y: hotInventory[2].y, textureIndex: 20},
 			{isOpen: trashIsOpen, count: trashCount, x: hotInventory[3].x, y: hotInventory[3].y, textureIndex: 21},
+			{isOpen: saplingIsOpen, count: saplingCount, x: hotInventory[4].x, y: hotInventory[4].y, textureIndex: 22},
 		}
 
 		for i, slot := range slotData {
