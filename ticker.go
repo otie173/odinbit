@@ -12,8 +12,7 @@ var (
 func doTick() {
 	if time.Since(lastTickTime) >= 1*time.Second {
 		lastTickTime = time.Now()
-
-		// логика роста деревьев
+		updateTree()
 		fmt.Println("Я тикнул")
 	}
 }

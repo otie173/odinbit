@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"fmt"
 	"math"
 	"math/rand"
 
@@ -75,6 +76,7 @@ const (
 	TILE_SIZE               float32 = 10.0
 	WORLD_SIZE              int     = 320
 	OBJECT_SPAWN_MULTIPLIER int     = 6
+	GROWTH_TIME             int     = 90
 
 	// Перечисление для строительных блоков
 	WALL = iota
@@ -329,6 +331,57 @@ func removeBlock(x, y float32) {
 	if worldGenerated {
 		updateVisibleBlocks(cam)
 	}
+}
+
+func addTree(x, y float32) {
+	tree := Tree{
+		x:         x,
+		y:         y,
+		needTicks: 0,
+	}
+	trees = append(trees, tree)
+	fmt.Println(trees)
+}
+
+func removeTree(x, y float32) {
+	var newTrees []Tree
+
+	for _, tree := range trees {
+		if !(tree.x == x && tree.y == y) {
+			newTrees = append(newTrees, tree)
+		}
+	}
+	trees = newTrees
+	fmt.Println(trees)
+}
+
+func updateTree() {
+	for i := range trees {
+		trees[i].needTicks++
+		if trees[i].needTicks == GROWTH_TIME {
+			saplingToTree(trees[i].x, trees[i].y)
+		}
+	}
+
+	fmt.Println(trees)
+}
+
+func saplingToTree(x, y float32) {
+	var treeTexture rl.Texture2D
+	treeTextureNum := rand.Intn(3)
+
+	switch treeTextureNum {
+	case 0:
+		treeTexture = smallTree
+	case 1:
+		treeTexture = normalTree
+	case 2:
+		treeTexture = bigTree
+	}
+
+	removeBlock(x, y)
+	addBlock(treeTexture, x, y, false)
+
 }
 
 func distanceInBlocks(playerX, playerY, blockX, blockY float32, distance float32) bool {

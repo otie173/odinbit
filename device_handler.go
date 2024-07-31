@@ -49,6 +49,7 @@ func mouseHandler() {
 					case sapling:
 						if shovelIsOpen {
 							removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+							removeTree(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 							pickupResourceSound()
 							generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 							saplingCount++
@@ -346,6 +347,7 @@ func mouseHandler() {
 			case SAPLING:
 				if saplingIsOpen && saplingCount != 0 {
 					addBlock(sapling, float32(mouseX), float32(mouseY), false)
+					addTree(float32(mouseX), float32(mouseY))
 					plantSeedSound()
 					saplingCount--
 				}
