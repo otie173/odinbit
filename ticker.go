@@ -12,5 +12,6 @@ func doTick() {
 	if time.Since(lastTickTime) >= 1*time.Second {
 		lastTickTime = time.Now()
 		updateTree()
+		generateResource()
 	}
 }

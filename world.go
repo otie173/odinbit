@@ -68,8 +68,7 @@ var (
 	tombstone      rl.Texture2D
 	trash          rl.Texture2D
 	sapling        rl.Texture2D
-	stonesCount    int = 0
-	treesCount     int = 0
+	resourceTick   int = 0
 )
 
 const (
@@ -78,7 +77,7 @@ const (
 	WORLD_SIZE              int     = 320
 	OBJECT_SPAWN_MULTIPLIER int     = 6
 	GROWTH_TIME             int     = 5
-	STONE_SPAWN_TIME        int     = 5
+	RESOURCE_SPAWN_TIME     int     = 5
 )
 
 const (
@@ -159,7 +158,8 @@ type Tree struct {
 type WorldInfo struct {
 	StructuresGenerated bool `json:"structures_generated"`
 	BonesGenerated      bool `json:"bones_generated"`
-	StonesCount         int  `json:"stones_count"`
+	BigStonesCount      int  `json:"big_stones_count"`
+	SmallStonesCount    int  `json:"small_stones_count"`
 	TreesCount          int  `json:"trees_count"`
 }
 

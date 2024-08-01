@@ -62,7 +62,14 @@ func mouseHandler() {
 							pickupResourceSound()
 							generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 							stoneCount += 5
-							worldInfo.StonesCount--
+
+							if block.img == stone1 || block.img == stone2 || block.img == stone3 || block.img == stone4 {
+								worldInfo.SmallStonesCount--
+							}
+
+							if block.img == bigStone1 || block.img == bigStone2 || block.img == bigStone3 || block.img == bigStone4 || block.img == bigStone5 {
+								worldInfo.BigStonesCount--
+							}
 						}
 					case grass1, grass2, grass3, grass4, grass5, grass6, barrier:
 						break

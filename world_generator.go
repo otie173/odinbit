@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math/rand"
 )
 
@@ -88,7 +87,7 @@ func generateStone(x, y float32) {
 	case 4:
 		addBlock(stone4, float32(x), float32(y), false)
 	}
-	worldInfo.StonesCount++
+	worldInfo.SmallStonesCount++
 }
 
 func generateBigStone(x, y float32) {
@@ -105,6 +104,7 @@ func generateBigStone(x, y float32) {
 	case 5:
 		addBlock(bigStone5, float32(x), float32(y), false)
 	}
+	worldInfo.BigStonesCount++
 }
 
 func generateGrass(x, y float32) {
@@ -194,6 +194,24 @@ func generateWorld() {
 	}
 	generateBarrier()
 	worldGenerated = true
-	fmt.Println(stonesCount)
-	fmt.Println(treesCount)
+}
+
+func generateResource() {
+	resourceTick++
+	if resourceTick != RESOURCE_SPAWN_TIME {
+		return
+	}
+
+	for i := 0; i <= 2 && worldInfo.BigStonesCount < 960; i++ {
+		generateBigStone(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2))
+	}
+
+	for i := 0; i <= 5 && worldInfo.SmallStonesCount < 640; i++ {
+		generateStone(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2))
+	}
+
+	for i := 0; i <= 21 && worldInfo.TreesCount < 1920; i++ {
+		generateTree(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2))
+	}
+	resourceTick = 0
 }
