@@ -129,8 +129,8 @@ func loadWorldFile() map[rl.Rectangle]Block {
 		rect := rl.Rectangle{
 			X:      data.X,
 			Y:      data.Y,
-			Width:  10.0,
-			Height: 10.0,
+			Width:  TILE_SIZE,
+			Height: TILE_SIZE,
 		}
 		world[rect] = Block{img: id[data.TextureID], rec: rect, passable: data.Passable}
 	}

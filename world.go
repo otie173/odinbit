@@ -2,7 +2,6 @@ package main
 
 import (
 	"embed"
-	"fmt"
 	"math"
 	"math/rand"
 
@@ -76,7 +75,7 @@ const (
 	TILE_SIZE               float32 = 10.0
 	WORLD_SIZE              int     = 320
 	OBJECT_SPAWN_MULTIPLIER int     = 6
-	GROWTH_TIME             int     = 90
+	GROWTH_TIME             int     = 5
 
 	// Перечисление для строительных блоков
 	WALL = iota
@@ -340,7 +339,6 @@ func addTree(x, y float32) {
 		needTicks: 0,
 	}
 	trees = append(trees, tree)
-	fmt.Println(trees)
 }
 
 func removeTree(x, y float32) {
@@ -352,18 +350,21 @@ func removeTree(x, y float32) {
 		}
 	}
 	trees = newTrees
-	fmt.Println(trees)
 }
 
 func updateTree() {
+	var treesToRemove []Tree
 	for i := range trees {
 		trees[i].needTicks++
 		if trees[i].needTicks == GROWTH_TIME {
 			saplingToTree(trees[i].x, trees[i].y)
+			treesToRemove = append(treesToRemove, trees[i])
 		}
 	}
 
-	fmt.Println(trees)
+	for _, treeToRemove := range treesToRemove {
+		removeTree(treeToRemove.x, treeToRemove.y)
+	}
 }
 
 func saplingToTree(x, y float32) {
@@ -381,7 +382,6 @@ func saplingToTree(x, y float32) {
 
 	removeBlock(x, y)
 	addBlock(treeTexture, x, y, false)
-
 }
 
 func distanceInBlocks(playerX, playerY, blockX, blockY float32, distance float32) bool {
