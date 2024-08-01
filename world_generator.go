@@ -1,6 +1,9 @@
 package main
 
-import "math/rand"
+import (
+	"fmt"
+	"math/rand"
+)
 
 func generateBarrier() {
 	// Генерация верхней и нижней границы
@@ -85,6 +88,7 @@ func generateStone(x, y float32) {
 	case 4:
 		addBlock(stone4, float32(x), float32(y), false)
 	}
+	worldInfo.StonesCount++
 }
 
 func generateBigStone(x, y float32) {
@@ -160,6 +164,7 @@ func generateTree(x, y float32) {
 	case 3:
 		addBlock(bigTree, float32(x), float32(y), false)
 	}
+	worldInfo.TreesCount++
 }
 
 func generateWorld() {
@@ -189,4 +194,6 @@ func generateWorld() {
 	}
 	generateBarrier()
 	worldGenerated = true
+	fmt.Println(stonesCount)
+	fmt.Println(treesCount)
 }

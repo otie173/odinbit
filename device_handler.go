@@ -45,6 +45,7 @@ func mouseHandler() {
 								}
 								saplingCount += 3
 							}
+							worldInfo.TreesCount--
 						}
 					case sapling:
 						if shovelIsOpen {
@@ -53,6 +54,7 @@ func mouseHandler() {
 							pickupResourceSound()
 							generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 							saplingCount++
+							worldInfo.TreesCount--
 						}
 					case stone1, stone2, stone3, stone4, bigStone1, bigStone2, bigStone3, bigStone4, bigStone5:
 						if pickaxeIsOpen {
@@ -60,6 +62,7 @@ func mouseHandler() {
 							pickupResourceSound()
 							generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 							stoneCount += 5
+							worldInfo.StonesCount--
 						}
 					case grass1, grass2, grass3, grass4, grass5, grass6, barrier:
 						break
@@ -322,10 +325,12 @@ func mouseHandler() {
 				}
 			case SAPLING:
 				if saplingIsOpen && saplingCount != 0 {
-					addBlock(sapling, float32(mouseX), float32(mouseY), false)
-					addTree(float32(mouseX), float32(mouseY))
-					plantSeedSound()
-					saplingCount--
+					if worldInfo.TreesCount < 1920 {
+						addBlock(sapling, float32(mouseX), float32(mouseY), false)
+						addTree(float32(mouseX), float32(mouseY))
+						plantSeedSound()
+						saplingCount--
+					}
 				}
 			}
 

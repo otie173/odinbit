@@ -68,6 +68,8 @@ var (
 	tombstone      rl.Texture2D
 	trash          rl.Texture2D
 	sapling        rl.Texture2D
+	stonesCount    int = 0
+	treesCount     int = 0
 )
 
 const (
@@ -76,7 +78,10 @@ const (
 	WORLD_SIZE              int     = 320
 	OBJECT_SPAWN_MULTIPLIER int     = 6
 	GROWTH_TIME             int     = 5
+	STONE_SPAWN_TIME        int     = 5
+)
 
+const (
 	// Перечисление для строительных блоков
 	WALL = iota
 	WALLWINDOW
@@ -154,6 +159,8 @@ type Tree struct {
 type WorldInfo struct {
 	StructuresGenerated bool `json:"structures_generated"`
 	BonesGenerated      bool `json:"bones_generated"`
+	StonesCount         int  `json:"stones_count"`
+	TreesCount          int  `json:"trees_count"`
 }
 
 func loadID() {
@@ -339,6 +346,7 @@ func addTree(x, y float32) {
 		needTicks: 0,
 	}
 	trees = append(trees, tree)
+	worldInfo.TreesCount++
 }
 
 func removeTree(x, y float32) {
@@ -350,6 +358,7 @@ func removeTree(x, y float32) {
 		}
 	}
 	trees = newTrees
+	worldInfo.TreesCount--
 }
 
 func updateTree() {
@@ -382,6 +391,7 @@ func saplingToTree(x, y float32) {
 
 	removeBlock(x, y)
 	addBlock(treeTexture, x, y, false)
+	worldInfo.TreesCount++
 }
 
 func distanceInBlocks(playerX, playerY, blockX, blockY float32, distance float32) bool {
