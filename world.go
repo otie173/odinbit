@@ -161,6 +161,9 @@ type WorldInfo struct {
 	BigStonesCount      int  `json:"big_stones_count"`
 	SmallStonesCount    int  `json:"small_stones_count"`
 	TreesCount          int  `json:"trees_count"`
+	PickaxesCount       int  `json:"pickaxes_count"`
+	AxesCount           int  `json:"axes_count"`
+	ShovelsCount        int  `json:"shovels_count"`
 }
 
 func loadID() {

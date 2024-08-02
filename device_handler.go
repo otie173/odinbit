@@ -180,16 +180,19 @@ func mouseHandler() {
 						generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 					case pickaxe:
 						pickaxeIsOpen = true
+						worldInfo.AxesCount--
 						removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 						pickupResourceSound()
 						generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 					case axe:
 						axeIsOpen = true
+						worldInfo.AxesCount--
 						removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 						pickupResourceSound()
 						generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 					case shovel:
 						shovelIsOpen = true
+						worldInfo.ShovelsCount--
 						removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 						pickupResourceSound()
 						generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)

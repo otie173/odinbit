@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -139,17 +140,21 @@ func generateBones(x, y float32, bonesPattern int) {
 		addBlock(bones2, x-1, y+1, false)  // -1 -1
 		addBlock(bones4, x-2, y-1, false)  // -2 1
 		addBlock(pickaxe, x-1, y-1, false) // -1 1
+		worldInfo.PickaxesCount++
 	case 2:
 		addBlock(bones3, x, y, false)     // 0 0
 		addBlock(bones2, x-1, y, false)   // -1 0
 		addBlock(bones4, x-1, y+1, false) // -1 -1
 		addBlock(bones2, x, y+1, false)   // 0 -1
 		addBlock(axe, x+1, y+1, false)    // 1 -1
+		worldInfo.AxesCount++
 	case 3:
 		addBlock(bones3, x, y, false)   // 0 0
 		addBlock(bones2, x, y+1, false) // 0 -1
 		addBlock(shovel, x-1, y, false) // -1 0
+		worldInfo.ShovelsCount++
 	}
+	fmt.Printf("Сгенерировано на %.0f и %0.f\n", x, y)
 
 	worldInfo.BonesGenerated = true
 }
@@ -205,18 +210,36 @@ func generateResource() {
 	}
 
 	for i := 0; i <= 2 && worldInfo.BigStonesCount < 960; i++ {
-		x, y := generateRandomPosition()
-		generateBigStone(x, y)
+		generateBigStone(generateRandomPosition())
 	}
 
 	for i := 0; i <= 5 && worldInfo.SmallStonesCount < 640; i++ {
-		x, y := generateRandomPosition()
-		generateStone(x, y)
+		generateStone(generateRandomPosition())
 	}
 
 	for i := 0; i <= 21 && worldInfo.TreesCount < 1920; i++ {
-		x, y := generateRandomPosition()
-		generateTree(x, y)
+		generateTree(generateRandomPosition())
+	}
+
+	switch {
+	case worldInfo.PickaxesCount < 9:
+		needItems := 9 - worldInfo.PickaxesCount
+		for i := 0; i < needItems; i++ {
+			x, y := generateRandomPosition()
+			generateBones(x, y, 1)
+		}
+	case worldInfo.AxesCount < 9:
+		needItems := 9 - worldInfo.AxesCount
+		for i := 0; i < needItems; i++ {
+			x, y := generateRandomPosition()
+			generateBones(x, y, 2)
+		}
+	case worldInfo.ShovelsCount < 9:
+		needItems := 9 - worldInfo.ShovelsCount
+		for i := 0; i < needItems; i++ {
+			x, y := generateRandomPosition()
+			generateBones(x, y, 3)
+		}
 	}
 	resourceTick = 0
 }
