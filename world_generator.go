@@ -2,6 +2,8 @@ package main
 
 import (
 	"math/rand"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 func generateBarrier() {
@@ -203,15 +205,29 @@ func generateResource() {
 	}
 
 	for i := 0; i <= 2 && worldInfo.BigStonesCount < 960; i++ {
-		generateBigStone(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2))
+		x, y := generateRandomPosition()
+		generateBigStone(x, y)
 	}
 
 	for i := 0; i <= 5 && worldInfo.SmallStonesCount < 640; i++ {
-		generateStone(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2))
+		x, y := generateRandomPosition()
+		generateStone(x, y)
 	}
 
 	for i := 0; i <= 21 && worldInfo.TreesCount < 1920; i++ {
-		generateTree(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2))
+		x, y := generateRandomPosition()
+		generateTree(x, y)
 	}
 	resourceTick = 0
+}
+
+func generateRandomPosition() (float32, float32) {
+	for {
+		x, y := float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2)
+
+		value, exist := world[rl.NewRectangle(x, y, TILE_SIZE, TILE_SIZE)]
+		if !exist || value.img == grass1 || value.img == grass2 || value.img == grass3 || value.img == grass4 || value.img == grass5 || value.img == grass6 {
+			return x, y
+		}
+	}
 }
