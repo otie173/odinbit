@@ -77,7 +77,6 @@ func init() {
 	monitorFPS = int32(rl.GetMonitorRefreshRate(rl.GetCurrentMonitor()))
 	rl.SetTargetFPS(monitorFPS)
 	rl.InitAudioDevice()
-	visibleBlocks = make(map[rl.Rectangle]Block)
 	prevCamPosition = rl.NewVector2(-1, -1)
 	fontBold = loadFont("assets/fonts/pypx/pypx_bold.ttf", 32)
 	font = loadFont("assets/fonts/pypx/pypx.ttf", 32)

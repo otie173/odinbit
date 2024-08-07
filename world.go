@@ -18,7 +18,7 @@ var assets embed.FS
 var (
 	world          map[rl.Rectangle]Block
 	trees          []Tree
-	visibleBlocks  map[rl.Rectangle]Block
+	visibleBlocks  []Block
 	id             map[int]rl.Texture2D
 	item           int
 	wall           rl.Texture2D
@@ -76,8 +76,8 @@ const (
 	TILE_SIZE               float32 = 10.0
 	WORLD_SIZE              int     = 320
 	OBJECT_SPAWN_MULTIPLIER int     = 6
-	GROWTH_TIME             int     = 5
-	RESOURCE_SPAWN_TIME     int     = 5
+	GROWTH_TIME             int     = 90
+	RESOURCE_SPAWN_TIME     int     = 180
 )
 
 const (
@@ -433,16 +433,14 @@ func updateVisibleBlocks(cam rl.Camera2D) {
 	screenWidth, screenHeight := rl.GetScreenWidth(), rl.GetScreenHeight()
 	left, right, top, bottom := updateVisibleArea(cam, screenWidth, screenHeight)
 
-	// Очистите мапу видимых блоков перед заполнением
-	for k := range visibleBlocks {
-		delete(visibleBlocks, k)
-	}
+	// Очищаем slice видимых блоков
+	visibleBlocks = visibleBlocks[:0]
 
-	// Заполните мапу видимыми блоками
+	// Заполняем slice видимыми блоками
 	for _, block := range world {
 		if block.rec.X+block.rec.Width > left && block.rec.X < right &&
 			block.rec.Y+block.rec.Height > top && block.rec.Y < bottom {
-			visibleBlocks[block.rec] = block
+			visibleBlocks = append(visibleBlocks, block)
 		}
 	}
 }
