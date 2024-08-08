@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -121,8 +120,6 @@ func saveWorldFile() {
 	if err != nil {
 		log.Fatalf("Не удалось сохранить мир: %v", err)
 	}
-
-	fmt.Printf("Мир сохранен, размер файла: %d байт\n", len(data))
 }
 
 func loadWorldFile() map[rl.Rectangle]Block {
@@ -181,8 +178,6 @@ func loadWorldFile() map[rl.Rectangle]Block {
 	}
 
 	worldGenerated = true
-	fmt.Printf("Мир загружен, количество блоков: %d\n", len(world))
-	fmt.Printf("Деревьев: %d\n", len(trees))
 	return world
 
 }
