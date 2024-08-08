@@ -11,6 +11,14 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+const (
+	WORLD_WIDTH  = 320
+	WORLD_HEIGHT = 320
+	MAX_BLOCKS   = WORLD_WIDTH * WORLD_HEIGHT
+	BLOCK_BITS   = 7
+	BLOCK_MASK   = (1 << BLOCK_BITS) - 1
+)
+
 func getOdinbitPath() string {
 	var odinbitPath string
 	switch runtime.GOOS {
@@ -70,88 +78,121 @@ func saveWorldInfo() {
 }
 
 func saveWorldFile() {
-	blocksData := []BlockData{}
-	var targetID int
-
-	for rect, block := range world {
-		for key, texture := range id {
-			if block.img == texture {
-				targetID = key
+	blocks := make([]byte, MAX_BLOCKS)
+	index := 0
+	for y := -WORLD_HEIGHT / 2; y < WORLD_HEIGHT/2; y++ {
+		for x := -WORLD_WIDTH / 2; x < WORLD_WIDTH/2; x++ {
+			rect := rl.Rectangle{
+				X:      float32(x) * TILE_SIZE,
+				Y:      float32(y) * TILE_SIZE,
+				Width:  TILE_SIZE,
+				Height: TILE_SIZE,
 			}
-		}
 
-		blocksData = append(blocksData, BlockData{
-			X:         rect.X,
-			Y:         rect.Y,
-			TextureID: targetID,
-		})
+			if block, exists := world[rect]; exists {
+				var textureID byte
+				for id, texture := range id {
+					if block.img == texture {
+						textureID = byte(id)
+						break
+					}
+				}
+				blocks[index] = textureID
+			}
+			index++
+		}
 	}
 
-	worldData, err := json.Marshal(blocksData)
-	if err != nil {
-		log.Fatalf("Не удалось преобразовать данные мира: %v", err)
+	data := make([]byte, (MAX_BLOCKS*BLOCK_BITS+7)/8)
+	for i, block := range blocks {
+		bitIndex := i * BLOCK_BITS
+		byteIndex := bitIndex / 8
+		bitOffset := uint(bitIndex % 8)
+		data[byteIndex] |= byte(block << bitOffset)
+		if bitOffset > 8-BLOCK_BITS {
+			data[byteIndex+1] |= byte(block >> (8 - bitOffset))
+		}
 	}
 
 	odinbitPath := getOdinbitPath()
-	worldDataPath := filepath.Join(odinbitPath, "world_data.json")
+	worldDataPath := filepath.Join(odinbitPath, "world.odn")
 
-	err = os.WriteFile(worldDataPath, worldData, 0644)
+	err := os.WriteFile(worldDataPath, data, 0644)
 	if err != nil {
 		log.Fatalf("Не удалось сохранить мир: %v", err)
 	}
-}
 
-func checkWorldFile() bool {
-	odinbitPath := getOdinbitPath()
-	worldDataPath := filepath.Join(odinbitPath, "world_data.json")
-
-	_, err := os.Stat(worldDataPath)
-	return !os.IsNotExist(err)
+	fmt.Printf("Мир сохранен, размер файла: %d байт\n", len(data))
 }
 
 func loadWorldFile() map[rl.Rectangle]Block {
 	odinbitPath := getOdinbitPath()
-	worldDataPath := filepath.Join(odinbitPath, "world_data.json")
+	worldDataPath := filepath.Join(odinbitPath, "world.odn")
 
-	jsonData, err := os.ReadFile(worldDataPath)
+	data, err := os.ReadFile(worldDataPath)
 	if err != nil {
-		log.Fatalf("Ошибка при чтении файла: %v", err)
+		log.Printf("Ошибка при чтении файла: %v", err)
+		return make(map[rl.Rectangle]Block)
 	}
 
-	var blocksData []BlockData
-	err = json.Unmarshal(jsonData, &blocksData)
-	if err != nil {
-		log.Fatalf("Ошибка при десериализации данных: %v", err)
+	blocks := make([]byte, MAX_BLOCKS)
+	for i := range blocks {
+		bitIndex := i * BLOCK_BITS
+		byteIndex := bitIndex / 8
+		bitOffset := uint(bitIndex % 8)
+		if byteIndex+1 < len(data) {
+			blocks[i] = byte((uint16(data[byteIndex]) | uint16(data[byteIndex+1])<<8) >> bitOffset & BLOCK_MASK)
+		} else if byteIndex < len(data) {
+			blocks[i] = byte(uint16(data[byteIndex]) >> bitOffset & BLOCK_MASK)
+		} else {
+			blocks[i] = 0
+		}
 	}
 
 	world := make(map[rl.Rectangle]Block)
-	for _, data := range blocksData {
-		rect := rl.Rectangle{
-			X:      data.X,
-			Y:      data.Y,
-			Width:  TILE_SIZE,
-			Height: TILE_SIZE,
-		}
+	index := 0
+	for y := -WORLD_HEIGHT / 2; y < WORLD_HEIGHT/2; y++ {
+		for x := -WORLD_WIDTH / 2; x < WORLD_WIDTH/2; x++ {
+			textureID := int(blocks[index])
+			if textureID != 0 {
+				rect := rl.Rectangle{
+					X:      float32(x) * TILE_SIZE,
+					Y:      float32(y) * TILE_SIZE,
+					Width:  TILE_SIZE,
+					Height: TILE_SIZE,
+				}
 
-		var passable bool = false
-		passableBlocks := []int{DOOR, GRASS1, GRASS2, GRASS3, GRASS4, GRASS5, GRASS6, FLOOR2, FLOOR4, DOOROPEN}
+				passable := false
+				passableBlocks := []int{DOOR, GRASS1, GRASS2, GRASS3, GRASS4, GRASS5, GRASS6, FLOOR, FLOOR2, FLOOR4, DOOROPEN}
+				for _, block := range passableBlocks {
+					if textureID == block {
+						passable = true
+						break
+					}
+				}
+				world[rect] = Block{img: id[textureID], rec: rect, passable: passable}
 
-		for _, block := range passableBlocks {
-			if data.TextureID == block {
-				passable = true
-				break
+				if textureID == SAPLING {
+					addTree(rect.X, rect.Y)
+				}
 			}
-		}
-		world[rect] = Block{img: id[data.TextureID], rec: rect, passable: passable}
-
-		if data.TextureID == SAPLING {
-			addTree(rect.X, rect.Y)
+			index++
 		}
 	}
 
 	worldGenerated = true
-	fmt.Println(trees)
+	fmt.Printf("Мир загружен, количество блоков: %d\n", len(world))
+	fmt.Printf("Деревьев: %d\n", len(trees))
 	return world
+
+}
+
+func checkWorldFile() bool {
+	odinbitPath := getOdinbitPath()
+	worldDataPath := filepath.Join(odinbitPath, "world.odn")
+
+	_, err := os.Stat(worldDataPath)
+	return !os.IsNotExist(err)
 }
 
 func loadWorldInfo() WorldInfo {
