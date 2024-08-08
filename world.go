@@ -139,7 +139,6 @@ const (
 type BlockData struct {
 	X         float32 `json:"x"`
 	Y         float32 `json:"y"`
-	Passable  bool    `json:"passable"`
 	TextureID int     `json:"id"`
 }
 

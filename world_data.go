@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -83,7 +84,6 @@ func saveWorldFile() {
 			X:         rect.X,
 			Y:         rect.Y,
 			TextureID: targetID,
-			Passable:  block.passable,
 		})
 	}
 
@@ -132,10 +132,25 @@ func loadWorldFile() map[rl.Rectangle]Block {
 			Width:  TILE_SIZE,
 			Height: TILE_SIZE,
 		}
-		world[rect] = Block{img: id[data.TextureID], rec: rect, passable: data.Passable}
+
+		var passable bool = false
+		passableBlocks := []int{DOOR, GRASS1, GRASS2, GRASS3, GRASS4, GRASS5, GRASS6, FLOOR2, FLOOR4, DOOROPEN}
+
+		for _, block := range passableBlocks {
+			if data.TextureID == block {
+				passable = true
+				break
+			}
+		}
+		world[rect] = Block{img: id[data.TextureID], rec: rect, passable: passable}
+
+		if data.TextureID == SAPLING {
+			addTree(rect.X, rect.Y)
+		}
 	}
 
 	worldGenerated = true
+	fmt.Println(trees)
 	return world
 }
 
