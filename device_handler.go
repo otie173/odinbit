@@ -143,7 +143,7 @@ func mouseHandler() {
 								closetIsOpen = true
 								closetCount++
 							}
-							if block.img == fence1 {
+							if block.img == fence1 || block.img == fence2 {
 								fence1IsOpen = true
 								fence2IsOpen = true
 								fence1Count++

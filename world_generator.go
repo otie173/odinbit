@@ -23,54 +23,93 @@ func generateBarrier() {
 func generateStructure(x, y, structure int) {
 	switch structure {
 	case 1:
-		// генерация дома 5x5
-		addBlock(wall, float32(x), float32(y), false)
-		addBlock(floor, float32(x+2), float32(y), true)
-		addBlock(floor, float32(x+4), float32(y), true)
-		addBlock(floor, float32(x), float32(y+1), true)
-		addBlock(wallWindow, float32(x+3), float32(y+1), false)
-		addBlock(wall, float32(x), float32(y+2), false)
-		addBlock(floor, float32(x+2), float32(y+2), true)
-		addBlock(chest, float32(x+4), float32(y+2), false)
-		addBlock(floor, float32(x+1), float32(y+3), true)
-		addBlock(door, float32(x+3), float32(y+3), true)
-		addBlock(fence1, float32(x), float32(y+4), false)
-		addBlock(floor, float32(x+2), float32(y+4), true)
-		addBlock(floor, float32(x+4), float32(y+4), true)
+		// Большой дом с разрушениями (8x7)
+		width, height := 8, 7
+		for i := 0; i < width; i++ {
+			for j := 0; j < height; j++ {
+				if i == 0 || i == width-1 || j == 0 || j == height-1 {
+					if rand.Float32() > 0.2 { // 20% шанс на отсутствие стены для эффекта разрушения
+						addBlock(wall, float32(x+i), float32(y+j), false)
+					}
+				} else {
+					addBlock(floor, float32(x+i), float32(y+j), true)
+				}
+			}
+		}
+		// Добавляем крышу с дырами
+		for i := 0; i < width; i++ {
+			if rand.Float32() > 0.3 { // 30% шанс на дыру в крыше
+				addBlock(wall, float32(x+i), float32(y+height), false)
+			}
+		}
+		// Добавляем мебель и декорации
+		addBlock(door, float32(x), float32(y+3), true)
+		addBlock(wallWindow, float32(x+width-1), float32(y+2), false)
+		addBlock(wallWindow, float32(x+3), float32(y), false)
+		addBlock(table, float32(x+2), float32(y+2), false)
+		addBlock(chair, float32(x+3), float32(y+2), false)
+		addBlock(chest, float32(x+width-2), float32(y+1), false)
+		addBlock(shelf, float32(x+1), float32(y+height-2), false)
+		addBlock(lamp, float32(x+width/2), float32(y+height-1), false)
+		addBlock(closet, float32(x+width-2), float32(y+height-2), false) // Добавлен closet
+		// Добавляем немного мусора для атмосферы
+		addBlock(trash, float32(x+5), float32(y+4), false)
+		addBlock(bones1, float32(x+1), float32(y+5), false)
+
 	case 2:
-		// генерация домика 6x6
-		addBlock(wall, float32(x), float32(y), false)
-		addBlock(wall, float32(x+4), float32(y), false)
-		addBlock(floor, float32(x+1), float32(y+1), true)
-		addBlock(shelf, float32(x+5), float32(y+1), false)
-		addBlock(floor, float32(x+2), float32(y+2), true)
-		addBlock(floor, float32(x+4), float32(y+2), true)
-		addBlock(table, float32(x), float32(y+3), false)
-		addBlock(chair, float32(x+3), float32(y+3), false)
-		addBlock(closet, float32(x+5), float32(y+3), false)
-		addBlock(floor, float32(x+1), float32(y+4), true)
-		addBlock(trash, float32(x+4), float32(y+4), false)
-		addBlock(lootbox, float32(x+2), float32(y+5), false)
-		addBlock(wall, float32(x+5), float32(y+5), false)
+		// Подземный бункер (9x6)
+		width, height := 9, 6
+		for i := 0; i < width; i++ {
+			for j := 0; j < height; j++ {
+				if i == 0 || i == width-1 || j == 0 || j == height-1 {
+					addBlock(wall, float32(x+i), float32(y+j), false)
+				} else {
+					addBlock(floor, float32(x+i), float32(y+j), true)
+				}
+			}
+		}
+		// Добавляем вход (лестницу)
+		for j := 0; j < height; j++ {
+			addBlock(floor, float32(x-1), float32(y+j), true)
+		}
+		// Добавляем мебель и оборудование
+		addBlock(door, float32(x), float32(y+2), true)
+		addBlock(shelf, float32(x+1), float32(y+1), false)
+		addBlock(shelf, float32(x+2), float32(y+1), false)
+		addBlock(table, float32(x+4), float32(y+2), false)
+		addBlock(chair, float32(x+5), float32(y+2), false)
+		addBlock(lootbox, float32(x+width-2), float32(y+1), false)
+		addBlock(lootbox, float32(x+width-2), float32(y+height-2), false)
+		addBlock(lamp, float32(x+width/2), float32(y+height-1), false)
+		// Добавляем трещину в стене
+		addBlock(floor, float32(x+width-1), float32(y+height/2), true)
+
 	case 3:
-		// генерация кладбища
-		addBlock(fence2, float32(x), float32(y), false)
-		addBlock(bones1, float32(x+3), float32(y), false)
-		addBlock(fence2, float32(x+6), float32(y), false)
+		// Обновленное кладбище (7x8)
+		width, height := 7, 8
+		// Ограда
+		for i := 0; i < width; i++ {
+			addBlock(fence2, float32(x+i), float32(y), false)
+			addBlock(fence2, float32(x+i), float32(y+height-1), false)
+		}
+		for j := 1; j < height-1; j++ {
+			addBlock(fence2, float32(x), float32(y+j), false)
+			addBlock(fence2, float32(x+width-1), float32(y+j), false)
+		}
+		// Могилы и декорации
 		addBlock(tombstone, float32(x+1), float32(y+1), false)
-		addBlock(wall, float32(x+4), float32(y+1), false)
-		addBlock(bones3, float32(x+2), float32(y+2), false)
-		addBlock(sign, float32(x+5), float32(y+2), false)
-		addBlock(fence2, float32(x), float32(y+3), false)
-		addBlock(smallBarrel, float32(x+3), float32(y+3), false)
-		addBlock(fence2, float32(x+6), float32(y+3), false)
-		addBlock(bones4, float32(x+1), float32(y+4), false)
-		addBlock(lamp, float32(x+4), float32(y+4), false)
-		addBlock(shovel, float32(x+2), float32(y+5), false)
-		addBlock(tombstone, float32(x+5), float32(y+5), false)
-		addBlock(fence2, float32(x), float32(y+6), false)
-		addBlock(bones2, float32(x+3), float32(y+6), false)
-		addBlock(fence2, float32(x+6), float32(y+6), false)
+		addBlock(tombstone, float32(x+3), float32(y+2), false)
+		addBlock(tombstone, float32(x+5), float32(y+1), false)
+		addBlock(tombstone, float32(x+2), float32(y+4), false)
+		addBlock(tombstone, float32(x+4), float32(y+5), false)
+		addBlock(bones1, float32(x+1), float32(y+3), false)
+		addBlock(bones2, float32(x+5), float32(y+4), false)
+		addBlock(bones3, float32(x+3), float32(y+6), false)
+		addBlock(bones4, float32(x+2), float32(y+2), false)
+		addBlock(lamp, float32(x+width/2), float32(y+height/2), false)
+		addBlock(shovel, float32(x+1), float32(y+height-2), false)
+		addBlock(smallBarrel, float32(x+width-2), float32(y+height-2), false)
+		addBlock(sign, float32(x+width/2), float32(y), false)
 	}
 
 	worldInfo.StructuresGenerated = true

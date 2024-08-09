@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -188,7 +187,6 @@ func loadWorldFile() map[rl.Rectangle]Block {
 		}
 	}
 
-	fmt.Println(trees)
 	worldGenerated = true
 	return world
 
