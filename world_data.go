@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -151,7 +152,7 @@ func loadWorldFile() map[rl.Rectangle]Block {
 	for y := -WORLD_HEIGHT / 2; y < WORLD_HEIGHT/2; y++ {
 		for x := -WORLD_WIDTH / 2; x < WORLD_WIDTH/2; x++ {
 			textureID := int(blocks[index])
-			if textureID != 0 {
+			if textureID != -0 {
 				rect := rl.Rectangle{
 					X:      float32(x) * TILE_SIZE,
 					Y:      float32(y) * TILE_SIZE,
@@ -170,13 +171,24 @@ func loadWorldFile() map[rl.Rectangle]Block {
 				world[rect] = Block{img: id[textureID], rec: rect, passable: passable}
 
 				if textureID == SAPLING {
-					addTree(rect.X, rect.Y)
+					treeExists := false
+					for _, tree := range trees {
+						if tree.x == rect.X && tree.y == rect.Y {
+							treeExists = true
+							break
+						}
+					}
+					if !treeExists {
+						addTree(rect.X, rect.Y)
+					}
 				}
+
 			}
 			index++
 		}
 	}
 
+	fmt.Println(trees)
 	worldGenerated = true
 	return world
 
