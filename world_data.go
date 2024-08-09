@@ -96,7 +96,13 @@ func saveWorldFile() {
 						break
 					}
 				}
-				blocks[index] = textureID
+				if textureID >= (1 << BLOCK_BITS) {
+					log.Printf("Предупреждение: ID блока %d превышает максимальное значение %d", textureID, (1<<BLOCK_BITS)-1)
+					textureID = 0 // или какое-то другое значение по умолчанию
+				}
+				blocks[index] = textureID + 1 // Добавляем 1, чтобы 0 означало пустой блок
+			} else {
+				blocks[index] = 0 // Пустой блок
 			}
 			index++
 		}
@@ -150,8 +156,8 @@ func loadWorldFile() map[rl.Rectangle]Block {
 	index := 0
 	for y := -WORLD_HEIGHT / 2; y < WORLD_HEIGHT/2; y++ {
 		for x := -WORLD_WIDTH / 2; x < WORLD_WIDTH/2; x++ {
-			textureID := int(blocks[index])
-			if textureID != -0 {
+			textureID := int(blocks[index]) - 1 // Вычитаем 1, чтобы вернуться к оригинальному ID
+			if textureID >= 0 {                 // Теперь проверяем, что ID >= 0, а не != 0
 				rect := rl.Rectangle{
 					X:      float32(x) * TILE_SIZE,
 					Y:      float32(y) * TILE_SIZE,
@@ -181,7 +187,6 @@ func loadWorldFile() map[rl.Rectangle]Block {
 						addTree(rect.X, rect.Y)
 					}
 				}
-
 			}
 			index++
 		}
@@ -189,7 +194,6 @@ func loadWorldFile() map[rl.Rectangle]Block {
 
 	worldGenerated = true
 	return world
-
 }
 
 func checkWorldFile() bool {
