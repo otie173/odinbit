@@ -1,0 +1,44 @@
+version: '3'
+
+vars:
+  PROJ_NAME: odinbit
+
+tasks:
+  build:
+    cmds:
+      - task: build-windows
+      - task: build-linux
+    silent: true
+
+  build-windows:
+    cmds:
+      - echo "Building game for Windows 64-bit..."
+      - |
+        if command -v x86_64-w64-mingw32-gcc >/dev/null 2>&1; then
+          CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o {{.PROJ_NAME}}.exe
+          echo "Build completed: {{.PROJ_NAME}}.exe"
+        else
+          echo "Error: Windows 64-bit cross-compiler (x86_64-w64-mingw32-gcc) not found."
+        fi
+    silent: true
+
+  build-linux:
+    cmds:
+      - echo "Building game for Linux 64-bit..."
+      - |
+        CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o {{.PROJ_NAME}}
+        echo "Build completed: {{.PROJ_NAME}}"
+    silent: true
+
+  check:
+    cmds:
+      - |
+        for file in {{.PROJ_NAME}}.exe {{.PROJ_NAME}}; do
+          if [ -f "$file" ]; then
+            echo "Checking $file..."
+            file "$file"
+          else
+            echo "$file not found."
+          fi
+        done
+    silent: true
