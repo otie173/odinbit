@@ -3,6 +3,8 @@ package main
 import (
 	"embed"
 	"log"
+	"net/http"
+	_ "net/http/pprof"
 	"os"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -89,6 +91,10 @@ func init() {
 }
 
 func main() {
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
+
 	for !rl.WindowShouldClose() {
 		update()
 		render()

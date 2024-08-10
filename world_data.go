@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -178,19 +179,35 @@ func loadWorldFile() map[rl.Rectangle]Block {
 				if textureID == SAPLING {
 					treeExists := false
 					for _, tree := range trees {
-						if tree.x == rect.X && tree.y == rect.Y {
+						if tree.x == float32(x) && tree.y == float32(y) {
 							treeExists = true
 							break
 						}
 					}
 					if !treeExists {
-						addTree(rect.X, rect.Y)
+						trees = append(trees, Tree{x: float32(x), y: float32(y)})
+					}
+				}
+
+				if textureID == SEED1NORMAL || textureID == SEED2NORMAL || textureID == SEED2SMALL {
+					seedExists := false
+					for _, seed := range seeds {
+						if seed.x == float32(x) && seed.y == float32(y) {
+							seedExists = true
+							break
+						}
+					}
+					if !seedExists {
+						seeds = append(seeds, Seed{x: float32(x), y: float32(y)})
 					}
 				}
 			}
 			index++
 		}
 	}
+
+	fmt.Println(trees)
+	fmt.Println(seeds)
 
 	worldGenerated = true
 	return world

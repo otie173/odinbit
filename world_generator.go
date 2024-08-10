@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math/rand"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -193,7 +192,6 @@ func generateBones(x, y float32, bonesPattern int) {
 		addBlock(shovel, x-1, y, false) // -1 0
 		worldInfo.ShovelsCount++
 	}
-	fmt.Printf("Сгенерировано на %.0f и %0.f\n", x, y)
 
 	worldInfo.BonesGenerated = true
 }

@@ -77,6 +77,14 @@ var (
 	tombstoneIsOpen    bool       = false
 	saplingIsOpen      bool       = false
 	saplingCount       int        = 0
+	seedIsOpen         bool       = false
+	seedCount          int        = 0
+	cabbageIsOpen      bool       = false
+	cabbageCount       int        = 0
+)
+
+const (
+	MAX_COUNT int = 16
 )
 
 type InventorySlot struct {
@@ -142,7 +150,7 @@ func loadInventory() {
 	stone = loadTexture("assets/images/items/stone.png")
 	metal = loadTexture("assets/images/items/metal.png")
 	textures = []rl.Texture2D{wood, stone, metal}
-	otherTextures = []rl.Texture2D{wall, floor, door, chest, wallWindow, doorOpen, bigBarrel, bookshelf, chair, closet, fence1, fence2, floor2, floor4, lamp, lootbox, shelf, sign, smallBarrel, table, tombstone, trash, sapling}
+	otherTextures = []rl.Texture2D{wall, floor, door, chest, wallWindow, doorOpen, bigBarrel, bookshelf, chair, closet, fence1, fence2, floor2, floor4, lamp, lootbox, shelf, sign, smallBarrel, table, tombstone, trash, sapling, seed2Small, seed1Big}
 	question = loadTexture("assets/images/gui/question.png")
 	leftArrow = loadTexture("assets/images/gui/left_arrow.png")
 	rightArrow = loadTexture("assets/images/gui/right_arrow.png")
@@ -284,6 +292,8 @@ func drawItems() {
 			{isOpen: tombstoneIsOpen, count: tombstoneCount, x: hotInventory[2].x, y: hotInventory[2].y, textureIndex: 20},
 			{isOpen: trashIsOpen, count: trashCount, x: hotInventory[3].x, y: hotInventory[3].y, textureIndex: 21},
 			{isOpen: saplingIsOpen, count: saplingCount, x: hotInventory[4].x, y: hotInventory[4].y, textureIndex: 22},
+			{isOpen: seedIsOpen, count: seedCount, x: hotInventory[5].x, y: hotInventory[5].y, textureIndex: 23},
+			{isOpen: cabbageIsOpen, count: cabbageCount, x: hotInventory[6].x, y: hotInventory[6].y, textureIndex: 24},
 		}
 
 		for i, slot := range slotData {

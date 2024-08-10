@@ -16,59 +16,62 @@ import (
 var assets embed.FS
 
 var (
-	world          map[rl.Rectangle]Block
-	trees          []Tree
-	visibleBlocks  []Block
-	id             map[int]rl.Texture2D
-	item           int
-	wall           rl.Texture2D
-	wallWindow     rl.Texture2D
-	floor          rl.Texture2D
-	door           rl.Texture2D
-	chest          rl.Texture2D
-	stone1         rl.Texture2D
-	stone2         rl.Texture2D
-	stone3         rl.Texture2D
-	stone4         rl.Texture2D
-	bigStone1      rl.Texture2D
-	bigStone2      rl.Texture2D
-	bigStone3      rl.Texture2D
-	bigStone4      rl.Texture2D
-	bigStone5      rl.Texture2D
-	smallTree      rl.Texture2D
-	normalTree     rl.Texture2D
-	bigTree        rl.Texture2D
-	grass1         rl.Texture2D
-	grass2         rl.Texture2D
-	grass3         rl.Texture2D
-	grass4         rl.Texture2D
-	grass5         rl.Texture2D
-	grass6         rl.Texture2D
-	barrier        rl.Texture2D
-	lootbox        rl.Texture2D
-	bones1         rl.Texture2D
-	bones2         rl.Texture2D
-	bones3         rl.Texture2D
-	bones4         rl.Texture2D
-	bones5         rl.Texture2D
-	worldGenerated bool
-	worldInfo      WorldInfo
-	doorOpen       rl.Texture2D
-	bigBarrel      rl.Texture2D
-	bookshelf      rl.Texture2D
-	chair          rl.Texture2D
-	closet         rl.Texture2D
-	fence1, fence2 rl.Texture2D
-	floor2, floor4 rl.Texture2D
-	lamp           rl.Texture2D
-	shelf          rl.Texture2D
-	sign           rl.Texture2D
-	smallBarrel    rl.Texture2D
-	table          rl.Texture2D
-	tombstone      rl.Texture2D
-	trash          rl.Texture2D
-	sapling        rl.Texture2D
-	resourceTick   int = 0
+	world                             map[rl.Rectangle]Block
+	trees                             []Tree
+	seeds                             []Seed
+	visibleBlocks                     []Block
+	id                                map[int]rl.Texture2D
+	item                              int
+	wall                              rl.Texture2D
+	wallWindow                        rl.Texture2D
+	floor                             rl.Texture2D
+	door                              rl.Texture2D
+	chest                             rl.Texture2D
+	stone1                            rl.Texture2D
+	stone2                            rl.Texture2D
+	stone3                            rl.Texture2D
+	stone4                            rl.Texture2D
+	bigStone1                         rl.Texture2D
+	bigStone2                         rl.Texture2D
+	bigStone3                         rl.Texture2D
+	bigStone4                         rl.Texture2D
+	bigStone5                         rl.Texture2D
+	smallTree                         rl.Texture2D
+	normalTree                        rl.Texture2D
+	bigTree                           rl.Texture2D
+	grass1                            rl.Texture2D
+	grass2                            rl.Texture2D
+	grass3                            rl.Texture2D
+	grass4                            rl.Texture2D
+	grass5                            rl.Texture2D
+	grass6                            rl.Texture2D
+	barrier                           rl.Texture2D
+	lootbox                           rl.Texture2D
+	bones1                            rl.Texture2D
+	bones2                            rl.Texture2D
+	bones3                            rl.Texture2D
+	bones4                            rl.Texture2D
+	bones5                            rl.Texture2D
+	worldGenerated                    bool
+	worldInfo                         WorldInfo
+	doorOpen                          rl.Texture2D
+	bigBarrel                         rl.Texture2D
+	bookshelf                         rl.Texture2D
+	chair                             rl.Texture2D
+	closet                            rl.Texture2D
+	fence1, fence2                    rl.Texture2D
+	floor2, floor4                    rl.Texture2D
+	lamp                              rl.Texture2D
+	shelf                             rl.Texture2D
+	sign                              rl.Texture2D
+	smallBarrel                       rl.Texture2D
+	table                             rl.Texture2D
+	tombstone                         rl.Texture2D
+	trash                             rl.Texture2D
+	sapling                           rl.Texture2D
+	resourceTick                      int = 0
+	seed1Normal, seed1Big             rl.Texture2D
+	seed2Small, seed2Normal, seed2Big rl.Texture2D
 )
 
 const (
@@ -76,8 +79,9 @@ const (
 	TILE_SIZE               float32 = 10.0
 	WORLD_SIZE              int     = 320
 	OBJECT_SPAWN_MULTIPLIER int     = 6
-	GROWTH_TIME             int     = 90
+	GROWTH_TIME             int     = 10
 	RESOURCE_SPAWN_TIME     int     = 180
+	SEED_TIME               int     = 75
 )
 
 const (
@@ -134,6 +138,11 @@ const (
 	STAIRSDOWN
 	STAIRSUP
 	SAPLING
+	SEED1NORMAL
+	SEED1BIG
+	SEED2SMALL
+	SEED2NORMAL
+	SEED2BIG
 )
 
 type BlockData struct {
@@ -149,9 +158,15 @@ type Block struct {
 }
 
 type Tree struct {
-	x         float32
-	y         float32
-	needTicks int
+	x    float32
+	y    float32
+	tick int
+}
+
+type Seed struct {
+	x    float32
+	y    float32
+	tick int
 }
 
 type WorldInfo struct {
@@ -160,6 +175,8 @@ type WorldInfo struct {
 	BigStonesCount      int  `json:"big_stones_count"`
 	SmallStonesCount    int  `json:"small_stones_count"`
 	TreesCount          int  `json:"trees_count"`
+	SaplingsCount       int  `json:"saplings_count"`
+	SeedsCount          int  `json:"seeds_count"`
 	PickaxesCount       int  `json:"pickaxes_count"`
 	AxesCount           int  `json:"axes_count"`
 	ShovelsCount        int  `json:"shovels_count"`
@@ -216,6 +233,11 @@ func loadID() {
 	id[TOMBSTONE] = tombstone
 	id[TRASH] = trash
 	id[SAPLING] = sapling
+	id[SEED1NORMAL] = seed1Normal
+	id[SEED1BIG] = seed1Big
+	id[SEED2SMALL] = seed2Small
+	id[SEED2NORMAL] = seed2Normal
+	id[SEED2BIG] = seed2Big
 }
 
 func loadWorld() {
@@ -268,6 +290,11 @@ func loadWorld() {
 	trash = loadTexture("assets/images/blocks/trash.png")
 	shelf = loadTexture("assets/images/blocks/shelf.png")
 	sapling = loadTexture("assets/images/world/sapling.png")
+	seed1Normal = loadTexture("assets/images/world/seed1_normal.png")
+	seed1Big = loadTexture("assets/images/world/seed1_big.png")
+	seed2Small = loadTexture("assets/images/world/seed2_small.png")
+	seed2Normal = loadTexture("assets/images/world/seed2_normal.png")
+	seed2Big = loadTexture("assets/images/world/seed2_big.png")
 
 	// Установка id для блоков
 	loadID()
@@ -318,6 +345,11 @@ func unloadWorld() {
 	rl.UnloadTexture(tombstone)
 	rl.UnloadTexture(trash)
 	rl.UnloadTexture(sapling)
+	rl.UnloadTexture(seed1Normal)
+	rl.UnloadTexture(seed1Big)
+	rl.UnloadTexture(seed2Small)
+	rl.UnloadTexture(seed2Normal)
+	rl.UnloadTexture(seed2Big)
 }
 
 func addBlock(img rl.Texture2D, x, y float32, passable bool) {
@@ -343,12 +375,23 @@ func removeBlock(x, y float32) {
 
 func addTree(x, y float32) {
 	tree := Tree{
-		x:         x,
-		y:         y,
-		needTicks: 0,
+		x:    x,
+		y:    y,
+		tick: 0,
 	}
 	trees = append(trees, tree)
+	worldInfo.SaplingsCount++
 	worldInfo.TreesCount++
+}
+
+func addSeed(x, y float32) {
+	seed := Seed{
+		x:    x,
+		y:    y,
+		tick: 0,
+	}
+	seeds = append(seeds, seed)
+	worldInfo.SeedsCount++
 }
 
 func removeTree(x, y float32) {
@@ -360,14 +403,27 @@ func removeTree(x, y float32) {
 		}
 	}
 	trees = newTrees
+	worldInfo.SaplingsCount--
 	worldInfo.TreesCount--
+}
+
+func removeSeed(x, y float32) {
+	var newSeeds []Seed
+
+	for _, seed := range seeds {
+		if !(seed.x == x && seed.y == y) {
+			newSeeds = append(newSeeds, seed)
+		}
+	}
+	seeds = newSeeds
+	worldInfo.SeedsCount--
 }
 
 func updateTree() {
 	var treesToRemove []Tree
 	for i := range trees {
-		trees[i].needTicks++
-		if trees[i].needTicks == GROWTH_TIME {
+		trees[i].tick++
+		if trees[i].tick == GROWTH_TIME {
 			saplingToTree(trees[i].x, trees[i].y)
 			treesToRemove = append(treesToRemove, trees[i])
 		}
@@ -375,6 +431,23 @@ func updateTree() {
 
 	for _, treeToRemove := range treesToRemove {
 		removeTree(treeToRemove.x, treeToRemove.y)
+	}
+}
+
+func updateSeed() {
+	var seedsToRemove []Seed
+	for i := range seeds {
+		seeds[i].tick++
+		if seeds[i].tick == SEED_TIME-40 || seeds[i].tick == SEED_TIME-15 || seeds[i].tick == SEED_TIME {
+			seedToPlant(seeds[i].x, seeds[i].y, seeds[i].tick)
+			if seeds[i].tick == SEED_TIME {
+				seedsToRemove = append(seedsToRemove, seeds[i])
+			}
+		}
+	}
+
+	for _, seedToRemove := range seedsToRemove {
+		removeSeed(seedToRemove.x, seedToRemove.y)
 	}
 }
 
@@ -394,6 +467,33 @@ func saplingToTree(x, y float32) {
 	removeBlock(x, y)
 	addBlock(treeTexture, x, y, false)
 	worldInfo.TreesCount++
+}
+
+func seedToPlant(x, y float32, tick int) {
+	var seedTexture rl.Texture2D
+	seedTextureNum := rand.Intn(2)
+
+	switch seedTextureNum {
+	case 0:
+		if tick == SEED_TIME-40 {
+			seedTexture = seed2Small
+		} else if tick == SEED_TIME-15 {
+			seedTexture = seed1Normal
+		} else if tick == SEED_TIME {
+			seedTexture = seed1Big
+		}
+	case 1:
+		if tick == SEED_TIME-40 {
+			seedTexture = seed2Small
+		} else if tick == SEED_TIME-15 {
+			seedTexture = seed2Normal
+		} else if tick == SEED_TIME {
+			seedTexture = seed2Big
+		}
+	}
+
+	removeBlock(x, y)
+	addBlock(seedTexture, x, y, false)
 }
 
 func distanceInBlocks(playerX, playerY, blockX, blockY float32, distance float32) bool {

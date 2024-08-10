@@ -53,6 +53,8 @@ func drawUI() {
 		TOMBSTONE:   tombstoneIsOpen,
 		TRASH:       trashIsOpen,
 		SAPLING:     saplingIsOpen,
+		SEED2SMALL:  seedIsOpen,
+		SEED1BIG:    cabbageIsOpen,
 	}
 
 	if state, ok := itemStates[item]; ok && state {

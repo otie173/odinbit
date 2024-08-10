@@ -56,6 +56,20 @@ func mouseHandler() {
 							saplingCount++
 							worldInfo.TreesCount--
 						}
+					case seed2Small, seed2Normal, seed2Big, seed1Normal, seed1Big:
+						if shovelIsOpen {
+							removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+							if block.img == seed2Small || block.img == seed2Normal || block.img == seed1Normal {
+								removeSeed(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+								seedCount++
+							} else {
+								cabbageIsOpen = true
+								cabbageCount++
+								seedCount += 3
+							}
+							pickupResourceSound()
+							generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
+						}
 					case stone1, stone2, stone3, stone4, bigStone1, bigStone2, bigStone3, bigStone4, bigStone5:
 						if pickaxeIsOpen {
 							removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
@@ -87,6 +101,14 @@ func mouseHandler() {
 								wallWindowCount++
 							}
 							if block.img == tombstone {
+								if !tombstoneIsOpen {
+									seedIsOpen = true
+									if seedCount+1 <= MAX_COUNT {
+										seedCount++
+									}
+									pickupResourceSound()
+								}
+
 								tombstoneIsOpen = true
 								tombstoneCount++
 							}
@@ -102,6 +124,14 @@ func mouseHandler() {
 								floor4Count++
 							}
 							if block.img == lootbox {
+								if !lootboxIsOpen {
+									seedIsOpen = true
+									if seedCount+1 <= MAX_COUNT {
+										seedCount++
+									}
+									pickupResourceSound()
+								}
+
 								lootboxIsOpen = true
 								lootboxCount++
 							}
@@ -146,11 +176,11 @@ func mouseHandler() {
 							if block.img == fence1 || block.img == fence2 {
 								fence1IsOpen = true
 								fence2IsOpen = true
-								fence1Count++
-							}
-							if block.img == fence2 {
-								fence2IsOpen = true
-								fence2Count++
+								if block.img == fence1 {
+									fence1Count++
+								} else {
+									fence2Count++
+								}
 							}
 							if block.img == floor2 {
 								floor2Count++
@@ -335,12 +365,19 @@ func mouseHandler() {
 				}
 			case SAPLING:
 				if saplingIsOpen && saplingCount != 0 {
-					if worldInfo.TreesCount < 1920 {
+					if worldInfo.TreesCount < 1920 && worldInfo.SaplingsCount < MAX_COUNT {
 						addBlock(sapling, float32(mouseX), float32(mouseY), false)
 						addTree(float32(mouseX), float32(mouseY))
 						plantSeedSound()
 						saplingCount--
 					}
+				}
+			case SEED2SMALL:
+				if seedIsOpen && seedCount != 0 && worldInfo.SeedsCount < MAX_COUNT {
+					addBlock(seed2Small, float32(mouseX), float32(mouseY), false)
+					addSeed(float32(mouseX), float32(mouseY))
+					plantSeedSound()
+					seedCount--
 				}
 			}
 
@@ -782,6 +819,8 @@ func keyboardHandler() {
 			rl.KeyThree: TOMBSTONE,
 			rl.KeyFour:  TRASH,
 			rl.KeyFive:  SAPLING,
+			rl.KeySix:   SEED2SMALL,
+			rl.KeySeven: SEED1BIG,
 		}
 
 		for key, value := range itemMap {

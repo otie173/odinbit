@@ -67,6 +67,8 @@ type Player struct {
 	LootboxOpen      bool    `json:"lootbox_open"`
 	TombstoneOpen    bool    `json:"tombstone_open"`
 	SaplingOpen      bool    `json:"sapling_open"`
+	SeedOpen         bool    `json:"seed_open"`
+	CabbageOpen      bool    `json:"cabbage_open"`
 	BigBarrelCount   int     `json:"big_barrel_count"`
 	BookshelfCount   int     `json:"bookshelf_count"`
 	ChairCount       int     `json:"chair_count"`
@@ -84,6 +86,8 @@ type Player struct {
 	LootboxCount     int     `json:"lootbox_count"`
 	TombstoneCount   int     `json:"tombstone_count"`
 	SaplingCount     int     `json:"sapling_count"`
+	SeedCount        int     `json:"seed_count"`
+	CabaggeCount     int     `json:"cabbage_count"`
 }
 
 func savePlayerFile() {
@@ -99,12 +103,12 @@ func savePlayerFile() {
 		ClosetOpen: closetIsOpen, Fence1Open: fence1IsOpen, Fence2Open: fence2IsOpen,
 		Floor2Open: floor2IsOpen, Floor4Open: floor4IsOpen, LampOpen: lampIsOpen,
 		ShelfOpen: shelfIsOpen, SignOpen: signIsOpen, SmallBarrelOpen: smallBarrelIsOpen,
-		TableOpen: tableIsOpen, TrashOpen: trashIsOpen, LootboxOpen: lootboxIsOpen, TombstoneOpen: tombstoneIsOpen, SaplingOpen: saplingIsOpen,
+		TableOpen: tableIsOpen, TrashOpen: trashIsOpen, LootboxOpen: lootboxIsOpen, TombstoneOpen: tombstoneIsOpen, SaplingOpen: saplingIsOpen, SeedOpen: seedIsOpen, CabbageOpen: cabbageIsOpen,
 		BigBarrelCount: bigBarrelCount, BookshelfCount: bookshelfCount, ChairCount: chairCount,
 		ClosetCount: closetCount, Fence1Count: fence1Count, Fence2Count: fence2Count,
 		Floor2Count: floor2Count, Floor4Count: floor4Count, LampCount: lampCount,
 		ShelfCount: shelfCount, SignCount: signCount, SmallBarrelCount: smallBarrelCount,
-		TableCount: tableCount, TrashCount: trashCount, LootboxCount: lootboxCount, TombstoneCount: tombstoneCount, SaplingCount: saplingCount,
+		TableCount: tableCount, TrashCount: trashCount, LootboxCount: lootboxCount, TombstoneCount: tombstoneCount, SaplingCount: saplingCount, SeedCount: seedCount, CabaggeCount: cabbageCount,
 	}
 	jsonData, err := json.Marshal(playerData)
 	if err != nil {
@@ -179,6 +183,8 @@ func loadPlayerFile() {
 	lootboxIsOpen = playerData.LootboxOpen
 	tombstoneIsOpen = playerData.TombstoneOpen
 	saplingIsOpen = playerData.SaplingOpen
+	seedIsOpen = playerData.SeedOpen
+	cabbageIsOpen = playerData.CabbageOpen
 
 	bigBarrelCount = playerData.BigBarrelCount
 	bookshelfCount = playerData.BookshelfCount
@@ -197,6 +203,8 @@ func loadPlayerFile() {
 	lootboxCount = playerData.LootboxCount
 	tombstoneCount = playerData.TombstoneCount
 	saplingCount = playerData.SaplingCount
+	seedCount = playerData.SeedCount
+	cabbageCount = playerData.CabaggeCount
 }
 
 func loadPlayer() {
