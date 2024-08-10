@@ -82,6 +82,7 @@ const (
 	GROWTH_TIME             int     = 90
 	RESOURCE_SPAWN_TIME     int     = 180
 	SEED_TIME               int     = 75
+	MAX_COUNT               int     = 32
 )
 
 const (

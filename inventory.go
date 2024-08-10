@@ -83,10 +83,6 @@ var (
 	cabbageCount       int        = 0
 )
 
-const (
-	MAX_COUNT int = 16
-)
-
 type InventorySlot struct {
 	x          float32
 	y          float32
