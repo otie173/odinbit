@@ -79,7 +79,7 @@ const (
 	TILE_SIZE               float32 = 10.0
 	WORLD_SIZE              int     = 320
 	OBJECT_SPAWN_MULTIPLIER int     = 6
-	GROWTH_TIME             int     = 10
+	GROWTH_TIME             int     = 90
 	RESOURCE_SPAWN_TIME     int     = 180
 	SEED_TIME               int     = 75
 )
