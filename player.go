@@ -12,18 +12,19 @@ import (
 )
 
 var (
-	player                 rl.Texture2D
-	playerPosition         rl.Vector2   = rl.NewVector2(0.0, 0.0)
-	targetPosition         rl.Vector2   = rl.NewVector2(0.0, 0.0)
-	playerRectangle        rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, TILE_SIZE, TILE_SIZE)
-	playerFlippedRectangle rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, -TILE_SIZE, TILE_SIZE)
-	playerDirection        bool         = false
-	playerBlockDistance    int          = 3
-	cam                    rl.Camera2D
-	prevCamPosition        rl.Vector2
-	canBuild               bool
-	lastMoveTime           time.Time
-	playerHealth           int = 3
+	player                   rl.Texture2D
+	playerWalk1, playerWalk2 rl.Texture2D
+	playerPosition           rl.Vector2   = rl.NewVector2(0.0, 0.0)
+	targetPosition           rl.Vector2   = rl.NewVector2(0.0, 0.0)
+	playerRectangle          rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, TILE_SIZE, TILE_SIZE)
+	playerFlippedRectangle   rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, -TILE_SIZE, TILE_SIZE)
+	playerDirection          bool         = false
+	playerBlockDistance      int          = 3
+	cam                      rl.Camera2D
+	prevCamPosition          rl.Vector2
+	canBuild                 bool
+	lastMoveTime             time.Time
+	playerHealth             int = 3
 )
 
 type Player struct {
@@ -209,6 +210,7 @@ func loadPlayerFile() {
 
 func loadPlayer() {
 	player = loadTexture("assets/images/characters/player.png")
+	playerWalk1 = loadTexture("assets/images/characters/playerWalk1.png")
 	cam = rl.NewCamera2D(rl.NewVector2(float32(rl.GetScreenWidth()/2), float32(rl.GetScreenHeight()/2)), rl.NewVector2(float32(playerPosition.X), float32(playerPosition.Y)), 0.0, 6.0)
 	lastMoveTime = time.Now()
 }
