@@ -27,7 +27,13 @@ var (
 	lastMoveTime             time.Time
 	playerHealth             int  = 3
 	isWalk                   bool = false
-	frameCounter             int
+	stepTimer                int
+	stepInterval             int = 15
+	currentStep              int = 0
+	lastTargetPosition       rl.Vector2
+	animationComplete        bool
+	directionChangeTimer     int
+	directionChangeDelay     int = 5
 )
 
 type Player struct {
@@ -240,43 +246,73 @@ func updateCameraTarget(cam *rl.Camera2D, playerPosition rl.Vector2, playerRecta
 }
 
 func updatePlayerPosition() {
-	// Вычисляем разницу между текущей и целевой позицией и округляем
-	dx := math.Round(float64(targetPosition.X) - float64(playerPosition.X))
-	dy := math.Round(float64(targetPosition.Y) - float64(playerPosition.Y))
+	// Вычисляем разницу между текущей и целевой позицией
+	dx := targetPosition.X - playerPosition.X
+	dy := targetPosition.Y - playerPosition.Y
 
 	// Определяем, нужно ли двигаться
-	const minMoveDistance = 0.5
+	const minMoveDistance = 0.05
 	distanceSquared := dx*dx + dy*dy
 
 	if distanceSquared >= minMoveDistance*minMoveDistance {
-		// Выполняем интерполяцию только если нужно двигаться
+		// Проверяем, изменилась ли целевая позиция
+		if targetPosition != lastTargetPosition {
+			directionChangeTimer++
+			if directionChangeTimer >= directionChangeDelay {
+				if currentStep == 0 || animationComplete {
+					currentStep = 1
+				} else {
+					currentStep = 3 - currentStep // Переключаем между 1 и 2
+				}
+				stepTimer = 0
+				animationComplete = false
+				lastTargetPosition = targetPosition
+				directionChangeTimer = 0
+			}
+		} else {
+			directionChangeTimer = 0
+		}
+
+		// Выполняем интерполяцию
 		lerpFactor := 0.075 * rl.GetFrameTime() * float32(monitorFPS)
-		playerPosition.X += float32(dx) * lerpFactor
-		playerPosition.Y += float32(dy) * lerpFactor
+		playerPosition.X += dx * lerpFactor
+		playerPosition.Y += dy * lerpFactor
 		isWalk = true
 	} else {
 		// Если расстояние меньше minMoveDistance, устанавливаем точную позицию
-		playerPosition = rl.Vector2{X: float32(math.Round(float64(targetPosition.X))),
-			Y: float32(math.Round(float64(targetPosition.Y)))}
+		playerPosition = targetPosition
 		isWalk = false
+		currentStep = 0
+		animationComplete = true
+		directionChangeTimer = 0
 	}
 }
 
 func updatePlayerTexture() {
-	switch isWalk {
-	case true:
-		frameCounter++
-		if frameCounter >= 13 { // Меняем кадр каждые 13 кадров игры
-			if playerTexture == playerWalk1 {
-				playerTexture = playerWalk2
+	if isWalk && !animationComplete {
+		stepTimer++
+		if stepTimer >= stepInterval {
+			if currentStep == 0 {
+				currentStep = 1
+			} else if currentStep == 1 {
+				currentStep = 2
 			} else {
-				playerTexture = playerWalk1
+				currentStep = 0
+				animationComplete = true
 			}
-			frameCounter = 0
+			stepTimer = 0
 		}
-	case false:
+
+		switch currentStep {
+		case 1:
+			playerTexture = playerWalk1
+		case 2:
+			playerTexture = playerWalk2
+		default:
+			playerTexture = player
+		}
+	} else {
 		playerTexture = player
-		frameCounter = 0
 	}
 }
 
