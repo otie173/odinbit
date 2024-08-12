@@ -14,6 +14,7 @@ import (
 var (
 	player                   rl.Texture2D
 	playerWalk1, playerWalk2 rl.Texture2D
+	playerTexture            rl.Texture2D
 	playerPosition           rl.Vector2   = rl.NewVector2(0.0, 0.0)
 	targetPosition           rl.Vector2   = rl.NewVector2(0.0, 0.0)
 	playerRectangle          rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, TILE_SIZE, TILE_SIZE)
@@ -24,7 +25,9 @@ var (
 	prevCamPosition          rl.Vector2
 	canBuild                 bool
 	lastMoveTime             time.Time
-	playerHealth             int = 3
+	playerHealth             int  = 3
+	isWalk                   bool = false
+	frameCounter             int
 )
 
 type Player struct {
@@ -211,6 +214,7 @@ func loadPlayerFile() {
 func loadPlayer() {
 	player = loadTexture("assets/images/characters/player.png")
 	playerWalk1 = loadTexture("assets/images/characters/playerWalk1.png")
+	playerWalk2 = loadTexture("assets/images/characters/playerWalk2.png")
 	cam = rl.NewCamera2D(rl.NewVector2(float32(rl.GetScreenWidth()/2), float32(rl.GetScreenHeight()/2)), rl.NewVector2(float32(playerPosition.X), float32(playerPosition.Y)), 0.0, 6.0)
 	lastMoveTime = time.Now()
 }
@@ -236,7 +240,44 @@ func updateCameraTarget(cam *rl.Camera2D, playerPosition rl.Vector2, playerRecta
 }
 
 func updatePlayerPosition() {
-	playerPosition = rl.Vector2Lerp(playerPosition, targetPosition, 0.075*rl.GetFrameTime()*float32(monitorFPS))
+	// Вычисляем разницу между текущей и целевой позицией и округляем
+	dx := math.Round(float64(targetPosition.X) - float64(playerPosition.X))
+	dy := math.Round(float64(targetPosition.Y) - float64(playerPosition.Y))
+
+	// Определяем, нужно ли двигаться
+	const minMoveDistance = 0.5
+	distanceSquared := dx*dx + dy*dy
+
+	if distanceSquared >= minMoveDistance*minMoveDistance {
+		// Выполняем интерполяцию только если нужно двигаться
+		lerpFactor := 0.075 * rl.GetFrameTime() * float32(monitorFPS)
+		playerPosition.X += float32(dx) * lerpFactor
+		playerPosition.Y += float32(dy) * lerpFactor
+		isWalk = true
+	} else {
+		// Если расстояние меньше minMoveDistance, устанавливаем точную позицию
+		playerPosition = rl.Vector2{X: float32(math.Round(float64(targetPosition.X))),
+			Y: float32(math.Round(float64(targetPosition.Y)))}
+		isWalk = false
+	}
+}
+
+func updatePlayerTexture() {
+	switch isWalk {
+	case true:
+		frameCounter++
+		if frameCounter >= 13 { // Меняем кадр каждые 13 кадров игры
+			if playerTexture == playerWalk1 {
+				playerTexture = playerWalk2
+			} else {
+				playerTexture = playerWalk1
+			}
+			frameCounter = 0
+		}
+	case false:
+		playerTexture = player
+		frameCounter = 0
+	}
 }
 
 func canMoveAgain() bool {
@@ -246,8 +287,8 @@ func canMoveAgain() bool {
 
 func drawPlayer() {
 	if playerDirection {
-		rl.DrawTextureRec(player, playerRectangle, rl.NewVector2(playerPosition.X, playerPosition.Y), rl.White)
+		rl.DrawTextureRec(playerTexture, playerRectangle, rl.NewVector2(playerPosition.X, playerPosition.Y), rl.White)
 	} else if !playerDirection {
-		rl.DrawTextureRec(player, playerFlippedRectangle, rl.NewVector2(playerPosition.X, playerPosition.Y), rl.White)
+		rl.DrawTextureRec(playerTexture, playerFlippedRectangle, rl.NewVector2(playerPosition.X, playerPosition.Y), rl.White)
 	}
 }
