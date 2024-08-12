@@ -77,10 +77,10 @@ func saveWorldInfo() {
 }
 
 func saveWorldFile() {
-	blocks := make([]byte, MAX_BLOCKS)
+	blocks := make([]byte, (WORLD_SIZE+1)*(WORLD_SIZE+1))
 	index := 0
-	for y := -WORLD_HEIGHT / 2; y < WORLD_HEIGHT/2; y++ {
-		for x := -WORLD_WIDTH / 2; x < WORLD_WIDTH/2; x++ {
+	for y := -WORLD_SIZE / 2; y <= WORLD_SIZE/2; y++ {
+		for x := -WORLD_SIZE / 2; x <= WORLD_SIZE/2; x++ {
 			rect := rl.Rectangle{
 				X:      float32(x) * TILE_SIZE,
 				Y:      float32(y) * TILE_SIZE,
@@ -108,13 +108,13 @@ func saveWorldFile() {
 		}
 	}
 
-	data := make([]byte, (MAX_BLOCKS*BLOCK_BITS+7)/8)
+	data := make([]byte, (len(blocks)*BLOCK_BITS+7)/8)
 	for i, block := range blocks {
 		bitIndex := i * BLOCK_BITS
 		byteIndex := bitIndex / 8
 		bitOffset := uint(bitIndex % 8)
 		data[byteIndex] |= byte(block << bitOffset)
-		if bitOffset > 8-BLOCK_BITS {
+		if bitOffset > 8-BLOCK_BITS && byteIndex+1 < len(data) {
 			data[byteIndex+1] |= byte(block >> (8 - bitOffset))
 		}
 	}
@@ -138,7 +138,7 @@ func loadWorldFile() map[rl.Rectangle]Block {
 		return make(map[rl.Rectangle]Block)
 	}
 
-	blocks := make([]byte, MAX_BLOCKS)
+	blocks := make([]byte, (WORLD_SIZE+1)*(WORLD_SIZE+1))
 	for i := range blocks {
 		bitIndex := i * BLOCK_BITS
 		byteIndex := bitIndex / 8
@@ -154,10 +154,10 @@ func loadWorldFile() map[rl.Rectangle]Block {
 
 	world := make(map[rl.Rectangle]Block)
 	index := 0
-	for y := -WORLD_HEIGHT / 2; y < WORLD_HEIGHT/2; y++ {
-		for x := -WORLD_WIDTH / 2; x < WORLD_WIDTH/2; x++ {
+	for y := -WORLD_SIZE / 2; y <= WORLD_SIZE/2; y++ {
+		for x := -WORLD_SIZE / 2; x <= WORLD_SIZE/2; x++ {
 			textureID := int(blocks[index]) - 1 // Вычитаем 1, чтобы вернуться к оригинальному ID
-			if textureID >= 0 {                 // Теперь проверяем, что ID >= 0, а не != 0
+			if textureID >= 0 {                 // Загружаем только непустые блоки
 				rect := rl.Rectangle{
 					X:      float32(x) * TILE_SIZE,
 					Y:      float32(y) * TILE_SIZE,
