@@ -14,6 +14,7 @@ var (
 
 const (
 	TITLE Scene = iota
+	MODE
 	GENERATE
 	SAVE
 	GAME
@@ -41,7 +42,8 @@ func drawScene() {
 		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
 			mousePos := rl.GetMousePosition()
 			if rl.CheckCollisionPointRec(mousePos, playRectangle) {
-				if checkWorldFile() {
+				currentScene = MODE
+				/*if checkWorldFile() {
 					loadWorldLabelSize := rl.MeasureTextEx(font, "Load world...", 56, 2)
 					loadWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(loadWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(loadWorldLabelSize.Y))/2)
 
@@ -56,12 +58,28 @@ func drawScene() {
 					currentScene = GAME
 				} else {
 					currentScene = GENERATE
-				}
+				}*/
 			}
 			if rl.CheckCollisionPointRec(mousePos, exitRectangle) {
 				rl.CloseWindow()
 			}
 		}
+	case MODE:
+		menuLabelSize := rl.MeasureTextEx(fontBold, "Select mode", 72, 2)
+		menuLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(menuLabelSize.X))/2, float32(rl.GetScreenHeight()-int(menuLabelSize.Y))/2-175)
+		backToGameLabelSize := rl.MeasureTextEx(font, "1) Singleplayer", 48, 2)
+		backToGameLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(backToGameLabelSize.X))/2, float32(rl.GetScreenHeight()-int(backToGameLabelSize.Y))/2-80)
+		saveAndQuitLabelSize := rl.MeasureTextEx(font, "2) Multiplayer", 48, 2)
+		saveAndQuitLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(backToGameLabelSize.X))/2, float32(rl.GetScreenHeight()-int(saveAndQuitLabelSize.Y))/2)
+		//backToGameRectangle := rl.NewRectangle(backToGameLabelPos.X, backToGameLabelPos.Y, 515, 65)
+		//saveAndQuitRectangle := rl.NewRectangle(backToGameLabelPos.X, saveAndQuitLabelPos.Y, 530, 65)
+
+		rl.BeginDrawing()
+		rl.ClearBackground(bkgColor)
+		rl.DrawTextEx(fontBold, "Select mode", rl.NewVector2(menuLabelPos.X, menuLabelPos.Y), 72, 2, rl.White)
+		rl.DrawTextEx(font, "1) Singleplayer", rl.NewVector2(backToGameLabelPos.X, backToGameLabelPos.Y), 48, 2, rl.White)
+		rl.DrawTextEx(font, "2) Multiplayer", rl.NewVector2(saveAndQuitLabelPos.X, saveAndQuitLabelPos.Y), 48, 2, rl.White)
+		rl.EndDrawing()
 	case GENERATE:
 		generatingWorldLabelSize := rl.MeasureTextEx(font, "Generating world...", 56, 2)
 		generatingWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(generatingWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(generatingWorldLabelSize.Y))/2)
