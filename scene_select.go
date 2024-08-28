@@ -105,6 +105,16 @@ func drawScene() {
 					currentScene = GENERATE
 				}
 			}
+
+			if rl.CheckCollisionPointRec(mousePos, multiplayerRectangle) {
+				if !connectedToServer {
+					connectServer("ws://localhost:8080/ws")
+				}
+				if connectedToServer {
+					readServer()
+					writeServer("world")
+				}
+			}
 		}
 	case GENERATE:
 		generatingWorldLabelSize := rl.MeasureTextEx(font, "Generating world...", 56, 2)
