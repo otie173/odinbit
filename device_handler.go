@@ -760,7 +760,7 @@ func keyboardHandler() {
 			}
 		}
 	}
-	if rl.IsKeyPressed(rl.KeyE) && currentScene != TITLE && currentScene != MENU {
+	if rl.IsKeyPressed(rl.KeyE) && currentScene != TITLE && currentScene != MENU && currentScene != MODE {
 		switch inventoryOpen {
 		case true:
 			inventoryOpen = false
@@ -830,7 +830,7 @@ func keyboardHandler() {
 			}
 		}
 	}
-	if rl.IsKeyPressed(rl.KeyEscape) && currentScene != TITLE && currentScene != INVENTORY {
+	if rl.IsKeyPressed(rl.KeyEscape) && currentScene != TITLE && currentScene != INVENTORY && currentScene != MODE {
 		switch menuOpen {
 		case true:
 			menuOpen = false

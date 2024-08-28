@@ -43,7 +43,52 @@ func drawScene() {
 			mousePos := rl.GetMousePosition()
 			if rl.CheckCollisionPointRec(mousePos, playRectangle) {
 				currentScene = MODE
-				/*if checkWorldFile() {
+			}
+			if rl.CheckCollisionPointRec(mousePos, exitRectangle) {
+				rl.CloseWindow()
+			}
+		}
+	case MODE:
+		modeLabelText := "Select mode"
+		modeLabelSize := rl.MeasureTextEx(fontBold, modeLabelText, 72, 2)
+		modeLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(modeLabelSize.X))/2, float32(rl.GetScreenHeight()-int(modeLabelSize.Y))/2-175)
+
+		singleplayerText := "1) Singleplayer"
+		multiplayerText := "2) Multiplayer"
+
+		singleplayerLabelSize := rl.MeasureTextEx(font, singleplayerText, 48, 2)
+		multiplayerLabelSize := rl.MeasureTextEx(font, multiplayerText, 48, 2)
+
+		// Находим максимальную ширину текста пунктов меню
+		maxWidth := singleplayerLabelSize.X
+		if multiplayerLabelSize.X > maxWidth {
+			maxWidth = multiplayerLabelSize.X
+		}
+
+		// Вычисляем позицию для текста, центрируя относительно "Select mode"
+		textX := modeLabelPos.X + (modeLabelSize.X-maxWidth)/2
+
+		singleplayerLabelPos := rl.NewVector2(textX, float32(rl.GetScreenHeight()-int(singleplayerLabelSize.Y))/2-80)
+		multiplayerLabelPos := rl.NewVector2(textX, float32(rl.GetScreenHeight()-int(multiplayerLabelSize.Y))/2)
+
+		singleplayerRectangle := rl.NewRectangle(singleplayerLabelPos.X, singleplayerLabelPos.Y, 475, 65)
+		multiplayerRectangle := rl.NewRectangle(multiplayerLabelPos.X, multiplayerLabelPos.Y, 430, 65)
+		//exitRectangle := rl.NewRectangle(odinbitLabelPos.X+230, odinbitLabelPos.Y+90, 145, 65)
+		//playRectangle := rl.NewRectangle(odinbitLabelPos.X, odinbitLabelPos.Y+90, 175, 65)
+
+		rl.BeginDrawing()
+		rl.ClearBackground(bkgColor)
+		rl.DrawRectangleRec(singleplayerRectangle, rl.Red)
+		rl.DrawRectangleRec(multiplayerRectangle, rl.Red)
+		rl.DrawTextEx(fontBold, modeLabelText, modeLabelPos, 72, 2, rl.White)
+		rl.DrawTextEx(font, singleplayerText, singleplayerLabelPos, 48, 2, rl.White)
+		rl.DrawTextEx(font, multiplayerText, multiplayerLabelPos, 48, 2, rl.White)
+		rl.EndDrawing()
+
+		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
+			mousePos := rl.GetMousePosition()
+			if rl.CheckCollisionPointRec(mousePos, singleplayerRectangle) {
+				if checkWorldFile() {
 					loadWorldLabelSize := rl.MeasureTextEx(font, "Load world...", 56, 2)
 					loadWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(loadWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(loadWorldLabelSize.Y))/2)
 
@@ -58,28 +103,9 @@ func drawScene() {
 					currentScene = GAME
 				} else {
 					currentScene = GENERATE
-				}*/
-			}
-			if rl.CheckCollisionPointRec(mousePos, exitRectangle) {
-				rl.CloseWindow()
+				}
 			}
 		}
-	case MODE:
-		menuLabelSize := rl.MeasureTextEx(fontBold, "Select mode", 72, 2)
-		menuLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(menuLabelSize.X))/2, float32(rl.GetScreenHeight()-int(menuLabelSize.Y))/2-175)
-		backToGameLabelSize := rl.MeasureTextEx(font, "1) Singleplayer", 48, 2)
-		backToGameLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(backToGameLabelSize.X))/2, float32(rl.GetScreenHeight()-int(backToGameLabelSize.Y))/2-80)
-		saveAndQuitLabelSize := rl.MeasureTextEx(font, "2) Multiplayer", 48, 2)
-		saveAndQuitLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(backToGameLabelSize.X))/2, float32(rl.GetScreenHeight()-int(saveAndQuitLabelSize.Y))/2)
-		//backToGameRectangle := rl.NewRectangle(backToGameLabelPos.X, backToGameLabelPos.Y, 515, 65)
-		//saveAndQuitRectangle := rl.NewRectangle(backToGameLabelPos.X, saveAndQuitLabelPos.Y, 530, 65)
-
-		rl.BeginDrawing()
-		rl.ClearBackground(bkgColor)
-		rl.DrawTextEx(fontBold, "Select mode", rl.NewVector2(menuLabelPos.X, menuLabelPos.Y), 72, 2, rl.White)
-		rl.DrawTextEx(font, "1) Singleplayer", rl.NewVector2(backToGameLabelPos.X, backToGameLabelPos.Y), 48, 2, rl.White)
-		rl.DrawTextEx(font, "2) Multiplayer", rl.NewVector2(saveAndQuitLabelPos.X, saveAndQuitLabelPos.Y), 48, 2, rl.White)
-		rl.EndDrawing()
 	case GENERATE:
 		generatingWorldLabelSize := rl.MeasureTextEx(font, "Generating world...", 56, 2)
 		generatingWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(generatingWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(generatingWorldLabelSize.Y))/2)
