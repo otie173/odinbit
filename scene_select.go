@@ -78,8 +78,8 @@ func drawScene() {
 
 		rl.BeginDrawing()
 		rl.ClearBackground(bkgColor)
-		rl.DrawRectangleRec(singleplayerRectangle, rl.Red)
-		rl.DrawRectangleRec(multiplayerRectangle, rl.Red)
+		//rl.DrawRectangleRec(singleplayerRectangle, rl.Red)
+		//rl.DrawRectangleRec(multiplayerRectangle, rl.Red)
 		rl.DrawTextEx(fontBold, modeLabelText, modeLabelPos, 72, 2, rl.White)
 		rl.DrawTextEx(font, singleplayerText, singleplayerLabelPos, 48, 2, rl.White)
 		rl.DrawTextEx(font, multiplayerText, multiplayerLabelPos, 48, 2, rl.White)
@@ -112,7 +112,6 @@ func drawScene() {
 				}
 				if connectedToServer {
 					readServer()
-					writeServer("world")
 				}
 			}
 		}

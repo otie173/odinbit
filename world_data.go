@@ -120,7 +120,12 @@ func saveWorldFile() {
 	}
 
 	odinbitPath := getOdinbitPath()
-	worldDataPath := filepath.Join(odinbitPath, "world.odn")
+	var worldDataPath string
+	if connectedToServer {
+		worldDataPath = filepath.Join(odinbitPath, "world_server.odn")
+	} else {
+		worldDataPath = filepath.Join(odinbitPath, "world.odn")
+	}
 
 	err := os.WriteFile(worldDataPath, data, 0644)
 	if err != nil {
