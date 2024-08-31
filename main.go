@@ -53,6 +53,10 @@ func update() {
 	updatePlayerTexture()
 	updateMusic()
 	doTick()
+
+	if gameMode == MULTIPLAYER {
+		readServer()
+	}
 }
 
 func render() {

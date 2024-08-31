@@ -16,7 +16,7 @@ var (
 // Opcodes for responses from server
 const (
 	SEND_WORLD byte = iota
-	SEND_DATA
+	RECEIVE_WORLD
 )
 
 func connectServer(url string) {
@@ -39,20 +39,31 @@ func connectServer(url string) {
 	socket.Connect()
 }
 
-func handleOpcode(opcode byte) {
-	switch opcode {
-	case SEND_WORLD:
-		sendWorld()
-	}
-}
-
 func readServer() {
 	socket.OnTextMessage = func(message string, socket gowebsocket.Socket) {
 		fmt.Println("Received: ", message)
 	}
 
 	socket.OnBinaryMessage = func(data []byte, socket gowebsocket.Socket) {
-		handleOpcode(data[0])
+		opcode := data[0]
+		var messageData []byte
+
+		if len(data) > 1 {
+			messageData = data[1:]
+			handleData(opcode, messageData)
+		} else {
+			handleData(opcode, nil)
+		}
+
+	}
+}
+
+func handleData(opcode byte, data []byte) {
+	switch opcode {
+	case SEND_WORLD:
+		sendWorld()
+	case RECEIVE_WORLD:
+		receiveWorld(data)
 	}
 }
 
@@ -69,10 +80,26 @@ func sendWorld() {
 	}
 
 	socket.SendBinary(worldData)
+	fmt.Println(worldData)
 	fmt.Println("World was sended")
 	err = os.Remove(worldPath)
 
 	if err != nil {
 		fmt.Println("Error: ", err)
 	}
+}
+
+func receiveWorld(worldData []byte) {
+	odinbitPath := getOdinbitPath()
+	worldPath := filepath.Join(odinbitPath, "world_server.odn")
+
+	if err := os.WriteFile(worldPath, worldData, 0644); err != nil {
+		fmt.Println("Error with receive world from server: ", err)
+	}
+
+	world = loadWorldFile()
+	if err := os.Remove(worldPath); err != nil {
+		fmt.Println("Error with remove file: ", err)
+	}
+	currentScene = GAME
 }
