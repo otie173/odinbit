@@ -80,13 +80,15 @@ func sendWorld() {
 	}
 
 	socket.SendBinary(worldData)
-	fmt.Println(worldData)
 	fmt.Println("World was sended")
+	loadWorldFile()
 	err = os.Remove(worldPath)
 
 	if err != nil {
 		fmt.Println("Error: ", err)
 	}
+
+	currentScene = GAME
 }
 
 func receiveWorld(worldData []byte) {
