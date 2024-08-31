@@ -760,7 +760,7 @@ func keyboardHandler() {
 			}
 		}
 	}
-	if rl.IsKeyPressed(rl.KeyE) && currentScene != TITLE && currentScene != MENU && currentScene != MODE {
+	if rl.IsKeyPressed(rl.KeyE) && currentScene != TITLE && currentScene != MENU && currentScene != MODE && currentScene != IP_INPUT {
 		switch inventoryOpen {
 		case true:
 			inventoryOpen = false

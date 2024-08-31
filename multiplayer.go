@@ -11,6 +11,9 @@ import (
 var (
 	socket            gowebsocket.Socket
 	connectedToServer bool
+	nickname          string
+	password          string
+	activeInput       int // 0 - nickname, 1 - password, 2 - ipAddress
 )
 
 // Opcodes for responses from server
