@@ -342,9 +342,6 @@ func drawScene() {
 			backspaceHeldTime = 0
 		}
 
-		if rl.IsKeyPressed(rl.KeyTab) {
-			activeInput = (activeInput + 1) % 3
-		}
 		if rl.IsKeyPressed(rl.KeyEnter) && len(nickname) > 0 && len(password) > 0 && len(ipAddress) > 0 {
 			if !connectedToServer {
 				connectServer("ws://" + ipAddress + "/ws")
