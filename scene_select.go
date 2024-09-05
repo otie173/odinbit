@@ -88,6 +88,7 @@ func drawScene() {
 		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
 			mousePos := rl.GetMousePosition()
 			if rl.CheckCollisionPointRec(mousePos, singleplayerRectangle) {
+				gameMode = SINGLEPLAYER
 				if checkWorldFile() {
 					loadWorldLabelSize := rl.MeasureTextEx(font, "Load world...", 56, 2)
 					loadWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(loadWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(loadWorldLabelSize.Y))/2)
@@ -107,6 +108,7 @@ func drawScene() {
 			}
 
 			if rl.CheckCollisionPointRec(mousePos, multiplayerRectangle) {
+				gameMode = MULTIPLAYER
 				currentScene = IP_INPUT
 				ipAddress = ""
 			}
@@ -213,7 +215,6 @@ func drawScene() {
 			}
 			if rl.CheckCollisionPointRec(mousePos, saveAndQuitRectangle) {
 				if connectedToServer {
-					connectedToServer = false
 					socket.Close()
 					currentScene = TITLE
 				} else {

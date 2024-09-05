@@ -53,10 +53,6 @@ func update() {
 	updatePlayerTexture()
 	updateMusic()
 	doTick()
-
-	if connectedToServer {
-		readServer()
-	}
 }
 
 func render() {

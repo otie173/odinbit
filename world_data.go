@@ -10,6 +10,10 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+var (
+	gameMode byte
+)
+
 const (
 	SINGLEPLAYER byte = iota
 	MULTIPLAYER
@@ -126,10 +130,11 @@ func saveWorldFile() {
 
 	odinbitPath := getOdinbitPath()
 	var worldDataPath string
-	if connectedToServer {
-		worldDataPath = filepath.Join(odinbitPath, "world_server.odn")
-	} else {
+	if gameMode == SINGLEPLAYER {
 		worldDataPath = filepath.Join(odinbitPath, "world.odn")
+	}
+	if gameMode == MULTIPLAYER && connectedToServer {
+		worldDataPath = filepath.Join(odinbitPath, "world_server.odn")
 	}
 
 	err := os.WriteFile(worldDataPath, data, 0644)
@@ -141,10 +146,11 @@ func saveWorldFile() {
 func loadWorldFile() map[rl.Rectangle]Block {
 	odinbitPath := getOdinbitPath()
 	var worldDataPath string
-	if connectedToServer {
-		worldDataPath = filepath.Join(odinbitPath, "world_server.odn")
-	} else {
+	if gameMode == SINGLEPLAYER {
 		worldDataPath = filepath.Join(odinbitPath, "world.odn")
+	}
+	if gameMode == MULTIPLAYER && connectedToServer {
+		worldDataPath = filepath.Join(odinbitPath, "world_server.odn")
 	}
 
 	data, err := os.ReadFile(worldDataPath)
@@ -227,10 +233,11 @@ func loadWorldFile() map[rl.Rectangle]Block {
 func checkWorldFile() bool {
 	odinbitPath := getOdinbitPath()
 	var worldDataPath string
-	if connectedToServer {
+	if gameMode == SINGLEPLAYER {
+		worldDataPath = filepath.Join(odinbitPath, "world.odn")
+	}
+	if gameMode == MULTIPLAYER && connectedToServer {
 		worldDataPath = filepath.Join(odinbitPath, "world_server.odn")
-	} else {
-		worldDataPath = filepath.Join(odinbitPath, "worldr.odn")
 	}
 
 	_, err := os.Stat(worldDataPath)

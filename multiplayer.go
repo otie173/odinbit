@@ -39,15 +39,12 @@ func connectServer(url string) {
 		connectedToServer = false
 	}
 
-	socket.Connect()
-}
-
-func readServer() {
 	socket.OnTextMessage = func(message string, socket gowebsocket.Socket) {
 		fmt.Println("Received: ", message)
 	}
 
 	socket.OnBinaryMessage = func(data []byte, socket gowebsocket.Socket) {
+		fmt.Println("Получено бинарное сообщение")
 		opcode := data[0]
 		var messageData []byte
 
@@ -59,6 +56,7 @@ func readServer() {
 		}
 
 	}
+	socket.Connect()
 }
 
 func handleData(opcode byte, data []byte) {

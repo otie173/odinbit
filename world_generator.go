@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
+	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -212,6 +214,7 @@ func generateTree(x, y float32) {
 }
 
 func generateWorld() {
+	startTime := time.Now()
 	for x := -WORLD_SIZE / 2; x <= WORLD_SIZE/2; x++ {
 		for y := -WORLD_SIZE / 2; y <= WORLD_SIZE/2; y++ {
 			generateGrass(float32(x), float32(y))
@@ -238,6 +241,8 @@ func generateWorld() {
 	}
 	generateBarrier()
 	worldGenerated = true
+
+	fmt.Println("World generated ", time.Since(startTime))
 }
 
 func generateResource() {
