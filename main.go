@@ -54,7 +54,7 @@ func update() {
 	updateMusic()
 	doTick()
 
-	if gameMode == MULTIPLAYER {
+	if connectedToServer {
 		readServer()
 	}
 }
