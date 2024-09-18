@@ -5,6 +5,7 @@ import (
 	"log"
 	_ "net/http/pprof"
 	"os"
+	"sync/atomic"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -53,6 +54,23 @@ func update() {
 	updatePlayerTexture()
 	updateMusic()
 	doTick()
+
+	if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
+		if atomic.LoadInt32(&needSendWorld) == 1 {
+			log.Println("Отсылаю мир")
+			sendWorld()
+			log.Println("Отослал")
+			atomic.StoreInt32(&needSendWorld, 0)
+		}
+		if atomic.LoadInt32(&needReceiveWorld) == 1 {
+			worldDataMutex.Lock()
+			dataForReceive := worldData
+			worldDataMutex.Unlock()
+			receiveWorld(dataForReceive)
+			atomic.StoreInt32(&needReceiveWorld, 0)
+		}
+	}
+
 }
 
 func render() {

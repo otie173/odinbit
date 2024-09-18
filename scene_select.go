@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"sync/atomic"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -214,7 +215,8 @@ func drawScene() {
 				menuOpen = false
 			}
 			if rl.CheckCollisionPointRec(mousePos, saveAndQuitRectangle) {
-				if connectedToServer {
+
+				if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
 					socket.Close()
 					currentScene = TITLE
 				} else {
@@ -342,7 +344,7 @@ func drawScene() {
 		}
 
 		if rl.IsKeyPressed(rl.KeyEnter) && len(nickname) > 0 && len(password) > 0 && len(ipAddress) > 0 {
-			if !connectedToServer {
+			if atomic.LoadInt32(&connectedToServer) == 0 {
 				connectServer("ws://" + ipAddress + "/ws")
 			}
 		}
