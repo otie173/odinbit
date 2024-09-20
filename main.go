@@ -90,7 +90,7 @@ func exit() {
 }
 
 func init() {
-	rl.SetConfigFlags(rl.FlagFullscreenMode)
+	rl.SetConfigFlags(rl.FlagFullscreenMode | rl.FlagVsyncHint)
 	screenWidth, screenHeight = int32(rl.GetScreenWidth()), int32(rl.GetScreenHeight())
 	rl.InitWindow(screenWidth, screenHeight, "Odinbit")
 	rl.SetExitKey(0)
