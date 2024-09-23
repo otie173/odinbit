@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"sync/atomic"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -134,7 +133,7 @@ func saveWorldFile() {
 	if gameMode == SINGLEPLAYER {
 		worldDataPath = filepath.Join(odinbitPath, "world.odn")
 	}
-	if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
+	if gameMode == MULTIPLAYER {
 		worldDataPath = filepath.Join(odinbitPath, "world_server.odn")
 	}
 
@@ -150,7 +149,7 @@ func loadWorldFile() map[rl.Rectangle]Block {
 	if gameMode == SINGLEPLAYER {
 		worldDataPath = filepath.Join(odinbitPath, "world.odn")
 	}
-	if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
+	if gameMode == MULTIPLAYER {
 		worldDataPath = filepath.Join(odinbitPath, "world_server.odn")
 	}
 
@@ -237,7 +236,7 @@ func checkWorldFile() bool {
 	if gameMode == SINGLEPLAYER {
 		worldDataPath = filepath.Join(odinbitPath, "world.odn")
 	}
-	if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
+	if gameMode == MULTIPLAYER {
 		worldDataPath = filepath.Join(odinbitPath, "world_server.odn")
 	}
 

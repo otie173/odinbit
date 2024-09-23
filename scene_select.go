@@ -110,6 +110,11 @@ func drawScene() {
 
 			if rl.CheckCollisionPointRec(mousePos, multiplayerRectangle) {
 				gameMode = MULTIPLAYER
+				if !checkWorldFile() {
+					//generateWorld()
+					//saveWorldFile()
+				}
+
 				currentScene = IP_INPUT
 				ipAddress = ""
 			}
@@ -216,7 +221,7 @@ func drawScene() {
 			}
 			if rl.CheckCollisionPointRec(mousePos, saveAndQuitRectangle) {
 
-				if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
+				if gameMode == MULTIPLAYER {
 					socket.Close()
 					currentScene = TITLE
 				} else {

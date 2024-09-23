@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -84,11 +83,6 @@ func handleData(opcode byte, data []byte) {
 
 func sendWorld() {
 	startTime := time.Now()
-	log.Println("Я тут 1")
-	//generateWorld()
-	log.Println("Я тут 2")
-	saveWorldFile()
-	log.Println("Я тут 3")
 
 	odinbitPath := getOdinbitPath()
 	worldPath := filepath.Join(odinbitPath, "world_server.odn")
@@ -98,16 +92,14 @@ func sendWorld() {
 		fmt.Println("Error: ", err)
 	}
 
-	log.Println("Я тут 4")
 	socket.SendBinary(worldData)
-	fmt.Println("World was sended")
 	loadWorldFile()
-	err = os.Remove(worldPath)
+	//err = os.Remove(worldPath)
 
-	if err != nil {
-		fmt.Println("Error: ", err)
-	}
-	fmt.Println("World sended ", time.Since(startTime))
+	//if err != nil {
+	//	fmt.Println("Error: ", err)
+	//}
+	fmt.Println("World was sended in ", time.Since(startTime))
 	currentScene = GAME
 }
 
