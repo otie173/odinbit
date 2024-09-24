@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"sync/atomic"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -134,7 +135,12 @@ func saveWorldFile() {
 		worldDataPath = filepath.Join(odinbitPath, "world.odn")
 	}
 	if gameMode == MULTIPLAYER {
-		worldDataPath = filepath.Join(odinbitPath, "world_server.odn")
+		switch atomic.LoadInt32(&worldType) {
+		case 0:
+			worldDataPath = filepath.Join(odinbitPath, "world_send.odn")
+		case 1:
+			worldDataPath = filepath.Join(odinbitPath, "world_receive.odn")
+		}
 	}
 
 	err := os.WriteFile(worldDataPath, data, 0644)
@@ -150,7 +156,12 @@ func loadWorldFile() map[rl.Rectangle]Block {
 		worldDataPath = filepath.Join(odinbitPath, "world.odn")
 	}
 	if gameMode == MULTIPLAYER {
-		worldDataPath = filepath.Join(odinbitPath, "world_server.odn")
+		switch atomic.LoadInt32(&worldType) {
+		case 0:
+			worldDataPath = filepath.Join(odinbitPath, "world_send.odn")
+		case 1:
+			worldDataPath = filepath.Join(odinbitPath, "world_receive.odn")
+		}
 	}
 
 	data, err := os.ReadFile(worldDataPath)
@@ -237,7 +248,7 @@ func checkWorldFile() bool {
 		worldDataPath = filepath.Join(odinbitPath, "world.odn")
 	}
 	if gameMode == MULTIPLAYER {
-		worldDataPath = filepath.Join(odinbitPath, "world_server.odn")
+		worldDataPath = filepath.Join(odinbitPath, "world_send.odn")
 	}
 
 	_, err := os.Stat(worldDataPath)

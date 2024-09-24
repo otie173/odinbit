@@ -21,6 +21,7 @@ var (
 	needReceiveWorld  int32
 	worldData         []byte
 	worldDataMutex    sync.Mutex
+	worldType         int32 // send(0) or receive(1)
 )
 
 // Opcodes for responses from server
@@ -85,7 +86,7 @@ func sendWorld() {
 	startTime := time.Now()
 
 	odinbitPath := getOdinbitPath()
-	worldPath := filepath.Join(odinbitPath, "world_server.odn")
+	worldPath := filepath.Join(odinbitPath, "world_send.odn")
 	worldData, err := os.ReadFile(worldPath)
 
 	if err != nil {
@@ -104,9 +105,11 @@ func sendWorld() {
 }
 
 func receiveWorld(worldData []byte) {
+	atomic.StoreInt32(&worldType, 1)
+
 	startTime := time.Now()
 	odinbitPath := getOdinbitPath()
-	worldPath := filepath.Join(odinbitPath, "world_server.odn")
+	worldPath := filepath.Join(odinbitPath, "world_receive.odn")
 
 	if err := os.WriteFile(worldPath, worldData, 0644); err != nil {
 		fmt.Println("Error with receive world from server: ", err)

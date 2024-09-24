@@ -111,12 +111,12 @@ func drawScene() {
 			if rl.CheckCollisionPointRec(mousePos, multiplayerRectangle) {
 				gameMode = MULTIPLAYER
 				if !checkWorldFile() {
-					//generateWorld()
-					//saveWorldFile()
+					atomic.StoreInt32(&worldType, 0)
+					generateWorld()
+					saveWorldFile()
 				}
 
 				currentScene = IP_INPUT
-				ipAddress = ""
 			}
 		}
 	case GENERATE:
