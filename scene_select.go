@@ -49,7 +49,11 @@ func drawScene() {
 		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
 			mousePos := rl.GetMousePosition()
 			if rl.CheckCollisionPointRec(mousePos, playRectangle) {
-				currentScene = MODE
+				if !checkWorldFile("world.odn") || !checkWorldFile("world_send.odn") {
+					currentScene = GENERATE
+				} else {
+					currentScene = MODE
+				}
 			}
 			if rl.CheckCollisionPointRec(mousePos, exitRectangle) {
 				rl.CloseWindow()
@@ -90,7 +94,7 @@ func drawScene() {
 			mousePos := rl.GetMousePosition()
 			if rl.CheckCollisionPointRec(mousePos, singleplayerRectangle) {
 				gameMode = SINGLEPLAYER
-				if checkWorldFile() {
+				if checkWorldFile("world.odn") {
 					loadWorldLabelSize := rl.MeasureTextEx(font, "Load world...", 56, 2)
 					loadWorldLabelPos := rl.NewVector2(float32(rl.GetScreenWidth()-int(loadWorldLabelSize.X))/2, float32(rl.GetScreenHeight()-int(loadWorldLabelSize.Y))/2)
 
@@ -103,17 +107,13 @@ func drawScene() {
 					updateWorld()
 					loadPlayerFile()
 					currentScene = GAME
-				} else {
-					currentScene = GENERATE
 				}
 			}
 
 			if rl.CheckCollisionPointRec(mousePos, multiplayerRectangle) {
 				gameMode = MULTIPLAYER
-				if !checkWorldFile() {
-					atomic.StoreInt32(&worldType, 0)
-					generateWorld()
-					saveWorldFile()
+				if checkWorldFile("world_send.odn") {
+					world = loadWorldFile()
 				}
 
 				currentScene = IP_INPUT
@@ -128,9 +128,25 @@ func drawScene() {
 		rl.DrawTextEx(font, "Generating world...", generatingWorldLabelPos, 56, 2, rl.White)
 		rl.EndDrawing()
 
-		generateWorld()
+		// Проверка миров
+		if !checkWorldFile("world.odn") {
+			gameMode = SINGLEPLAYER
+			generateWorld()
+			saveWorldFile()
+			saveWorldInfo()
+			savePlayerFile()
+			clear(world)
+		}
+		if !checkWorldFile("world_send.odn") {
+			gameMode = MULTIPLAYER
+			generateWorld()
+			saveWorldFile()
+			clear(world)
+		}
+		worldGenerated = true
+
 		if worldGenerated {
-			currentScene = GAME
+			currentScene = MODE
 		}
 	case SAVE:
 		saveWorldLabelSize := rl.MeasureTextEx(font, "Save world...", 56, 2)

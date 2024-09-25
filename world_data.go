@@ -241,16 +241,17 @@ func loadWorldFile() map[rl.Rectangle]Block {
 	return world
 }
 
-func checkWorldFile() bool {
+func checkWorldFile(worldname string) bool {
 	odinbitPath := getOdinbitPath()
-	var worldDataPath string
-	if gameMode == SINGLEPLAYER {
+	/*if gameMode == SINGLEPLAYER {
 		worldDataPath = filepath.Join(odinbitPath, "world.odn")
 	}
 	if gameMode == MULTIPLAYER {
 		worldDataPath = filepath.Join(odinbitPath, "world_send.odn")
 	}
+	*/
 
+	worldDataPath := filepath.Join(odinbitPath, worldname)
 	_, err := os.Stat(worldDataPath)
 	return !os.IsNotExist(err)
 }

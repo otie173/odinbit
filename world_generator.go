@@ -237,7 +237,6 @@ func generateWorld() {
 		generateBones(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), 3)
 	}
 	generateBarrier()
-	worldGenerated = true
 }
 
 func generateResource() {
