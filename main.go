@@ -57,9 +57,7 @@ func update() {
 
 	if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
 		if atomic.LoadInt32(&needSendWorld) == 1 {
-			log.Println("Отсылаю мир")
 			sendWorld()
-			log.Println("Отослал")
 			atomic.StoreInt32(&needSendWorld, 0)
 		}
 		if atomic.LoadInt32(&needReceiveWorld) == 1 {
