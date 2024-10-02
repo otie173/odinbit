@@ -17,7 +17,6 @@ var (
 	bkgColor                  rl.Color = rl.NewColor(0, 0, 0, 255)
 	fontBold, font            rl.Font
 	screenWidth, screenHeight int32
-	monitorFPS                int32
 )
 
 func loadFont(fontName string, fontSize int32) rl.Font {
@@ -51,6 +50,7 @@ func update() {
 	mouseHandler()
 	updateCameraTarget(&cam, playerPosition, playerRectangle)
 	updatePlayerPosition()
+	updatePlayerTexture()
 	updateMusic()
 	doTick()
 
@@ -91,8 +91,7 @@ func init() {
 	screenWidth, screenHeight = int32(rl.GetScreenWidth()), int32(rl.GetScreenHeight())
 	rl.InitWindow(screenWidth, screenHeight, "Odinbit")
 	rl.SetExitKey(0)
-	monitorFPS = int32(rl.GetMonitorRefreshRate(rl.GetCurrentMonitor()))
-	rl.SetTargetFPS(monitorFPS)
+	rl.SetTargetFPS(75)
 	rl.InitAudioDevice()
 	prevCamPosition = rl.NewVector2(-1, -1)
 	fontBold = loadFont("assets/fonts/pypx/pypx_bold.ttf", 32)

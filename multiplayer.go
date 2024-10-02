@@ -29,6 +29,12 @@ var (
 const (
 	SEND_WORLD byte = iota
 	RECEIVE_WORLD
+
+	PLACE_BLOCK
+	REMOVE_BLOCK
+
+	FAIL_AUTH
+	OK_AUTH
 )
 
 func connectServer(url string) {
