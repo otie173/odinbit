@@ -51,7 +51,6 @@ func update() {
 	mouseHandler()
 	updateCameraTarget(&cam, playerPosition, playerRectangle)
 	updatePlayerPosition()
-	updatePlayerTexture()
 	updateMusic()
 	doTick()
 

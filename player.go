@@ -27,13 +27,10 @@ var (
 	lastMoveTime             time.Time
 	playerHealth             int  = 3
 	isWalk                   bool = false
-	stepTimer                int
-	stepInterval             int = 15
+	stepTimer                float32
 	currentStep              int = 0
-	lastTargetPosition       rl.Vector2
 	animationComplete        bool
-	directionChangeTimer     int
-	directionChangeDelay     int = 5
+	moveStarted              bool
 )
 
 type Player struct {
@@ -235,84 +232,63 @@ func roundToFixed(x float32, places int) float32 {
 }
 
 func updateCameraTarget(cam *rl.Camera2D, playerPosition rl.Vector2, playerRectangle rl.Rectangle) {
+	// Локальные константы
+	const lerpSpeed float32 = 0.05 // Это значение ближе к исходной версии
+
+	// Вычисляем целевую позицию камеры
 	targetX := playerPosition.X + playerRectangle.Width/2
 	targetY := playerPosition.Y + playerRectangle.Height/2
 
-	newX := rl.Vector2Lerp(cam.Target, rl.NewVector2(targetX, cam.Target.Y), 0.05*rl.GetFrameTime()*float32(monitorFPS)).X
-	newY := rl.Vector2Lerp(cam.Target, rl.NewVector2(cam.Target.X, targetY), 0.05*rl.GetFrameTime()*float32(monitorFPS)).Y
+	// Используем простую линейную интерполяцию, как в исходной версии
+	newX := rl.Lerp(cam.Target.X, targetX, lerpSpeed)
+	newY := rl.Lerp(cam.Target.Y, targetY, lerpSpeed)
 
+	// Обновляем позицию камеры, округляя до одного знака после запятой
 	cam.Target.X = roundToFixed(newX, 1)
 	cam.Target.Y = roundToFixed(newY, 1)
 }
 
 func updatePlayerPosition() {
+	// Локальные константы
+	const lerpSpeed float32 = 4.5
+	const minMoveDistance float32 = 0.05
+	const moveCooldown = 300 * time.Millisecond // Задержка между движениями
+
 	// Вычисляем разницу между текущей и целевой позицией
 	dx := targetPosition.X - playerPosition.X
 	dy := targetPosition.Y - playerPosition.Y
 
 	// Определяем, нужно ли двигаться
-	const minMoveDistance = 0.05
 	distanceSquared := dx*dx + dy*dy
 
+	currentTime := time.Now()
+
 	if distanceSquared >= minMoveDistance*minMoveDistance {
-		// Проверяем, изменилась ли целевая позиция
-		if targetPosition != lastTargetPosition {
-			directionChangeTimer++
-			if directionChangeTimer >= directionChangeDelay {
-				if currentStep == 0 || animationComplete {
-					currentStep = 1
-				} else {
-					currentStep = 3 - currentStep // Переключаем между 1 и 2
-				}
-				stepTimer = 0
-				animationComplete = false
-				lastTargetPosition = targetPosition
-				directionChangeTimer = 0
-			}
-		} else {
-			directionChangeTimer = 0
+		if !moveStarted && currentTime.Sub(lastMoveTime) >= moveCooldown {
+			moveStarted = true
+			isWalk = true
+			animationComplete = false
+			currentStep = 0
+			stepTimer = 0
+			lastMoveTime = currentTime
 		}
 
 		// Выполняем интерполяцию
-		lerpFactor := 0.075 * rl.GetFrameTime() * float32(monitorFPS)
-		playerPosition.X += dx * lerpFactor
-		playerPosition.Y += dy * lerpFactor
-		isWalk = true
+		lerpFactor := 1.0 - float32(math.Pow(2, -float64(lerpSpeed)*float64(rl.GetFrameTime())))
+		playerPosition.X = rl.Lerp(playerPosition.X, targetPosition.X, lerpFactor)
+		playerPosition.Y = rl.Lerp(playerPosition.Y, targetPosition.Y, lerpFactor)
 	} else {
 		// Если расстояние меньше minMoveDistance, устанавливаем точную позицию
 		playerPosition = targetPosition
 		isWalk = false
-		currentStep = 0
-		animationComplete = true
-		directionChangeTimer = 0
+		moveStarted = false
 	}
-}
 
-func updatePlayerTexture() {
-	if isWalk && !animationComplete {
-		stepTimer++
-		if stepTimer >= stepInterval {
-			if currentStep == 0 {
-				currentStep = 1
-			} else if currentStep == 1 {
-				currentStep = 2
-			} else {
-				currentStep = 0
-				animationComplete = true
-			}
-			stepTimer = 0
-		}
-
-		switch currentStep {
-		case 1:
-			playerTexture = playerWalk1
-		case 2:
-			playerTexture = playerWalk2
-		default:
-			playerTexture = player
-		}
-	} else {
-		playerTexture = player
+	// Обновляем направление игрока
+	if dx > 0 {
+		playerDirection = true // Движение вправо
+	} else if dx < 0 {
+		playerDirection = false // Движение влево
 	}
 }
 
@@ -323,8 +299,8 @@ func canMoveAgain() bool {
 
 func drawPlayer() {
 	if playerDirection {
-		rl.DrawTextureRec(playerTexture, playerRectangle, rl.NewVector2(playerPosition.X, playerPosition.Y), rl.White)
+		rl.DrawTextureRec(player, playerRectangle, rl.NewVector2(playerPosition.X, playerPosition.Y), rl.White)
 	} else if !playerDirection {
-		rl.DrawTextureRec(playerTexture, playerFlippedRectangle, rl.NewVector2(playerPosition.X, playerPosition.Y), rl.White)
+		rl.DrawTextureRec(player, playerFlippedRectangle, rl.NewVector2(playerPosition.X, playerPosition.Y), rl.White)
 	}
 }

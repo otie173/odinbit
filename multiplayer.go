@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"net/http"
 	"os"
 	"path/filepath"
 	"sync"
@@ -34,7 +36,10 @@ func connectServer(url string) {
 
 	socket.OnConnected = func(s gowebsocket.Socket) {
 		atomic.StoreInt32(&connectedToServer, 1)
-		connectedToServer = 1
+
+		posturl := fmt.Sprintf("http://%s/api/auth", ipAddress)
+		body := []byte(fmt.Sprintf(`{"nickname":"%s","password":"%s"}`, nickname, password))
+		http.Post(posturl, "application/json", bytes.NewBuffer(body))
 	}
 
 	socket.OnConnectError = func(err error, socket gowebsocket.Socket) {
@@ -103,6 +108,5 @@ func receiveWorld(worldData []byte) {
 		fmt.Println("Error with remove file: ", err)
 	}
 
-	atomic.StoreInt32(&needReceiveWorld, 1)
 	currentScene = GAME
 }
