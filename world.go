@@ -521,14 +521,6 @@ func updateWorld() {
 	}
 }
 
-func isCameraMoved(cam rl.Camera2D) bool {
-	moved := cam.Target.X != prevCamPosition.X || cam.Target.Y != prevCamPosition.Y
-	if moved {
-		prevCamPosition = cam.Target
-	}
-	return moved
-}
-
 func updateVisibleBlocks(cam rl.Camera2D) {
 	screenWidth, screenHeight := rl.GetScreenWidth(), rl.GetScreenHeight()
 	left, right, top, bottom := updateVisibleArea(cam, screenWidth, screenHeight)
@@ -564,9 +556,7 @@ func updateVisibleArea(cam rl.Camera2D, screenWidth, screenHeight int) (left, ri
 }
 
 func drawWorld(cam rl.Camera2D) {
-	if isCameraMoved(cam) {
-		updateVisibleBlocks(cam)
-	}
+	updateVisibleBlocks(cam)
 
 	for _, block := range visibleBlocks {
 		rl.DrawTextureRec(block.img, block.rec, rl.NewVector2(block.rec.X, block.rec.Y), rl.White)

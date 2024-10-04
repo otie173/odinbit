@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -32,20 +34,34 @@ const (
 
 	PLACE_BLOCK
 	REMOVE_BLOCK
-
-	FAIL_AUTH
-	OK_AUTH
 )
+
+func authPlayer() bool {
+	posturl := fmt.Sprintf("http://%s/api/auth", ipAddress)
+	body := []byte(fmt.Sprintf(`{"nickname":"%s","password":"%s"}`, nickname, password))
+	resp, err := http.Post(posturl, "application/json", bytes.NewBuffer(body))
+	if err != nil {
+		log.Printf("Error with auth: %v\n", err)
+	}
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Error: %v\n", err)
+	}
+	resp.Body.Close()
+
+	if string(respBody) == "OK" {
+		return true
+	}
+
+	return false
+}
 
 func connectServer(url string) {
 	socket = gowebsocket.New(url)
 
 	socket.OnConnected = func(s gowebsocket.Socket) {
 		atomic.StoreInt32(&connectedToServer, 1)
-
-		posturl := fmt.Sprintf("http://%s/api/auth", ipAddress)
-		body := []byte(fmt.Sprintf(`{"nickname":"%s","password":"%s"}`, nickname, password))
-		http.Post(posturl, "application/json", bytes.NewBuffer(body))
 	}
 
 	socket.OnConnectError = func(err error, socket gowebsocket.Socket) {

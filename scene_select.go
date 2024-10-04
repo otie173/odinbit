@@ -366,7 +366,11 @@ func drawScene() {
 
 		if rl.IsKeyPressed(rl.KeyEnter) && len(nickname) > 0 && len(password) > 0 && len(ipAddress) > 0 {
 			if atomic.LoadInt32(&connectedToServer) == 0 {
-				connectServer("ws://" + ipAddress + "/ws")
+				succesAuth := authPlayer()
+
+				if succesAuth {
+					connectServer("ws://" + ipAddress + "/ws")
+				}
 			}
 		}
 		if rl.IsKeyPressed(rl.KeyEscape) {
