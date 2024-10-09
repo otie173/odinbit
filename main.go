@@ -93,7 +93,6 @@ func init() {
 	rl.SetExitKey(0)
 	rl.SetTargetFPS(60)
 	rl.InitAudioDevice()
-	prevCamPosition = rl.NewVector2(-1, -1)
 	fontBold = loadFont("assets/fonts/pypx/pypx_bold.ttf", 32)
 	font = loadFont("assets/fonts/pypx/pypx.ttf", 32)
 	loadUI()

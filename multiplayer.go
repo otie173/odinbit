@@ -32,7 +32,7 @@ const (
 	SEND_WORLD byte = iota
 	RECEIVE_WORLD
 
-	PLACE_BLOCK
+	ADD_BLOCK
 	REMOVE_BLOCK
 )
 
@@ -50,11 +50,7 @@ func authPlayer() bool {
 	}
 	resp.Body.Close()
 
-	if string(respBody) == "OK" {
-		return true
-	}
-
-	return false
+	return string(respBody) == "OK"
 }
 
 func connectServer(url string) {
@@ -126,9 +122,9 @@ func receiveWorld(worldData []byte) {
 	}
 
 	world = loadWorldFile()
-	if err := os.Remove(worldPath); err != nil {
-		fmt.Println("Error with remove file: ", err)
-	}
+	//if err := os.Remove(worldPath); err != nil {
+	//	fmt.Println("Error with remove file: ", err)
+	//}
 
 	currentScene = GAME
 }

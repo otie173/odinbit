@@ -11,5 +11,7 @@ require (
 	github.com/ebitengine/purego v0.7.1 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/sacOO7/go-logger v0.0.0-20180719173527-9ac9add5a50d // indirect
+	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
+	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	golang.org/x/sys v0.23.0 // indirect
 )

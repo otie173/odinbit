@@ -2,10 +2,13 @@ package main
 
 import (
 	"embed"
+	"log"
 	"math"
 	"math/rand"
+	"sync/atomic"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 //go:embed assets/images/blocks/*.png
@@ -364,10 +367,45 @@ func addBlock(img rl.Texture2D, x, y float32, passable bool) {
 	if worldGenerated {
 		updateVisibleBlocks(cam)
 	}
+
+	if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
+		type Request struct {
+			Name     string
+			Action   byte
+			Texture  byte
+			X        float32
+			Y        float32
+			Passable bool
+		}
+
+		req := Request{
+			Name:     "otie173",
+			Texture:  byte(img.ID),
+			Action:   ADD_BLOCK,
+			X:        x,
+			Y:        y,
+			Passable: passable,
+		}
+
+		data, err := msgpack.Marshal(&req)
+		if err != nil {
+			log.Println(err)
+		}
+
+		dataToSend := append([]byte{ADD_BLOCK}, data...)
+
+		socket.SendBinary(dataToSend)
+		log.Printf("Игрок поставил блок ID: %d на позиции X: %.0f, Y: %.0f и его поле Passable: %t\n", img, x, y, passable)
+	}
 }
 
 func removeBlock(x, y float32) {
 	delete(world, rl.NewRectangle(x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE, TILE_SIZE))
+
+	if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
+		//socket.SendBinary([]byte{REMOVE_BLOCK, byte(x), byte(y)})
+		log.Printf("Игрок удалил блок на позиции X: %.0f, Y: %.0f\n", x, y)
+	}
 
 	if worldGenerated {
 		updateVisibleBlocks(cam)
