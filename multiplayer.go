@@ -12,6 +12,7 @@ import (
 	"sync/atomic"
 
 	"github.com/sacOO7/gowebsocket"
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 var (
@@ -31,6 +32,9 @@ var (
 const (
 	SEND_WORLD byte = iota
 	RECEIVE_WORLD
+
+	SEND_ID
+	RECEIVE_ID
 
 	ADD_BLOCK
 	REMOVE_BLOCK
@@ -94,6 +98,8 @@ func handleData(opcode byte, data []byte) {
 		worldData = data
 		worldDataMutex.Unlock()
 		atomic.StoreInt32(&needReceiveWorld, 1)
+	case SEND_ID:
+		sendID()
 	}
 }
 
@@ -106,7 +112,9 @@ func sendWorld() {
 		fmt.Println("Error: ", err)
 	}
 
-	socket.SendBinary(worldData)
+	data2Send := append([]byte{RECEIVE_WORLD}, worldData...)
+
+	socket.SendBinary(data2Send)
 	loadWorldFile()
 	currentScene = GAME
 }
@@ -122,9 +130,19 @@ func receiveWorld(worldData []byte) {
 	}
 
 	world = loadWorldFile()
-	//if err := os.Remove(worldPath); err != nil {
-	//	fmt.Println("Error with remove file: ", err)
-	//}
+	if err := os.Remove(worldPath); err != nil {
+		fmt.Println("Error with remove file: ", err)
+	}
 
 	currentScene = GAME
+}
+
+func sendID() {
+	idData, err := msgpack.Marshal(&id)
+	if err != nil {
+		log.Println(err)
+	}
+
+	data2Send := append([]byte{RECEIVE_ID}, idData...)
+	socket.SendBinary(data2Send)
 }

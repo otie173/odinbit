@@ -3,7 +3,6 @@ package main
 import (
 	"embed"
 	"log"
-	_ "net/http/pprof"
 	"os"
 	"sync/atomic"
 
