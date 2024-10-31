@@ -369,15 +369,15 @@ func addBlock(img rl.Texture2D, x, y float32, passable bool) {
 	}
 
 	if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
-		blockPacket := BlockPacket{
-			Action:   ADD_BLOCK,
-			Texture:  img.ID,
-			X:        x,
-			Y:        y,
-			Passable: passable,
+		packet := map[string]interface{}{
+			"Action":   ADD_BLOCK,
+			"Texture":  img.ID,
+			"X":        x,
+			"Y":        y,
+			"Passable": passable,
 		}
 
-		data, err := msgpack.Marshal(&blockPacket)
+		data, err := msgpack.Marshal(&packet)
 		if err != nil {
 			log.Println(err)
 		}
@@ -393,13 +393,13 @@ func removeBlock(x, y float32) {
 	delete(world, rl.NewRectangle(x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE, TILE_SIZE))
 
 	if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
-		blockPacket := BlockPacket{
-			Action: REMOVE_BLOCK,
-			X:      x,
-			Y:      y,
+		packet := map[string]interface{}{
+			"Action": REMOVE_BLOCK,
+			"X":      x,
+			"Y":      y,
 		}
 
-		data, err := msgpack.Marshal(&blockPacket)
+		data, err := msgpack.Marshal(&packet)
 		if err != nil {
 			log.Println(err)
 		}

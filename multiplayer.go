@@ -140,10 +140,6 @@ func receiveWorld(worldData []byte) {
 	}
 
 	world = loadWorldFile()
-	if err := os.Remove(worldPath); err != nil {
-		fmt.Println("Error with remove file: ", err)
-	}
-
 	currentScene = GAME
 }
 

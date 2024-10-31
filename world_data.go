@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -238,6 +239,11 @@ func loadWorldFile() map[rl.Rectangle]Block {
 	}
 
 	worldGenerated = true
+	if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
+		if err := os.Remove(worldDataPath); err != nil {
+			fmt.Println("Error with remove file: ", err)
+		}
+	}
 	return world
 }
 
