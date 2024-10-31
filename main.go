@@ -90,7 +90,7 @@ func init() {
 	screenWidth, screenHeight = int32(rl.GetScreenWidth()), int32(rl.GetScreenHeight())
 	rl.InitWindow(screenWidth, screenHeight, "Odinbit")
 	rl.SetExitKey(0)
-	rl.SetTargetFPS(60)
+	rl.SetTargetFPS(75)
 	rl.InitAudioDevice()
 	fontBold = loadFont("assets/fonts/pypx/pypx_bold.ttf", 32)
 	font = loadFont("assets/fonts/pypx/pypx.ttf", 32)
