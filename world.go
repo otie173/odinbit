@@ -369,30 +369,20 @@ func addBlock(img rl.Texture2D, x, y float32, passable bool) {
 	}
 
 	if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
-		type Request struct {
-			Name     string
-			Action   byte
-			Texture  byte
-			X        float32
-			Y        float32
-			Passable bool
-		}
-
-		req := Request{
-			Name:     "otie173",
-			Texture:  byte(img.ID),
+		blockPacket := BlockPacket{
 			Action:   ADD_BLOCK,
+			Texture:  img.ID,
 			X:        x,
 			Y:        y,
 			Passable: passable,
 		}
 
-		data, err := msgpack.Marshal(&req)
+		data, err := msgpack.Marshal(&blockPacket)
 		if err != nil {
 			log.Println(err)
 		}
 
-		dataToSend := append([]byte{ADD_BLOCK}, data...)
+		dataToSend := append([]byte{BLOCK_PACKET}, data...)
 
 		socket.SendBinary(dataToSend)
 		log.Printf("Игрок поставил блок ID: %d на позиции X: %.0f, Y: %.0f и его поле Passable: %t\n", img, x, y, passable)
@@ -403,7 +393,20 @@ func removeBlock(x, y float32) {
 	delete(world, rl.NewRectangle(x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE, TILE_SIZE))
 
 	if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
-		//socket.SendBinary([]byte{REMOVE_BLOCK, byte(x), byte(y)})
+		blockPacket := BlockPacket{
+			Action: REMOVE_BLOCK,
+			X:      x,
+			Y:      y,
+		}
+
+		data, err := msgpack.Marshal(&blockPacket)
+		if err != nil {
+			log.Println(err)
+		}
+
+		dataToSend := append([]byte{BLOCK_PACKET}, data...)
+
+		socket.SendBinary(dataToSend)
 		log.Printf("Игрок удалил блок на позиции X: %.0f, Y: %.0f\n", x, y)
 	}
 

@@ -36,9 +36,18 @@ const (
 	SEND_ID
 	RECEIVE_ID
 
+	BLOCK_PACKET
 	ADD_BLOCK
 	REMOVE_BLOCK
 )
+
+type BlockPacket struct {
+	Action   byte
+	Texture  uint32
+	X        float32
+	Y        float32
+	Passable bool
+}
 
 func authPlayer() bool {
 	posturl := fmt.Sprintf("http://%s/api/auth", ipAddress)
@@ -59,6 +68,7 @@ func authPlayer() bool {
 
 func connectServer(url string) {
 	socket = gowebsocket.New(url)
+	socket.RequestHeader.Set("Session-Nickname", nickname)
 
 	socket.OnConnected = func(s gowebsocket.Socket) {
 		atomic.StoreInt32(&connectedToServer, 1)

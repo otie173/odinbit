@@ -284,7 +284,7 @@ func generateRandomPosition() (float32, float32) {
 	for {
 		x, y := float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2)
 
-		value, exist := world[rl.NewRectangle(x, y, TILE_SIZE, TILE_SIZE)]
+		value, exist := world[rl.NewRectangle(x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE, TILE_SIZE)]
 		if !exist || value.img == grass1 || value.img == grass2 || value.img == grass3 || value.img == grass4 || value.img == grass5 || value.img == grass6 {
 			return x, y
 		}
