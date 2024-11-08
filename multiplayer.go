@@ -39,15 +39,10 @@ const (
 	BLOCK_PACKET
 	ADD_BLOCK
 	REMOVE_BLOCK
-)
 
-type BlockPacket struct {
-	Action   byte
-	Texture  uint32
-	X        float32
-	Y        float32
-	Passable bool
-}
+	PLAYER_PACKET
+	RECEIVE_PLAYER_DATA
+)
 
 func authPlayer() bool {
 	posturl := fmt.Sprintf("http://%s/api/auth", ipAddress)
