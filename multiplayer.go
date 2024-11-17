@@ -2,29 +2,27 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
-	"sync"
 	"sync/atomic"
 
-	"github.com/sacOO7/gowebsocket"
+	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/otie173/gowebsocket"
 	"github.com/vmihailenco/msgpack/v5"
 )
 
 var (
-	socket            gowebsocket.Socket
+	socket            *gowebsocket.Socket
 	connectedToServer int32
 	nickname          string
 	password          string
 	activeInput       int // 0 - nickname, 1 - password, 2 - ipAddress
-	needSendWorld     int32
-	needReceiveWorld  int32
-	worldData         []byte
-	worldDataMutex    sync.Mutex
+	needLoadWorld     int32
 	worldType         int32 // send(0) or receive(1)
 )
 
@@ -43,6 +41,14 @@ const (
 	PLAYER_PACKET
 	RECEIVE_PLAYER_DATA
 )
+
+type ServerStatus struct {
+	Address          string `json:"address"`
+	IdWaiting        bool   `json:"id_waiting"`
+	WorldWaiting     bool   `json:"world_waiting"`
+	PlayersConnected int    `json:"players_connected"`
+	MaxPlayers       int    `json:"max_players"`
+}
 
 func authPlayer() bool {
 	posturl := fmt.Sprintf("http://%s/api/auth", ipAddress)
@@ -65,21 +71,21 @@ func connectServer(url string) {
 	socket = gowebsocket.New(url)
 	socket.RequestHeader.Set("Session-Nickname", nickname)
 
-	socket.OnConnected = func(s gowebsocket.Socket) {
+	socket.OnConnected = func(s *gowebsocket.Socket) {
 		atomic.StoreInt32(&connectedToServer, 1)
 	}
 
-	socket.OnConnectError = func(err error, socket gowebsocket.Socket) {
+	socket.OnConnectError = func(err error, socket *gowebsocket.Socket) {
 	}
 
-	socket.OnDisconnected = func(err error, s gowebsocket.Socket) {
+	socket.OnDisconnected = func(err error, s *gowebsocket.Socket) {
 		atomic.StoreInt32(&connectedToServer, 0)
 	}
 
-	socket.OnTextMessage = func(message string, socket gowebsocket.Socket) {
+	socket.OnTextMessage = func(message string, socket *gowebsocket.Socket) {
 	}
 
-	socket.OnBinaryMessage = func(data []byte, socket gowebsocket.Socket) {
+	socket.OnBinaryMessage = func(data []byte, socket *gowebsocket.Socket) {
 		opcode := data[0]
 		var messageData []byte
 
@@ -89,61 +95,91 @@ func connectServer(url string) {
 		} else {
 			handleData(opcode, nil)
 		}
-
 	}
 	socket.Connect()
 }
 
+func disconnectServer() {
+	socket.Close()
+}
+
 func handleData(opcode byte, data []byte) {
 	switch opcode {
-	case SEND_WORLD:
-		atomic.StoreInt32(&needSendWorld, 1)
-	case RECEIVE_WORLD:
-		worldDataMutex.Lock()
-		worldData = data
-		worldDataMutex.Unlock()
-		atomic.StoreInt32(&needReceiveWorld, 1)
-	case SEND_ID:
-		sendID()
+	case BLOCK_PACKET:
+		var packet map[string]interface{}
+		if err := msgpack.Unmarshal(data, &packet); err != nil {
+			log.Println(err)
+		}
+		log.Println(packet)
+		switch GetByte(packet["Action"]) {
+		case ADD_BLOCK:
+			addBlockNetwork(rl.Texture2D{ID: GetUint32(packet["Texture"]), Width: 10, Height: 10, Mipmaps: 1, Format: 7}, GetFloat32(packet["X"]), GetFloat32(packet["Y"]), false)
+			log.Println("Сетевой игрок поставил новый блок")
+		}
 	}
 }
 
-func sendWorld() {
-	odinbitPath := getOdinbitPath()
-	worldPath := filepath.Join(odinbitPath, "world_send.odn")
-	worldData, err := os.ReadFile(worldPath)
+func checkStatusRest() {
+	var status ServerStatus
 
+	r, err := http.Get(fmt.Sprintf("http://%s/api/status", ipAddress))
 	if err != nil {
-		fmt.Println("Error: ", err)
+		log.Println(err)
 	}
+	defer r.Body.Close()
+	json.NewDecoder(r.Body).Decode(&status)
 
-	data2Send := append([]byte{RECEIVE_WORLD}, worldData...)
-
-	socket.SendBinary(data2Send)
-	loadWorldFile()
-	currentScene = GAME
+	if status.IdWaiting {
+		sendIdRest()
+	}
+	if status.WorldWaiting {
+		sendWorldRest()
+	}
 }
 
-func receiveWorld(worldData []byte) {
-	atomic.StoreInt32(&worldType, 1)
-
-	odinbitPath := getOdinbitPath()
-	worldPath := filepath.Join(odinbitPath, "world_receive.odn")
-
-	if err := os.WriteFile(worldPath, worldData, 0644); err != nil {
-		fmt.Println("Error with receive world from server: ", err)
-	}
-
-	world = loadWorldFile()
-	currentScene = GAME
-}
-
-func sendID() {
+func sendIdRest() {
 	idData, err := msgpack.Marshal(&id)
 	if err != nil {
 		log.Println(err)
 	}
 
-	data2Send := append([]byte{RECEIVE_ID}, idData...)
-	socket.SendBinary(data2Send)
+	if _, err := http.Post(fmt.Sprintf("http://%s/api/loadid", ipAddress), "binary", bytes.NewBuffer(idData)); err != nil {
+		log.Println(err)
+	}
+}
+
+func sendWorldRest() {
+	odinbitPath := getOdinbitPath()
+	worldPath := filepath.Join(odinbitPath, "world_send.odn")
+	worldData, err := os.ReadFile(worldPath)
+	if err != nil {
+		log.Println(err)
+	}
+
+	if _, err := http.Post(fmt.Sprintf("http://%s/api/loadworld", ipAddress), "binary", bytes.NewBuffer(worldData)); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func loadWorldRest() {
+	atomic.StoreInt32(&worldType, 1)
+
+	resp, err := http.Get(fmt.Sprintf("http://%s/api/getworld", ipAddress))
+	if err != nil {
+		log.Println(err)
+	}
+	defer resp.Body.Close()
+
+	odinbitPath := getOdinbitPath()
+	worldPath := filepath.Join(odinbitPath, "world_receive.odn")
+	worldData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println(err)
+	}
+
+	if err := os.WriteFile(worldPath, worldData, 0644); err != nil {
+		fmt.Println("Error with receive world from server: ", err)
+	}
+	world = loadWorldFile()
+	currentScene = GAME
 }

@@ -369,7 +369,10 @@ func drawScene() {
 				succesAuth := authPlayer()
 
 				if succesAuth {
+					checkStatusRest()
+					atomic.StoreInt32(&needLoadWorld, 1)
 					connectServer("ws://" + ipAddress + "/ws")
+					//loadWorldRest()
 				}
 			}
 		}

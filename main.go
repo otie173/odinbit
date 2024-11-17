@@ -54,19 +54,11 @@ func update() {
 	doTick()
 
 	if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
-		if atomic.LoadInt32(&needSendWorld) == 1 {
-			sendWorld()
-			atomic.StoreInt32(&needSendWorld, 0)
-		}
-		if atomic.LoadInt32(&needReceiveWorld) == 1 {
-			worldDataMutex.Lock()
-			dataForReceive := worldData
-			worldDataMutex.Unlock()
-			receiveWorld(dataForReceive)
-			atomic.StoreInt32(&needReceiveWorld, 0)
+		if atomic.LoadInt32(&needLoadWorld) == 1 {
+			loadWorldRest()
+			atomic.StoreInt32(&needLoadWorld, 0)
 		}
 	}
-
 }
 
 func render() {
@@ -88,7 +80,7 @@ func exit() {
 func init() {
 	rl.SetConfigFlags(rl.FlagFullscreenMode | rl.FlagVsyncHint)
 	screenWidth, screenHeight = int32(rl.GetScreenWidth()), int32(rl.GetScreenHeight())
-	rl.InitWindow(screenWidth, screenHeight, "Odinbit")
+	rl.InitWindow(screenWidth, screenHeight, "Odinbit Debug")
 	rl.SetExitKey(0)
 	rl.SetTargetFPS(75)
 	rl.InitAudioDevice()

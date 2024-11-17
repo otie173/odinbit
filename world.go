@@ -5,6 +5,7 @@ import (
 	"log"
 	"math"
 	"math/rand"
+	"sync"
 	"sync/atomic"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -20,6 +21,7 @@ var assets embed.FS
 
 var (
 	world                             map[rl.Rectangle]Block
+	worldMutex                        sync.RWMutex
 	trees                             []Tree
 	seeds                             []Seed
 	visibleBlocks                     []Block
@@ -362,7 +364,9 @@ func addBlock(img rl.Texture2D, x, y float32, passable bool) {
 		rec:      rl.NewRectangle(x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE, TILE_SIZE),
 		passable: passable,
 	}
+	worldMutex.Lock()
 	world[block.rec] = block
+	worldMutex.Unlock()
 
 	if worldGenerated {
 		updateVisibleBlocks(cam)
@@ -389,8 +393,25 @@ func addBlock(img rl.Texture2D, x, y float32, passable bool) {
 	}
 }
 
+func addBlockNetwork(img rl.Texture2D, x, y float32, passable bool) {
+	block := Block{
+		img:      img,
+		rec:      rl.NewRectangle(x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE, TILE_SIZE),
+		passable: passable,
+	}
+	worldMutex.Lock()
+	world[block.rec] = block
+	worldMutex.Unlock()
+
+	if worldGenerated {
+		updateVisibleBlocks(cam)
+	}
+}
+
 func removeBlock(x, y float32) {
+	worldMutex.Lock()
 	delete(world, rl.NewRectangle(x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE, TILE_SIZE))
+	worldMutex.Unlock()
 
 	if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
 		packet := map[string]interface{}{
@@ -567,6 +588,7 @@ func updateVisibleBlocks(cam rl.Camera2D) {
 	left, right, top, bottom := updateVisibleArea(cam, screenWidth, screenHeight)
 
 	// Очищаем slice видимых блоков
+	worldMutex.Lock()
 	visibleBlocks = visibleBlocks[:0]
 
 	// Заполняем slice видимыми блоками
@@ -576,6 +598,7 @@ func updateVisibleBlocks(cam rl.Camera2D) {
 			visibleBlocks = append(visibleBlocks, block)
 		}
 	}
+	worldMutex.Unlock()
 }
 
 func updateVisibleArea(cam rl.Camera2D, screenWidth, screenHeight int) (left, right, top, bottom float32) {
