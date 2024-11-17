@@ -436,6 +436,16 @@ func removeBlock(x, y float32) {
 	}
 }
 
+func removeBlockNetwork(x, y float32) {
+	worldMutex.Lock()
+	delete(world, rl.NewRectangle(x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE, TILE_SIZE))
+	worldMutex.Unlock()
+
+	if worldGenerated {
+		updateVisibleBlocks(cam)
+	}
+}
+
 func addTree(x, y float32) {
 	tree := Tree{
 		x:    x,

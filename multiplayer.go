@@ -115,6 +115,9 @@ func handleData(opcode byte, data []byte) {
 		case ADD_BLOCK:
 			addBlockNetwork(rl.Texture2D{ID: GetUint32(packet["Texture"]), Width: 10, Height: 10, Mipmaps: 1, Format: 7}, GetFloat32(packet["X"]), GetFloat32(packet["Y"]), false)
 			log.Println("Сетевой игрок поставил новый блок")
+		case REMOVE_BLOCK:
+			removeBlockNetwork(GetFloat32(packet["X"]), GetFloat32(packet["Y"]))
+			log.Println("Сетевой игрок удалил блок")
 		}
 	}
 }
