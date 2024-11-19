@@ -73,6 +73,7 @@ func connectServer(url string) {
 
 	socket.OnConnected = func(s *gowebsocket.Socket) {
 		atomic.StoreInt32(&connectedToServer, 1)
+		loadPlayerRest()
 	}
 
 	socket.OnConnectError = func(err error, socket *gowebsocket.Socket) {
@@ -80,6 +81,7 @@ func connectServer(url string) {
 
 	socket.OnDisconnected = func(err error, s *gowebsocket.Socket) {
 		atomic.StoreInt32(&connectedToServer, 0)
+		savePlayerRest()
 	}
 
 	socket.OnTextMessage = func(message string, socket *gowebsocket.Socket) {
@@ -185,4 +187,204 @@ func loadWorldRest() {
 	}
 	world = loadWorldFile()
 	currentScene = GAME
+}
+
+func savePlayerRest() {
+	playerData := Player{
+		X: playerPosition.X, Y: playerPosition.Y, TargetX: targetPosition.X, TargetY: targetPosition.Y,
+		Health: playerHealth, WoodCount: woodCount, StoneCount: stoneCount, MetalCount: metalCount,
+		PickaxeOpen: pickaxeIsOpen, AxeOpen: axeIsOpen, ShovelOpen: shovelIsOpen,
+		WallOpen: wallIsOpen, WallWindowOpen: wallWindowIsOpen, FloorOpen: floorIsOpen,
+		DoorOpen: doorIsOpen, DoorOpenOpen: doorOpenIsOpen, ChestOpen: chestIsOpen,
+		WallCount: wallCount, WallWindowCount: wallWindowCount, FloorCount: floorCount,
+		DoorCount: doorCount, ChestCount: chestCount, DoorOpenCount: doorOpenCount,
+		BigBarrelOpen: bigBarrelIsOpen, BookshelfOpen: bookshelfIsOpen, ChairOpen: chairIsOpen,
+		ClosetOpen: closetIsOpen, Fence1Open: fence1IsOpen, Fence2Open: fence2IsOpen,
+		Floor2Open: floor2IsOpen, Floor4Open: floor4IsOpen, LampOpen: lampIsOpen,
+		ShelfOpen: shelfIsOpen, SignOpen: signIsOpen, SmallBarrelOpen: smallBarrelIsOpen,
+		TableOpen: tableIsOpen, TrashOpen: trashIsOpen, LootboxOpen: lootboxIsOpen, TombstoneOpen: tombstoneIsOpen, SaplingOpen: saplingIsOpen, SeedOpen: seedIsOpen, CabbageOpen: cabbageIsOpen,
+		BigBarrelCount: bigBarrelCount, BookshelfCount: bookshelfCount, ChairCount: chairCount,
+		ClosetCount: closetCount, Fence1Count: fence1Count, Fence2Count: fence2Count,
+		Floor2Count: floor2Count, Floor4Count: floor4Count, LampCount: lampCount,
+		ShelfCount: shelfCount, SignCount: signCount, SmallBarrelCount: smallBarrelCount,
+		TableCount: tableCount, TrashCount: trashCount, LootboxCount: lootboxCount, TombstoneCount: tombstoneCount, SaplingCount: saplingCount, SeedCount: seedCount, CabaggeCount: cabbageCount,
+	}
+
+	playerDataBinary, err := msgpack.Marshal(&playerData)
+	if err != nil {
+		log.Println("Error with marshal player data: ", err)
+	}
+
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", fmt.Sprintf("http://%s/api/loadpdata", ipAddress), bytes.NewBuffer(playerDataBinary))
+	req.Header.Add("Session-Nickname", nickname)
+	if err != nil {
+		log.Println("Error with create new request to server: ", err)
+	}
+
+	_, err = client.Do(req)
+	if err != nil {
+		log.Println("Error with request to server: ", err)
+	}
+}
+
+func loadPlayerRest() {
+	var playerData Player
+
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", fmt.Sprintf("http://%s/api/getpdata", ipAddress), nil)
+	req.Header.Add("Session-Nickname", nickname)
+	if err != nil {
+		log.Println("Error with create new request to server: ", err)
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
+		log.Println("Error with request to server: ", err)
+	}
+
+	bodyData, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.Println("Error with read response body: ", err)
+	}
+
+	if res.StatusCode == http.StatusOK {
+		if err := msgpack.Unmarshal(bodyData, &playerData); err != nil {
+			log.Println("Error with unmarshal player data: ", err)
+		}
+
+		playerPosition = rl.NewVector2(playerData.X, playerData.Y)
+		targetPosition = rl.NewVector2(playerData.TargetX, playerData.TargetY)
+		cam.Target = playerPosition
+		playerHealth = playerData.Health
+
+		woodCount = playerData.WoodCount
+		stoneCount = playerData.StoneCount
+		metalCount = playerData.MetalCount
+
+		pickaxeIsOpen = playerData.PickaxeOpen
+		axeIsOpen = playerData.AxeOpen
+		shovelIsOpen = playerData.ShovelOpen
+
+		wallIsOpen = playerData.WallOpen
+		wallWindowIsOpen = playerData.WallWindowOpen
+		floorIsOpen = playerData.FloorOpen
+		doorIsOpen = playerData.DoorOpen
+		chestIsOpen = playerData.ChestOpen
+		doorOpenIsOpen = playerData.DoorOpen
+
+		wallCount = playerData.WallCount
+		wallWindowCount = playerData.WallWindowCount
+		floorCount = playerData.FloorCount
+		doorCount = playerData.DoorCount
+		doorOpenCount = playerData.DoorOpenCount
+		chestCount = playerData.ChestCount
+
+		bigBarrelIsOpen = playerData.BigBarrelOpen
+		bookshelfIsOpen = playerData.BookshelfOpen
+		chairIsOpen = playerData.ChairOpen
+		closetIsOpen = playerData.ClosetOpen
+		fence1IsOpen = playerData.Fence1Open
+		fence2IsOpen = playerData.Fence2Open
+		floor2IsOpen = playerData.Floor2Open
+		floor4IsOpen = playerData.Floor4Open
+		lampIsOpen = playerData.LampOpen
+		shelfIsOpen = playerData.ShelfOpen
+		signIsOpen = playerData.SignOpen
+		smallBarrelIsOpen = playerData.SmallBarrelOpen
+		tableIsOpen = playerData.TableOpen
+		trashIsOpen = playerData.TrashOpen
+		lootboxIsOpen = playerData.LootboxOpen
+		tombstoneIsOpen = playerData.TombstoneOpen
+		saplingIsOpen = playerData.SaplingOpen
+		seedIsOpen = playerData.SeedOpen
+		cabbageIsOpen = playerData.CabbageOpen
+
+		bigBarrelCount = playerData.BigBarrelCount
+		bookshelfCount = playerData.BookshelfCount
+		chairCount = playerData.ChairCount
+		closetCount = playerData.ClosetCount
+		fence1Count = playerData.Fence1Count
+		fence2Count = playerData.Fence2Count
+		floor2Count = playerData.Floor2Count
+		floor4Count = playerData.Floor4Count
+		lampCount = playerData.LampCount
+		shelfCount = playerData.ShelfCount
+		signCount = playerData.SignCount
+		smallBarrelCount = playerData.SmallBarrelCount
+		tableCount = playerData.TableCount
+		trashCount = playerData.TrashCount
+		lootboxCount = playerData.LootboxCount
+		tombstoneCount = playerData.TombstoneCount
+		saplingCount = playerData.SaplingCount
+		seedCount = playerData.SeedCount
+		cabbageCount = playerData.CabaggeCount
+	} else if res.StatusCode == http.StatusNotFound {
+		playerPosition = rl.NewVector2(0, 0)
+		targetPosition = rl.NewVector2(0, 0)
+		cam.Target = playerPosition
+		playerHealth = 3
+
+		woodCount = 0
+		stoneCount = 0
+		metalCount = 0
+
+		pickaxeIsOpen = false
+		axeIsOpen = false
+		shovelIsOpen = false
+
+		wallIsOpen = false
+		wallWindowIsOpen = false
+		floorIsOpen = false
+		doorIsOpen = false
+		chestIsOpen = false
+		doorOpenIsOpen = false
+
+		wallCount = 0
+		wallWindowCount = 0
+		floorCount = 0
+		doorCount = 0
+		doorOpenCount = 0
+		chestCount = 0
+
+		bigBarrelIsOpen = false
+		bookshelfIsOpen = false
+		chairIsOpen = false
+		closetIsOpen = false
+		fence1IsOpen = false
+		fence2IsOpen = false
+		floor2IsOpen = false
+		floor4IsOpen = false
+		lampIsOpen = false
+		shelfIsOpen = false
+		signIsOpen = false
+		smallBarrelIsOpen = false
+		tableIsOpen = false
+		trashIsOpen = false
+		lootboxIsOpen = false
+		tombstoneIsOpen = false
+		saplingIsOpen = false
+		seedIsOpen = false
+		cabbageIsOpen = false
+
+		bigBarrelCount = 0
+		bookshelfCount = 0
+		chairCount = 0
+		closetCount = 0
+		fence1Count = 0
+		fence2Count = 0
+		floor2Count = 0
+		floor4Count = 0
+		lampCount = 0
+		shelfCount = 0
+		signCount = 0
+		smallBarrelCount = 0
+		tableCount = 0
+		trashCount = 0
+		lootboxCount = 0
+		tombstoneCount = 0
+		saplingCount = 0
+		seedCount = 0
+		cabbageCount = 0
+	}
 }
