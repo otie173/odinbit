@@ -41,3 +41,10 @@ func GetString(v interface{}) string {
 	}
 	return ""
 }
+
+func roundFloat32(val float32) float32 {
+	if val < 0 {
+		return float32(int(val - 0.5))
+	}
+	return float32(int(val + 0.5))
+}

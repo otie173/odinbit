@@ -3,6 +3,7 @@ package main
 import (
 	"math"
 	"math/rand"
+	"sync/atomic"
 	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -712,10 +713,15 @@ func mouseHandler() {
 }
 
 func keyboardHandler() {
+	var canMove bool
 	var moveX, moveY float32
 	var shouldMove bool
 
 	if currentScene == GAME {
+		// Сначала выравниваем текущую позицию
+		startX := float32(int(targetPosition.X/TILE_SIZE) * int(TILE_SIZE))
+		startY := float32(int(targetPosition.Y/TILE_SIZE) * int(TILE_SIZE))
+
 		if rl.IsKeyDown(rl.KeyW) {
 			moveY = -TILE_SIZE
 			shouldMove = true
@@ -734,19 +740,20 @@ func keyboardHandler() {
 		}
 
 		if shouldMove && canMoveAgain() {
-			canMove := true
+			canMove = true
+			// Проверяем коллизии с выровненными координатами
 			if moveX != 0 && moveY != 0 {
 				for _, block := range world {
-					if (!block.passable) && ((targetPosition.X+moveX == block.rec.X && targetPosition.Y == block.rec.Y) ||
-						(targetPosition.Y+moveY == block.rec.Y && targetPosition.X == block.rec.X) ||
-						(targetPosition.X+moveX == block.rec.X && targetPosition.Y+moveY == block.rec.Y)) {
+					if (!block.passable) && ((startX+moveX == block.rec.X && startY == block.rec.Y) ||
+						(startY+moveY == block.rec.Y && startX == block.rec.X) ||
+						(startX+moveX == block.rec.X && startY+moveY == block.rec.Y)) {
 						canMove = false
 						break
 					}
 				}
 			} else {
 				for _, block := range world {
-					if (!block.passable) && (targetPosition.X+moveX == block.rec.X && targetPosition.Y+moveY == block.rec.Y) {
+					if (!block.passable) && (startX+moveX == block.rec.X && startY+moveY == block.rec.Y) {
 						canMove = false
 						break
 					}
@@ -754,9 +761,22 @@ func keyboardHandler() {
 			}
 
 			if canMove {
-				targetPosition.X += moveX
-				targetPosition.Y += moveY
+				// Обновляем позиции с выровненными координатами
+				playerPositionNetwork.X = startX
+				playerPositionNetwork.Y = startY
+				targetPosition.X = startX + moveX
+				targetPosition.Y = startY + moveY
 				lastMoveTime = time.Now()
+
+				// Отправляем пакет только если подключены к серверу
+				if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
+					sendMovePacket(
+						startX,
+						startY,
+						targetPosition.X,
+						targetPosition.Y,
+					)
+				}
 			}
 		}
 	}

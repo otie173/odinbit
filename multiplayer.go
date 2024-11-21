@@ -26,20 +26,13 @@ var (
 	worldType         int32 // send(0) or receive(1)
 )
 
-// Opcodes for responses from server
 const (
-	SEND_WORLD byte = iota
-	RECEIVE_WORLD
-
-	SEND_ID
-	RECEIVE_ID
-
-	BLOCK_PACKET
+	BLOCK_PACKET byte = iota
 	ADD_BLOCK
 	REMOVE_BLOCK
 
 	PLAYER_PACKET
-	RECEIVE_PLAYER_DATA
+	PLAYER_MOVE
 )
 
 type ServerStatus struct {
@@ -387,4 +380,24 @@ func loadPlayerRest() {
 		seedCount = 0
 		cabbageCount = 0
 	}
+}
+
+func sendMovePacket(x, y, targetX, targetY float32) {
+	packet := map[string]interface{}{
+		"Action":  PLAYER_MOVE,
+		"Player":  nickname,
+		"X":       x,
+		"Y":       y,
+		"TargetX": targetX,
+		"TargetY": targetY,
+	}
+
+	packetBinary, err := msgpack.Marshal(&packet)
+	if err != nil {
+		log.Println("Error with marshal move packet: ", err)
+	}
+
+	data2Send := append([]byte{PLAYER_PACKET}, packetBinary...)
+	socket.SendBinary(data2Send)
+	log.Println("Пакет кнопки W отправлен")
 }

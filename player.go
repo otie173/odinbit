@@ -12,27 +12,29 @@ import (
 )
 
 var (
-	player                   rl.Texture2D
-	playerWalk1, playerWalk2 rl.Texture2D
-	playerTexture            rl.Texture2D
-	playerPosition           rl.Vector2   = rl.NewVector2(0.0, 0.0)
-	targetPosition           rl.Vector2   = rl.NewVector2(0.0, 0.0)
-	playerRectangle          rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, TILE_SIZE, TILE_SIZE)
-	playerFlippedRectangle   rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, -TILE_SIZE, TILE_SIZE)
-	playerDirection          bool         = false
-	playerBlockDistance      int          = 3
-	cam                      rl.Camera2D
-	canBuild                 bool
-	lastMoveTime             time.Time
-	playerHealth             int  = 3
-	isWalk                   bool = false
-	stepTimer                int
-	stepInterval             int = 15
-	currentStep              int = 0
-	lastTargetPosition       rl.Vector2
-	animationComplete        bool
-	directionChangeTimer     int
-	directionChangeDelay     int = 5
+	player                     rl.Texture2D
+	playerWalk1, playerWalk2   rl.Texture2D
+	playerTexture              rl.Texture2D
+	playerPosition             rl.Vector2   = rl.NewVector2(0.0, 0.0)
+	targetPosition             rl.Vector2   = rl.NewVector2(0.0, 0.0)
+	playerPositionNetwork      rl.Vector2   = rl.NewVector2(0.0, 0.0)
+	targetCoordX, targetCoordY int          = 0, 0
+	playerRectangle            rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, TILE_SIZE, TILE_SIZE)
+	playerFlippedRectangle     rl.Rectangle = rl.NewRectangle(playerPosition.X, playerPosition.Y, -TILE_SIZE, TILE_SIZE)
+	playerDirection            bool         = false
+	playerBlockDistance        int          = 3
+	cam                        rl.Camera2D
+	canBuild                   bool
+	lastMoveTime               time.Time
+	playerHealth               int  = 3
+	isWalk                     bool = false
+	stepTimer                  int
+	stepInterval               int = 15
+	currentStep                int = 0
+	lastTargetPosition         rl.Vector2
+	animationComplete          bool
+	directionChangeTimer       int
+	directionChangeDelay       int = 5
 )
 
 type Player struct {
