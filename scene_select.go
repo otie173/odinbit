@@ -167,6 +167,7 @@ func drawScene() {
 		rl.BeginMode2D(cam)
 		drawWorld(cam)
 		drawPlayer()
+
 		rl.EndMode2D()
 		rl.DrawRectangleV(rl.NewVector2(0, 0), rl.NewVector2(240, 130), rl.ColorAlpha(rl.Black, 0.65))
 		rl.DrawRectangleLinesEx(rl.NewRectangle(0, 0, 240, 130), 5, rl.White)
@@ -372,7 +373,6 @@ func drawScene() {
 					checkStatusRest()
 					atomic.StoreInt32(&needLoadWorld, 1)
 					connectServer("ws://" + ipAddress + "/ws")
-					//loadWorldRest()
 				}
 			}
 		}

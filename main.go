@@ -59,6 +59,11 @@ func update() {
 			atomic.StoreInt32(&needLoadWorld, 0)
 		}
 	}
+
+	if atomic.LoadInt32(&needSwitchScene) == 1 && atomic.LoadInt32(&connectedToServer) == 0 {
+		currentScene = TITLE
+		atomic.StoreInt32(&needSwitchScene, 0)
+	}
 }
 
 func render() {
@@ -78,9 +83,9 @@ func exit() {
 }
 
 func init() {
-	rl.SetConfigFlags(rl.FlagFullscreenMode | rl.FlagVsyncHint)
+	rl.SetConfigFlags(rl.FlagFullscreenMode | rl.FlagVsyncHint | rl.FlagWindowUnfocused)
 	screenWidth, screenHeight = int32(rl.GetScreenWidth()), int32(rl.GetScreenHeight())
-	rl.InitWindow(screenWidth, screenHeight, "Odinbit Debug")
+	rl.InitWindow(screenWidth, screenHeight, "Odinbit debug")
 	rl.SetExitKey(0)
 	rl.SetTargetFPS(75)
 	rl.InitAudioDevice()

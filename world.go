@@ -86,7 +86,7 @@ const (
 	OBJECT_SPAWN_MULTIPLIER int     = 6
 	GROWTH_TIME             int     = 90
 	RESOURCE_SPAWN_TIME     int     = 180
-	SEED_TIME               int     = 75
+	SEED_TIME               int     = 5
 	MAX_COUNT               int     = 32
 )
 
@@ -374,7 +374,7 @@ func addBlock(img rl.Texture2D, x, y float32, passable bool) {
 
 	if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
 		packet := map[string]interface{}{
-			"Action":   ADD_BLOCK,
+			"Action":   blockAdd,
 			"Texture":  img.ID,
 			"X":        x,
 			"Y":        y,
@@ -386,10 +386,7 @@ func addBlock(img rl.Texture2D, x, y float32, passable bool) {
 			log.Println(err)
 		}
 
-		dataToSend := append([]byte{BLOCK_PACKET}, data...)
-
-		socket.SendBinary(dataToSend)
-		log.Printf("Игрок поставил блок ID: %d на позиции X: %.0f, Y: %.0f и его поле Passable: %t\n", img, x, y, passable)
+		socket.SendBinary(append([]byte{blockPacket}, data...))
 	}
 }
 
@@ -415,7 +412,7 @@ func removeBlock(x, y float32) {
 
 	if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
 		packet := map[string]interface{}{
-			"Action": REMOVE_BLOCK,
+			"Action": blockRemove,
 			"X":      x,
 			"Y":      y,
 		}
@@ -425,10 +422,7 @@ func removeBlock(x, y float32) {
 			log.Println(err)
 		}
 
-		dataToSend := append([]byte{BLOCK_PACKET}, data...)
-
-		socket.SendBinary(dataToSend)
-		log.Printf("Игрок удалил блок на позиции X: %.0f, Y: %.0f\n", x, y)
+		socket.SendBinary(append([]byte{blockPacket}, data...))
 	}
 
 	if worldGenerated {

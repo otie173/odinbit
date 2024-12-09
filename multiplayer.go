@@ -24,15 +24,13 @@ var (
 	activeInput       int // 0 - nickname, 1 - password, 2 - ipAddress
 	needLoadWorld     int32
 	worldType         int32 // send(0) or receive(1)
+	needSwitchScene   int32
 )
 
 const (
-	BLOCK_PACKET byte = iota
-	ADD_BLOCK
-	REMOVE_BLOCK
-
-	PLAYER_PACKET
-	PLAYER_MOVE
+	blockPacket byte = iota
+	blockAdd
+	blockRemove
 )
 
 type ServerStatus struct {
@@ -43,8 +41,17 @@ type ServerStatus struct {
 	MaxPlayers       int    `json:"max_players"`
 }
 
+type PlayerMultiplayer struct {
+	Nickname string
+	X        float32
+	Y        float32
+	TargetX  float32
+	TargetY  float32
+	Flipped  bool
+}
+
 func authPlayer() bool {
-	posturl := fmt.Sprintf("http://%s/api/auth", ipAddress)
+	posturl := fmt.Sprintf("http://%s/api/v1/player/auth", ipAddress)
 	body := []byte(fmt.Sprintf(`{"nickname":"%s","password":"%s"}`, nickname, password))
 	resp, err := http.Post(posturl, "application/json", bytes.NewBuffer(body))
 	if err != nil {
@@ -70,9 +77,11 @@ func connectServer(url string) {
 	}
 
 	socket.OnConnectError = func(err error, socket *gowebsocket.Socket) {
+		log.Println(err)
 	}
 
 	socket.OnDisconnected = func(err error, s *gowebsocket.Socket) {
+		atomic.StoreInt32(&needSwitchScene, 1)
 		atomic.StoreInt32(&connectedToServer, 0)
 		savePlayerRest()
 	}
@@ -100,19 +109,17 @@ func disconnectServer() {
 
 func handleData(opcode byte, data []byte) {
 	switch opcode {
-	case BLOCK_PACKET:
+	case blockPacket:
 		var packet map[string]interface{}
 		if err := msgpack.Unmarshal(data, &packet); err != nil {
 			log.Println(err)
 		}
 		log.Println(packet)
 		switch GetByte(packet["Action"]) {
-		case ADD_BLOCK:
+		case blockAdd:
 			addBlockNetwork(rl.Texture2D{ID: GetUint32(packet["Texture"]), Width: 10, Height: 10, Mipmaps: 1, Format: 7}, GetFloat32(packet["X"]), GetFloat32(packet["Y"]), false)
-			log.Println("Сетевой игрок поставил новый блок")
-		case REMOVE_BLOCK:
+		case blockRemove:
 			removeBlockNetwork(GetFloat32(packet["X"]), GetFloat32(packet["Y"]))
-			log.Println("Сетевой игрок удалил блок")
 		}
 	}
 }
@@ -120,7 +127,7 @@ func handleData(opcode byte, data []byte) {
 func checkStatusRest() {
 	var status ServerStatus
 
-	r, err := http.Get(fmt.Sprintf("http://%s/api/status", ipAddress))
+	r, err := http.Get(fmt.Sprintf("http://%s/api/v1/server/status", ipAddress))
 	if err != nil {
 		log.Println(err)
 	}
@@ -141,7 +148,7 @@ func sendIdRest() {
 		log.Println(err)
 	}
 
-	if _, err := http.Post(fmt.Sprintf("http://%s/api/loadid", ipAddress), "binary", bytes.NewBuffer(idData)); err != nil {
+	if _, err := http.Post(fmt.Sprintf("http://%s/api/v1/world/loadid", ipAddress), "binary", bytes.NewBuffer(idData)); err != nil {
 		log.Println(err)
 	}
 }
@@ -154,7 +161,7 @@ func sendWorldRest() {
 		log.Println(err)
 	}
 
-	if _, err := http.Post(fmt.Sprintf("http://%s/api/loadworld", ipAddress), "binary", bytes.NewBuffer(worldData)); err != nil {
+	if _, err := http.Post(fmt.Sprintf("http://%s/api/v1/world/loadworld", ipAddress), "binary", bytes.NewBuffer(worldData)); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -162,7 +169,7 @@ func sendWorldRest() {
 func loadWorldRest() {
 	atomic.StoreInt32(&worldType, 1)
 
-	resp, err := http.Get(fmt.Sprintf("http://%s/api/getworld", ipAddress))
+	resp, err := http.Get(fmt.Sprintf("http://%s/api/v1/world/getworld", ipAddress))
 	if err != nil {
 		log.Println(err)
 	}
@@ -183,6 +190,7 @@ func loadWorldRest() {
 }
 
 func savePlayerRest() {
+	playerMu.RLock()
 	playerData := Player{
 		X: playerPosition.X, Y: playerPosition.Y, TargetX: targetPosition.X, TargetY: targetPosition.Y,
 		Health: playerHealth, WoodCount: woodCount, StoneCount: stoneCount, MetalCount: metalCount,
@@ -202,6 +210,7 @@ func savePlayerRest() {
 		ShelfCount: shelfCount, SignCount: signCount, SmallBarrelCount: smallBarrelCount,
 		TableCount: tableCount, TrashCount: trashCount, LootboxCount: lootboxCount, TombstoneCount: tombstoneCount, SaplingCount: saplingCount, SeedCount: seedCount, CabaggeCount: cabbageCount,
 	}
+	playerMu.RUnlock()
 
 	playerDataBinary, err := msgpack.Marshal(&playerData)
 	if err != nil {
@@ -209,7 +218,7 @@ func savePlayerRest() {
 	}
 
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", fmt.Sprintf("http://%s/api/loadpdata", ipAddress), bytes.NewBuffer(playerDataBinary))
+	req, err := http.NewRequest("POST", fmt.Sprintf("http://%s/api/v1/player/loadpdata", ipAddress), bytes.NewBuffer(playerDataBinary))
 	req.Header.Add("Session-Nickname", nickname)
 	if err != nil {
 		log.Println("Error with create new request to server: ", err)
@@ -225,7 +234,7 @@ func loadPlayerRest() {
 	var playerData Player
 
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", fmt.Sprintf("http://%s/api/getpdata", ipAddress), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("http://%s/api/v1/player/getpdata", ipAddress), nil)
 	req.Header.Add("Session-Nickname", nickname)
 	if err != nil {
 		log.Println("Error with create new request to server: ", err)
@@ -380,24 +389,4 @@ func loadPlayerRest() {
 		seedCount = 0
 		cabbageCount = 0
 	}
-}
-
-func sendMovePacket(x, y, targetX, targetY float32) {
-	packet := map[string]interface{}{
-		"Action":  PLAYER_MOVE,
-		"Player":  nickname,
-		"X":       x,
-		"Y":       y,
-		"TargetX": targetX,
-		"TargetY": targetY,
-	}
-
-	packetBinary, err := msgpack.Marshal(&packet)
-	if err != nil {
-		log.Println("Error with marshal move packet: ", err)
-	}
-
-	data2Send := append([]byte{PLAYER_PACKET}, packetBinary...)
-	socket.SendBinary(data2Send)
-	log.Println("Пакет кнопки W отправлен")
 }

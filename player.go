@@ -6,12 +6,14 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 var (
+	playerMu                   sync.RWMutex
 	player                     rl.Texture2D
 	playerWalk1, playerWalk2   rl.Texture2D
 	playerTexture              rl.Texture2D
@@ -253,6 +255,7 @@ func updateCameraTarget(cam *rl.Camera2D, playerPosition rl.Vector2, playerRecta
 }
 
 func updatePlayerPosition() {
+	playerMu.Lock()
 	// Вычисляем разницу между текущей и целевой позицией
 	dx := targetPosition.X - playerPosition.X
 	dy := targetPosition.Y - playerPosition.Y
@@ -293,6 +296,7 @@ func updatePlayerPosition() {
 		animationComplete = true
 		directionChangeTimer = 0
 	}
+	playerMu.Unlock()
 }
 
 func updatePlayerTexture() {

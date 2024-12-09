@@ -3,7 +3,6 @@ package main
 import (
 	"math"
 	"math/rand"
-	"sync/atomic"
 	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -767,16 +766,6 @@ func keyboardHandler() {
 				targetPosition.X = startX + moveX
 				targetPosition.Y = startY + moveY
 				lastMoveTime = time.Now()
-
-				// Отправляем пакет только если подключены к серверу
-				if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
-					sendMovePacket(
-						startX,
-						startY,
-						targetPosition.X,
-						targetPosition.Y,
-					)
-				}
 			}
 		}
 	}

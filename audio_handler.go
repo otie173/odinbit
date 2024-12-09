@@ -205,17 +205,17 @@ func updateMusic() {
 	}
 
 	switch currentScene {
-	case MENU, INVENTORY:
+	case MENU:
 		if lastScene != currentScene {
-			// При первом переходе в MENU или INVENTORY ставим музыку на паузу
+			// При первом переходе в MENU ставим музыку на паузу
 			if !musicPaused {
 				pauseMusic()
 			}
 			lastScene = currentScene
 		}
 	case GAME:
-		if lastScene == MENU || lastScene == INVENTORY {
-			// Возвращаемся из MENU или INVENTORY, возобновляем музыку, не выбирая новый трек
+		if lastScene == MENU {
+			// Возвращаемся из MENU, возобновляем музыку, не выбирая новый трек
 			if musicPaused {
 				resumeMusic()
 			}
