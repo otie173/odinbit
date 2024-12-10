@@ -21,8 +21,7 @@ var (
 	connectedToServer int32
 	nickname          string
 	password          string
-	activeInput       int // 0 - nickname, 1 - password, 2 - ipAddress
-	needLoadWorld     int32
+	activeInput       int   // 0 - nickname, 1 - password, 2 - ipAddress
 	worldType         int32 // send(0) or receive(1)
 	needSwitchScene   int32
 )
@@ -73,6 +72,7 @@ func connectServer(url string) {
 
 	socket.OnConnected = func(s *gowebsocket.Socket) {
 		atomic.StoreInt32(&connectedToServer, 1)
+		loadWorldRest()
 		loadPlayerRest()
 	}
 

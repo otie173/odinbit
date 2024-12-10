@@ -112,10 +112,6 @@ func drawScene() {
 
 			if rl.CheckCollisionPointRec(mousePos, multiplayerRectangle) {
 				gameMode = MULTIPLAYER
-				if checkWorldFile("world_send.odn") {
-					world = loadWorldFile()
-				}
-
 				currentScene = IP_INPUT
 			}
 		}
@@ -371,7 +367,6 @@ func drawScene() {
 
 				if succesAuth {
 					checkStatusRest()
-					atomic.StoreInt32(&needLoadWorld, 1)
 					connectServer("ws://" + ipAddress + "/ws")
 				}
 			}

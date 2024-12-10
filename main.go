@@ -53,13 +53,6 @@ func update() {
 	updateMusic()
 	doTick()
 
-	if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
-		if atomic.LoadInt32(&needLoadWorld) == 1 {
-			loadWorldRest()
-			atomic.StoreInt32(&needLoadWorld, 0)
-		}
-	}
-
 	if atomic.LoadInt32(&needSwitchScene) == 1 && atomic.LoadInt32(&connectedToServer) == 0 {
 		currentScene = TITLE
 		atomic.StoreInt32(&needSwitchScene, 0)
