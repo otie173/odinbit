@@ -114,7 +114,6 @@ func handleData(opcode byte, data []byte) {
 		if err := msgpack.Unmarshal(data, &packet); err != nil {
 			log.Println(err)
 		}
-		log.Println(packet)
 		switch GetByte(packet["Action"]) {
 		case blockAdd:
 			addBlockNetwork(rl.Texture2D{ID: GetUint32(packet["Texture"]), Width: 10, Height: 10, Mipmaps: 1, Format: 7}, GetFloat32(packet["X"]), GetFloat32(packet["Y"]), false)
