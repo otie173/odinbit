@@ -290,3 +290,22 @@ func generateRandomPosition() (float32, float32) {
 		}
 	}
 }
+
+func regenerateResource(texture rl.Texture2D) {
+	x, y := generateRandomPosition()
+
+	switch texture.ID {
+	case bigStone1.ID, bigStone2.ID, bigStone3.ID, bigStone4.ID, bigStone5.ID:
+		generateBigStone(x, y)
+	case stone1.ID, stone2.ID, stone3.ID, stone4.ID:
+		generateStone(x, y)
+	case smallTree.ID, normalTree.ID, bigTree.ID:
+		generateTree(x, y)
+	case pickaxe.ID:
+		generateBones(x, y, 1)
+	case axe.ID:
+		generateBones(x, y, 2)
+	case shovel.ID:
+		generateBones(x, y, 3)
+	}
+}

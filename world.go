@@ -407,8 +407,14 @@ func addBlockNetwork(img rl.Texture2D, x, y float32, passable bool) {
 
 func removeBlock(x, y float32) {
 	worldMutex.Lock()
-	delete(world, rl.NewRectangle(x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE, TILE_SIZE))
+	rec := rl.NewRectangle(x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE, TILE_SIZE)
+	val, ok := world[rec]
+	delete(world, rec)
 	worldMutex.Unlock()
+
+	if ok {
+		regenerateResource(val.img)
+	}
 
 	if atomic.LoadInt32(&connectedToServer) == 1 && gameMode == MULTIPLAYER {
 		packet := map[string]interface{}{
