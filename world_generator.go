@@ -167,7 +167,6 @@ func generateGrass(x, y float32) {
 			addBlock(grass6, x, y, true)
 		}
 	}
-
 }
 
 func generateBones(x, y float32, bonesPattern int) {
