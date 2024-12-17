@@ -239,47 +239,6 @@ func generateWorld() {
 	generateBarrier()
 }
 
-func generateResource() {
-	resourceTick++
-	if resourceTick != RESOURCE_SPAWN_TIME {
-		return
-	}
-
-	for i := 0; i <= 2 && worldInfo.BigStonesCount < 960; i++ {
-		generateBigStone(generateRandomPosition())
-	}
-
-	for i := 0; i <= 5 && worldInfo.SmallStonesCount < 640; i++ {
-		generateStone(generateRandomPosition())
-	}
-
-	for i := 0; i <= 21 && worldInfo.TreesCount < 1920; i++ {
-		generateTree(generateRandomPosition())
-	}
-
-	switch {
-	case worldInfo.PickaxesCount < 9:
-		needItems := 9 - worldInfo.PickaxesCount
-		for i := 0; i < needItems; i++ {
-			x, y := generateRandomPosition()
-			generateBones(x, y, 1)
-		}
-	case worldInfo.AxesCount < 9:
-		needItems := 9 - worldInfo.AxesCount
-		for i := 0; i < needItems; i++ {
-			x, y := generateRandomPosition()
-			generateBones(x, y, 2)
-		}
-	case worldInfo.ShovelsCount < 9:
-		needItems := 9 - worldInfo.ShovelsCount
-		for i := 0; i < needItems; i++ {
-			x, y := generateRandomPosition()
-			generateBones(x, y, 3)
-		}
-	}
-	resourceTick = 0
-}
-
 func generateRandomPosition() (float32, float32) {
 	for {
 		x, y := float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2)

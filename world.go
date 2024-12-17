@@ -74,7 +74,6 @@ var (
 	tombstone                         rl.Texture2D
 	trash                             rl.Texture2D
 	sapling                           rl.Texture2D
-	resourceTick                      int = 0
 	seed1Normal, seed1Big             rl.Texture2D
 	seed2Small, seed2Normal, seed2Big rl.Texture2D
 )
@@ -574,23 +573,6 @@ func distanceInBlocks(playerX, playerY, blockX, blockY float32, distance float32
 	dy := math.Floor(math.Abs(float64(blockY-playerY)) / float64(TILE_SIZE))
 
 	return dx <= float64(distance) && dy <= float64(distance)
-}
-
-func updateWorld() {
-	if !worldInfo.StructuresGenerated {
-		for i := 0; i <= 6; i++ {
-			generateStructure(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, 1)
-			generateStructure(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, 2)
-			generateStructure(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2, 3)
-		}
-	}
-	if !worldInfo.BonesGenerated {
-		for i := 0; i <= 8; i++ {
-			generateBones(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), 1)
-			generateBones(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), 2)
-			generateBones(float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), float32(rand.Intn(WORLD_SIZE+1)-WORLD_SIZE/2), 3)
-		}
-	}
 }
 
 func updateVisibleBlocks(cam rl.Camera2D) {

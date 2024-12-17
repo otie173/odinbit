@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -70,21 +69,6 @@ func getOdinbitPath() string {
 	}
 
 	return odinbitPath
-}
-
-func saveWorldInfo() {
-	jsonData, err := json.Marshal(worldInfo)
-	if err != nil {
-		log.Fatalf("Не удалось преобразовать информацию мира: %v", err)
-	}
-
-	odinbitPath := getOdinbitPath()
-	worldInfoPath := filepath.Join(odinbitPath, "world_info.json")
-
-	err = os.WriteFile(worldInfoPath, jsonData, 0644)
-	if err != nil {
-		log.Fatalf("Не удалось сохранить информацию о мире: %v", err)
-	}
 }
 
 func saveWorldFile() {
@@ -253,24 +237,6 @@ func checkWorldFile(worldname string) bool {
 	worldDataPath := filepath.Join(odinbitPath, worldname)
 	_, err := os.Stat(worldDataPath)
 	return !os.IsNotExist(err)
-}
-
-func loadWorldInfo() WorldInfo {
-	odinbitPath := getOdinbitPath()
-	worldInfoPath := filepath.Join(odinbitPath, "world_info.json")
-
-	jsonData, err := os.ReadFile(worldInfoPath)
-	if err != nil {
-		log.Fatalf("Ошибка при чтении файла: %v", err)
-	}
-
-	var worldInfoFile WorldInfo
-	err = json.Unmarshal(jsonData, &worldInfoFile)
-	if err != nil {
-		log.Fatalf("Ошибка при десериализации данных: %v", err)
-	}
-
-	return worldInfoFile
 }
 
 func loadTexture(fileName string) rl.Texture2D {

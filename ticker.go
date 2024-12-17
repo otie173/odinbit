@@ -13,6 +13,5 @@ func doTick() {
 		lastTickTime = time.Now()
 		updateTree()
 		updateSeed()
-		generateResource()
 	}
 }

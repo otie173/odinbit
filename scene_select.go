@@ -103,8 +103,6 @@ func drawScene() {
 					rl.DrawTextEx(font, "Load world...", loadWorldLabelPos, 56, 2, rl.White)
 					rl.EndDrawing()
 					world = loadWorldFile()
-					worldInfo = loadWorldInfo()
-					updateWorld()
 					loadPlayerFile()
 					currentScene = GAME
 				}
@@ -129,7 +127,6 @@ func drawScene() {
 			gameMode = SINGLEPLAYER
 			generateWorld()
 			saveWorldFile()
-			saveWorldInfo()
 			savePlayerFile()
 			clear(world)
 		}
@@ -154,7 +151,6 @@ func drawScene() {
 		rl.EndDrawing()
 
 		saveWorldFile()
-		saveWorldInfo()
 		savePlayerFile()
 		currentScene = TITLE
 	case GAME:
