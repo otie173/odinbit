@@ -257,111 +257,133 @@ func mouseHandler() {
 				if wallIsOpen && wallCount != 0 {
 					addBlock(wall, float32(mouseX), float32(mouseY), false)
 					wallCount--
+					placeBlockSound()
 				}
 			case FLOOR:
 				if floorIsOpen && floorCount != 0 {
 					addBlock(floor, float32(mouseX), float32(mouseY), true)
 					floorCount--
+					placeBlockSound()
 				}
 			case DOOR:
 				if doorIsOpen && doorCount != 0 {
 					addBlock(door, float32(mouseX), float32(mouseY), true)
 					doorCount--
+					placeBlockSound()
 				}
 			case CHEST:
 				if chestIsOpen && chestCount != 0 {
 					addBlock(chest, float32(mouseX), float32(mouseY), false)
 					chestCount--
+					placeBlockSound()
 				}
 			case WALLWINDOW:
 				if wallWindowIsOpen && wallWindowCount != 0 {
 					addBlock(wallWindow, float32(mouseX), float32(mouseY), false)
 					wallWindowCount--
+					placeBlockSound()
 				}
 			case DOOROPEN:
 				if doorOpenIsOpen && doorOpenCount != 0 {
 					addBlock(doorOpen, float32(mouseX), float32(mouseY), true)
 					doorOpenCount--
+					placeBlockSound()
 				}
 			case BIGBARREL:
 				if bigBarrelIsOpen && bigBarrelCount != 0 {
 					addBlock(bigBarrel, float32(mouseX), float32(mouseY), false)
 					bigBarrelCount--
+					placeBlockSound()
 				}
 			case BOOKSHELF:
 				if bookshelfIsOpen && bookshelfCount != 0 {
 					addBlock(bookshelf, float32(mouseX), float32(mouseY), false)
 					bookshelfCount--
+					placeBlockSound()
 				}
 			case CHAIR:
 				if chairIsOpen && chairCount != 0 {
 					addBlock(chair, float32(mouseX), float32(mouseY), false)
 					chairCount--
+					placeBlockSound()
 				}
 			case CLOSET:
 				if closetIsOpen && closetCount != 0 {
 					addBlock(closet, float32(mouseX), float32(mouseY), false)
 					closetCount--
+					placeBlockSound()
 				}
 			case FENCE1:
 				if fence1IsOpen && fence1Count != 0 {
 					addBlock(fence1, float32(mouseX), float32(mouseY), false)
 					fence1Count--
+					placeBlockSound()
 				}
 			case FENCE2:
 				if fence2IsOpen && fence2Count != 0 {
 					addBlock(fence2, float32(mouseX), float32(mouseY), false)
 					fence2Count--
+					placeBlockSound()
 				}
 			case FLOOR2:
 				if floor2IsOpen && floor2Count != 0 {
 					addBlock(floor2, float32(mouseX), float32(mouseY), true)
 					floor2Count--
+					placeBlockSound()
 				}
 			case FLOOR4:
 				if floor4IsOpen && floor4Count != 0 {
 					addBlock(floor4, float32(mouseX), float32(mouseY), true)
 					floor4Count--
+					placeBlockSound()
 				}
 			case LAMP:
 				if lampIsOpen && lampCount != 0 {
 					addBlock(lamp, float32(mouseX), float32(mouseY), false)
 					lampCount--
+					placeBlockSound()
 				}
 			case LOOTBOX:
 				if lootboxIsOpen && lootboxCount != 0 {
 					addBlock(lootbox, float32(mouseX), float32(mouseY), false)
 					lootboxCount--
+					placeBlockSound()
 				}
 			case SHELF:
 				if shelfIsOpen && shelfCount != 0 {
 					addBlock(shelf, float32(mouseX), float32(mouseY), false)
 					shelfCount--
+					placeBlockSound()
 				}
 			case SIGN:
 				if signIsOpen && signCount != 0 {
 					addBlock(sign, float32(mouseX), float32(mouseY), false)
 					signCount--
+					placeBlockSound()
 				}
 			case SMALLBARREL:
 				if smallBarrelIsOpen && smallBarrelCount != 0 {
 					addBlock(smallBarrel, float32(mouseX), float32(mouseY), false)
 					smallBarrelCount--
+					placeBlockSound()
 				}
 			case TABLE:
 				if tableIsOpen && tableCount != 0 {
 					addBlock(table, float32(mouseX), float32(mouseY), false)
 					tableCount--
+					placeBlockSound()
 				}
 			case TOMBSTONE:
 				if tombstoneIsOpen && tombstoneCount != 0 {
 					addBlock(tombstone, float32(mouseX), float32(mouseY), false)
 					tombstoneCount--
+					placeBlockSound()
 				}
 			case TRASH:
 				if trashIsOpen && trashCount != 0 {
 					addBlock(trash, float32(mouseX), float32(mouseY), false)
 					trashCount--
+					placeBlockSound()
 				}
 			case SAPLING:
 				if saplingIsOpen && saplingCount != 0 {

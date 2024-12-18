@@ -85,7 +85,7 @@ const (
 	OBJECT_SPAWN_MULTIPLIER int     = 6
 	GROWTH_TIME             int     = 90
 	RESOURCE_SPAWN_TIME     int     = 180
-	SEED_TIME               int     = 5
+	SEED_TIME               int     = 90
 	MAX_COUNT               int     = 32
 )
 
