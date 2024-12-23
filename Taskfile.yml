@@ -26,7 +26,7 @@ tasks:
     cmds:
       - echo "Building game for Linux 64-bit..."
       - |
-        CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w -H=windowsgui" -o {{.PROJ_NAME}}
+        CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o {{.PROJ_NAME}}
         echo "Build completed: {{.PROJ_NAME}}"
     silent: true
 
