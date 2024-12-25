@@ -103,10 +103,6 @@ func connectServer(url string) {
 	socket.Connect()
 }
 
-func disconnectServer() {
-	socket.Close()
-}
-
 func handleData(opcode byte, data []byte) {
 	switch opcode {
 	case blockPacket:
