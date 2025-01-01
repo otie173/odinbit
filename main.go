@@ -94,7 +94,7 @@ func init() {
 
 func main() {
 	for !rl.WindowShouldClose() {
-		update()
+		go update()
 		render()
 	}
 	exit()
