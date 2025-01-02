@@ -59,7 +59,6 @@ var (
 	bones4                            rl.Texture2D
 	bones5                            rl.Texture2D
 	worldGenerated                    bool
-	worldInfo                         WorldInfo
 	doorOpen                          rl.Texture2D
 	bigBarrel                         rl.Texture2D
 	bookshelf                         rl.Texture2D
@@ -178,19 +177,6 @@ type Seed struct {
 	x    float32
 	y    float32
 	tick int
-}
-
-type WorldInfo struct {
-	StructuresGenerated bool `json:"structures_generated"`
-	BonesGenerated      bool `json:"bones_generated"`
-	BigStonesCount      int  `json:"big_stones_count"`
-	SmallStonesCount    int  `json:"small_stones_count"`
-	TreesCount          int  `json:"trees_count"`
-	SaplingsCount       int  `json:"saplings_count"`
-	SeedsCount          int  `json:"seeds_count"`
-	PickaxesCount       int  `json:"pickaxes_count"`
-	AxesCount           int  `json:"axes_count"`
-	ShovelsCount        int  `json:"shovels_count"`
 }
 
 func loadID() {
@@ -460,8 +446,6 @@ func addTree(x, y float32) {
 		tick: 0,
 	}
 	trees = append(trees, tree)
-	worldInfo.SaplingsCount++
-	worldInfo.TreesCount++
 }
 
 func addSeed(x, y float32) {
@@ -471,7 +455,6 @@ func addSeed(x, y float32) {
 		tick: 0,
 	}
 	seeds = append(seeds, seed)
-	worldInfo.SeedsCount++
 }
 
 func removeTree(x, y float32) {
@@ -483,8 +466,6 @@ func removeTree(x, y float32) {
 		}
 	}
 	trees = newTrees
-	worldInfo.SaplingsCount--
-	worldInfo.TreesCount--
 }
 
 func removeSeed(x, y float32) {
@@ -496,7 +477,6 @@ func removeSeed(x, y float32) {
 		}
 	}
 	seeds = newSeeds
-	worldInfo.SeedsCount--
 }
 
 func updateTree() {
@@ -546,7 +526,6 @@ func saplingToTree(x, y float32) {
 
 	removeBlock(x, y)
 	addBlock(treeTexture, x, y, false)
-	worldInfo.TreesCount++
 }
 
 func seedToPlant(x, y float32, tick int) {

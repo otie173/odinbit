@@ -110,8 +110,6 @@ func generateStructure(x, y, structure int) {
 		addBlock(smallBarrel, float32(x+width-2), float32(y+height-2), false)
 		addBlock(sign, float32(x+width/2), float32(y), false)
 	}
-
-	worldInfo.StructuresGenerated = true
 }
 
 func generateStone(x, y float32) {
@@ -128,7 +126,6 @@ func generateStone(x, y float32) {
 	case 4:
 		addBlock(stone4, float32(x), float32(y), false)
 	}
-	worldInfo.SmallStonesCount++
 }
 
 func generateBigStone(x, y float32) {
@@ -145,7 +142,6 @@ func generateBigStone(x, y float32) {
 	case 5:
 		addBlock(bigStone5, float32(x), float32(y), false)
 	}
-	worldInfo.BigStonesCount++
 }
 
 func generateGrass(x, y float32) {
@@ -177,22 +173,18 @@ func generateBones(x, y float32, bonesPattern int) {
 		addBlock(bones2, x-1, y+1, false)  // -1 -1
 		addBlock(bones4, x-2, y-1, false)  // -2 1
 		addBlock(pickaxe, x-1, y-1, false) // -1 1
-		worldInfo.PickaxesCount++
 	case 2:
 		addBlock(bones3, x, y, false)     // 0 0
 		addBlock(bones2, x-1, y, false)   // -1 0
 		addBlock(bones4, x-1, y+1, false) // -1 -1
 		addBlock(bones2, x, y+1, false)   // 0 -1
 		addBlock(axe, x+1, y+1, false)    // 1 -1
-		worldInfo.AxesCount++
 	case 3:
 		addBlock(bones3, x, y, false)   // 0 0
 		addBlock(bones2, x, y+1, false) // 0 -1
 		addBlock(shovel, x-1, y, false) // -1 0
-		worldInfo.ShovelsCount++
 	}
 
-	worldInfo.BonesGenerated = true
 }
 
 func generateTree(x, y float32) {
@@ -207,7 +199,6 @@ func generateTree(x, y float32) {
 	case 3:
 		addBlock(bigTree, float32(x), float32(y), false)
 	}
-	worldInfo.TreesCount++
 }
 
 func generateWorld() {

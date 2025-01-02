@@ -45,7 +45,6 @@ func mouseHandler() {
 								}
 								saplingCount += 3
 							}
-							worldInfo.TreesCount--
 						}
 					case sapling:
 						if shovelIsOpen {
@@ -54,7 +53,6 @@ func mouseHandler() {
 							pickupResourceSound()
 							generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 							saplingCount++
-							worldInfo.TreesCount--
 						}
 					case seed2Small, seed2Normal, seed2Big, seed1Normal, seed1Big:
 						if shovelIsOpen {
@@ -76,14 +74,6 @@ func mouseHandler() {
 							pickupResourceSound()
 							generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 							stoneCount += 5
-
-							if block.img == stone1 || block.img == stone2 || block.img == stone3 || block.img == stone4 {
-								worldInfo.SmallStonesCount--
-							}
-
-							if block.img == bigStone1 || block.img == bigStone2 || block.img == bigStone3 || block.img == bigStone4 || block.img == bigStone5 {
-								worldInfo.BigStonesCount--
-							}
 						}
 					case grass1, grass2, grass3, grass4, grass5, grass6, barrier:
 						break
@@ -210,19 +200,16 @@ func mouseHandler() {
 						generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 					case pickaxe:
 						pickaxeIsOpen = true
-						worldInfo.AxesCount--
 						removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 						pickupResourceSound()
 						generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 					case axe:
 						axeIsOpen = true
-						worldInfo.AxesCount--
 						removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 						pickupResourceSound()
 						generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 					case shovel:
 						shovelIsOpen = true
-						worldInfo.ShovelsCount--
 						removeBlock(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
 						pickupResourceSound()
 						generateGrass(block.rec.X/TILE_SIZE, block.rec.Y/TILE_SIZE)
@@ -387,15 +374,13 @@ func mouseHandler() {
 				}
 			case SAPLING:
 				if saplingIsOpen && saplingCount != 0 {
-					if worldInfo.TreesCount < 1920 && worldInfo.SaplingsCount < MAX_COUNT {
-						addBlock(sapling, float32(mouseX), float32(mouseY), false)
-						addTree(float32(mouseX), float32(mouseY))
-						plantSeedSound()
-						saplingCount--
-					}
+					addBlock(sapling, float32(mouseX), float32(mouseY), false)
+					addTree(float32(mouseX), float32(mouseY))
+					plantSeedSound()
+					saplingCount--
 				}
 			case SEED2SMALL:
-				if seedIsOpen && seedCount != 0 && worldInfo.SeedsCount < MAX_COUNT {
+				if seedIsOpen && seedCount != 0 {
 					addBlock(seed2Small, float32(mouseX), float32(mouseY), false)
 					addSeed(float32(mouseX), float32(mouseY))
 					plantSeedSound()
