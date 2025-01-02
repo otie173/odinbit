@@ -17,6 +17,7 @@ import (
 //go:embed assets/images/characters/*.png
 //go:embed assets/images/gui/*.png
 //go:embed assets/images/items/*.png
+//go:embed assets/images/entity/*.png
 var assets embed.FS
 
 var (
@@ -76,6 +77,9 @@ var (
 	sapling                           rl.Texture2D
 	seed1Normal, seed1Big             rl.Texture2D
 	seed2Small, seed2Normal, seed2Big rl.Texture2D
+
+	chicken rl.Texture2D
+	cow     rl.Texture2D
 )
 
 const (
@@ -148,6 +152,8 @@ const (
 	SEED2SMALL
 	SEED2NORMAL
 	SEED2BIG
+	CHICKEN
+	COW
 )
 
 type BlockData struct {
@@ -300,6 +306,8 @@ func loadWorld() {
 	seed2Small = loadTexture("assets/images/world/seed2_small.png")
 	seed2Normal = loadTexture("assets/images/world/seed2_normal.png")
 	seed2Big = loadTexture("assets/images/world/seed2_big.png")
+	chicken = loadTexture("assets/images/entity/chicken.png")
+	cow = loadTexture("assets/images/entity/cow.png")
 
 	// Установка id для блоков
 	loadID()
