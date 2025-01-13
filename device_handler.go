@@ -728,6 +728,11 @@ func keyboardHandler() {
 		startX := float32(int(targetPosition.X/TILE_SIZE) * int(TILE_SIZE))
 		startY := float32(int(targetPosition.Y/TILE_SIZE) * int(TILE_SIZE))
 
+		if rl.IsKeyPressed(rl.KeyK) {
+			addAnimal(chicken, 1, 1)
+			addAnimal(cow, 3, 3)
+		}
+
 		if rl.IsKeyDown(rl.KeyW) {
 			moveY = -TILE_SIZE
 			shouldMove = true

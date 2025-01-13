@@ -235,6 +235,8 @@ func loadID() {
 	id[SEED2SMALL] = seed2Small
 	id[SEED2NORMAL] = seed2Normal
 	id[SEED2BIG] = seed2Big
+	id[CHICKEN] = chicken
+	id[COW] = cow
 }
 
 func loadWorld() {
