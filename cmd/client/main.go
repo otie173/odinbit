@@ -1,9 +1,13 @@
 package main
 
-import rl "github.com/gen2brain/raylib-go/raylib"
+import (
+	"odinbit/utils/build"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
+)
 
 func init() {
-
+	build.SetBuildType(build.Debug)
 }
 
 func update() {
