@@ -1,23 +1,26 @@
 package main
 
 import (
+	"odinbit/internal/device"
+	"odinbit/internal/player"
+	"odinbit/internal/scene"
 	"odinbit/utils/build"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-func init() {
+func load() {
 	build.SetBuildType(build.Debug)
+
+	player.LoadTexture()
+	player.RegisterCam()
 }
 
 func update() {
+	player.UpdateCamera()
 
-}
-
-func draw() {
-	rl.BeginDrawing()
-	rl.ClearBackground(rl.Black)
-	rl.EndDrawing()
+	device.HandleMouse()
+	device.HandleKeyboard()
 }
 
 func main() {
@@ -29,9 +32,10 @@ func main() {
 	rl.SetExitKey(0)
 	rl.SetTargetFPS(60)
 
+	load()
 	for !rl.WindowShouldClose() {
 		go update()
-		draw()
+		scene.DrawScene()
 	}
 	rl.CloseWindow()
 }
