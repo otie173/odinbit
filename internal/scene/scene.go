@@ -2,6 +2,7 @@ package scene
 
 import (
 	"odinbit/internal/player"
+	"odinbit/internal/world"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -29,6 +30,7 @@ func DrawScene() {
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.Black)
 		rl.BeginMode2D(player.Cam)
+		world.DrawWorld()
 		player.DrawPlayer()
 		rl.EndMode2D()
 		rl.EndDrawing()

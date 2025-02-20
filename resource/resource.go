@@ -8,11 +8,11 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-// /go:embed block/*.png
 // /go:embed sound/*.ogg
 // /go:embed soundtrack/*.ogg
 // /go:embed ui/*.png
 //
+//go:embed block/*.png
 //go:embed entity/*.png
 var resource embed.FS
 

@@ -4,6 +4,7 @@ import (
 	"odinbit/internal/device"
 	"odinbit/internal/player"
 	"odinbit/internal/scene"
+	"odinbit/internal/world"
 	"odinbit/utils/build"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -12,8 +13,12 @@ import (
 func load() {
 	build.SetBuildType(build.Debug)
 
+	world.LoadTexture()
+
 	player.LoadTexture()
 	player.RegisterCam()
+
+	world.AddBlock(1, 2, world.Tree1)
 }
 
 func update() {
@@ -26,7 +31,7 @@ func update() {
 func main() {
 	screenWidth, screenHeight := int32(rl.GetScreenWidth()), int32(rl.GetScreenHeight())
 
-	rl.SetConfigFlags(rl.FlagFullscreenMode | rl.FlagVsyncHint | rl.FlagWindowUnfocused)
+	rl.SetConfigFlags(rl.FlagFullscreenMode | rl.FlagWindowUnfocused | rl.FlagVsyncHint)
 	rl.InitWindow(screenWidth, screenHeight, "Odinbit")
 
 	rl.SetExitKey(0)
