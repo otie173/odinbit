@@ -35,16 +35,16 @@ func roundToFixed(x float32, places int) float32 {
 }
 
 func UpdateCamera() {
-	//	const lerpSpeed float32 = 0.05
+	const lerpSpeed float32 = 0.05
 
-	//	targetX := Roben.Pos.X + playerRectangle.Width/2
-	//	targetY := Roben.Pos.Y + playerRectangle.Height/2
+	targetX := Roben.Pos.X + playerRectangle.Width/2
+	targetY := Roben.Pos.Y + playerRectangle.Height/2
 
-	//	newX := rl.Lerp(Cam.Target.X, targetX, lerpSpeed)
-	//	newY := rl.Lerp(Cam.Target.Y, targetY, lerpSpeed)
+	newX := rl.Lerp(Cam.Target.X, targetX, lerpSpeed)
+	newY := rl.Lerp(Cam.Target.Y, targetY, lerpSpeed)
 
-	Cam.Target.X = Roben.Pos.X //roundToFixed(newX, 1)
-	Cam.Target.Y = Roben.Pos.Y // roundToFixed(newY, 1)
+	Cam.Target.X = roundToFixed(newX, 1)
+	Cam.Target.Y = roundToFixed(newY, 1)
 }
 
 func UpdateTexture() {
