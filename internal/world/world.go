@@ -9,12 +9,14 @@ import (
 var (
 	world map[rl.Vector2]Block = make(map[rl.Vector2]Block, WorldSize*WorldSize)
 
-	Tree1, Tree2 rl.Texture2D
+	Barrier                                                rl.Texture2D
+	Tree1, Tree2                                           rl.Texture2D
+	Stone1, Stone2, Stone3, Stone4, Stone5, Stone6, Stone7 rl.Texture2D
 )
 
 const (
 	TileSize  float32 = 10
-	WorldSize int     = 512
+	WorldSize int     = 16
 )
 
 type Block struct {
@@ -24,8 +26,18 @@ type Block struct {
 }
 
 func LoadTexture() {
+	Barrier = resource.LoadTexture("block/barrier.png")
+
 	Tree1 = resource.LoadTexture("block/tree1.png")
 	Tree2 = resource.LoadTexture("block/tree2.png")
+
+	Stone1 = resource.LoadTexture("block/stone1.png")
+	Stone2 = resource.LoadTexture("block/stone2.png")
+	Stone3 = resource.LoadTexture("block/stone3.png")
+	Stone4 = resource.LoadTexture("block/stone4.png")
+	Stone5 = resource.LoadTexture("block/stone5.png")
+	Stone6 = resource.LoadTexture("block/stone6.png")
+	Stone7 = resource.LoadTexture("block/stone7.png")
 }
 
 func AddBlock(x, y float32, texture rl.Texture2D) {

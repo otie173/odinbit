@@ -18,7 +18,8 @@ func load() {
 	player.LoadTexture()
 	player.RegisterCam()
 
-	world.AddBlock(1, 2, world.Tree1)
+	//	world.AddBlock(1, 2, world.Tree1)
+	world.GenerateWorld()
 }
 
 func update() {

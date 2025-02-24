@@ -26,7 +26,7 @@ func LoadTexture() {
 }
 
 func RegisterCam() {
-	Cam = rl.NewCamera2D(rl.NewVector2(float32(rl.GetScreenWidth()/2), float32(rl.GetScreenHeight()/2)), Roben.Pos, 0.0, 6.0)
+	Cam = rl.NewCamera2D(rl.NewVector2(float32(rl.GetScreenWidth()/2), float32(rl.GetScreenHeight()/2)), rl.NewVector2(float32(Roben.Pos.X-(playerFlippedRectangle.Width/2)), float32(Roben.Pos.Y-(playerRectangle.Height/2))), 0.0, 6.0)
 }
 
 func roundToFixed(x float32, places int) float32 {
