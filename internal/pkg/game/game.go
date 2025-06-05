@@ -1,7 +1,10 @@
 package game
 
 import (
+	"log"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/otie173/odinbit/internal/block"
 	"github.com/otie173/odinbit/internal/camera"
 	"github.com/otie173/odinbit/internal/device"
 	"github.com/otie173/odinbit/internal/player"
@@ -18,9 +21,12 @@ func New() {
 
 func Load() {
 	resource.Load()
+	block.Load()
 	player.Load()
 	world.Load()
 	camera.Load()
+
+	log.Println(block.Mushroom2)
 }
 
 func update() {

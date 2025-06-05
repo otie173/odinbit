@@ -16,6 +16,10 @@ func HandleKeyboard() {
 		tileX := int(math.Floor(float64(mousePos.X / common.TileSize)))
 		tileY := int(math.Floor(float64(mousePos.Y / common.TileSize)))
 
+		if world.BlockExists(tileX, tileY) {
+			world.CheckBehavior(tileX, tileY)
+		}
+
 		if world.IsValidPos(tileX, tileY) && !world.BlockExists(tileX, tileY) || world.IsValidPos(tileX, tileY) && world.IsPassable(tileX, tileY) {
 			player.SetTilePos(tileX, tileY)
 		}
