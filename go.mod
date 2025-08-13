@@ -1,11 +1,14 @@
 module github.com/otie173/odinbit
 
-go 1.23.2
-
-require github.com/gen2brain/raylib-go/raylib v0.0.0-20250409052854-a4292f0f0412
+go 1.24.4
 
 require (
-	github.com/ebitengine/purego v0.8.2 // indirect
-	golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0 // indirect
-	golang.org/x/sys v0.32.0 // indirect
+	github.com/gen2brain/raylib-go/raygui v0.0.0-20250617194346-eddd038123ee
+	github.com/gen2brain/raylib-go/raylib v0.55.1
+)
+
+require (
+	github.com/ebitengine/purego v0.8.4 // indirect
+	golang.org/x/exp v0.0.0-20250711185948-6ae5c78190dc // indirect
+	golang.org/x/sys v0.34.0 // indirect
 )
