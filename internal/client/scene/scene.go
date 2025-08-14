@@ -25,11 +25,17 @@ var (
 )
 
 type Handler struct {
+	screenWidth  int32
+	screenHeight int32
 	currentScene common.Scene
 }
 
-func New(scene common.Scene) *Handler {
-	return &Handler{currentScene: scene}
+func New(screenWidth, screenHeight int32, scene common.Scene) *Handler {
+	return &Handler{
+		screenWidth:  screenWidth,
+		screenHeight: screenHeight,
+		currentScene: scene,
+	}
 }
 
 func (h *Handler) drawFunc(fn func()) {
@@ -43,10 +49,10 @@ func (h *Handler) Update() {
 	switch h.currentScene {
 	case common.Title:
 		h.drawFunc(func() {
-			x := float32(rl.GetScreenWidth()/2 - 900/2)
+			x := float32(h.screenWidth/2 - 900/2)
 			y := float32(340)
 			raygui.SetStyle(raygui.DEFAULT, raygui.TEXT_SIZE, 32)
-			raygui.GroupBox(rl.NewRectangle(x, float32(rl.GetScreenHeight()/2-550/2), 900, 550), "Odinbit")
+			raygui.GroupBox(rl.NewRectangle(x, float32(h.screenHeight/2-550/2), 900, 550), "Odinbit")
 
 			if raygui.Button(rl.NewRectangle(x+40, y, 820, 100), "Singleplayer") {
 			}
@@ -60,9 +66,9 @@ func (h *Handler) Update() {
 		})
 	case common.Connect:
 		h.drawFunc(func() {
-			x := float32(rl.GetScreenWidth()/2 - 900/2)
+			x := float32(h.screenWidth/2 - 900/2)
 			y := float32(340)
-			raygui.GroupBox(rl.NewRectangle(x, float32(rl.GetScreenHeight()/2-550/2), 900, 550), "Connect")
+			raygui.GroupBox(rl.NewRectangle(x, float32(h.screenHeight/2-550/2), 900, 550), "Connect")
 			if raygui.TextBox(rl.NewRectangle(x+40, y, 820, 80), &nickname, 64, nicknameEdit) {
 				nicknameEdit = !nicknameEdit
 			}
@@ -72,7 +78,7 @@ func (h *Handler) Update() {
 			if raygui.TextBox(rl.NewRectangle(x+40, y+110*2, 820, 80), &ip, 64, ipEdit) {
 				ipEdit = !ipEdit
 			}
-			if raygui.Button(rl.NewRectangle(float32(rl.GetScreenWidth()/2-350/2), y+115*3, 350, 85), "Connect") {
+			if raygui.Button(rl.NewRectangle(float32(h.screenWidth/2-350/2), y+115*3, 350, 85), "Connect") {
 				if !connection.IsConnected() {
 					if err := connection.Connect(ip); err != nil {
 						log.Println(err)

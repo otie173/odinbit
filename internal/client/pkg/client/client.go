@@ -17,7 +17,7 @@ func New(title string, screenWidth, screenHeight int32) *Client {
 		title:        title,
 		screenWidth:  screenWidth,
 		screenHeight: screenHeight,
-		sceneHandler: scene.New(common.Title),
+		sceneHandler: scene.New(screenWidth, screenWidth, common.Title),
 	}
 }
 
