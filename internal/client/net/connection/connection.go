@@ -26,6 +26,10 @@ func Connect(address string) error {
 	return nil
 }
 
+func Disconnect() {
+	connection.Close()
+}
+
 func Write(data []byte) {
 	if _, err := connection.Write(data); err != nil {
 		log.Println("Error: ", err)

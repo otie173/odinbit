@@ -2,34 +2,47 @@ package server
 
 import (
 	"log"
+	"net"
+	"os"
 
-	"github.com/otie173/odinbit/internal/server/net/handler/http"
-	"github.com/otie173/odinbit/internal/server/net/handler/tcp"
+	"github.com/otie173/odinbit/internal/server/net/handler"
 )
 
 // TODO: Server { world, players, entities}
 // нужно все разделить на компоненты
 // чтобы передавать в аргументы функции
 type Server struct {
-	httpHandler *http.HTTPHandler
-	tcpHandler  *tcp.TCPHandler
+	addr    string
+	handler *handler.Handler
 }
 
-func New() *Server {
+func New(addr string) *Server {
 	return &Server{
-		httpHandler: http.New(),
-		tcpHandler:  tcp.New(),
+		addr:    addr,
+		handler: handler.New(),
 	}
 }
 
 func (s *Server) Load() {
-	s.httpHandler.Load()
-	s.tcpHandler.Load()
 }
 
 func (s *Server) Run() {
-	log.Println("Hello world!")
+	listener, err := net.Listen("tcp", s.addr)
+	if err != nil {
+		log.Printf("Error starting server: %v\n", err)
+		os.Exit(1)
+	}
+	defer listener.Close()
+	log.Printf("Server listening on: %s\n", s.addr)
 
-	go s.httpHandler.Run()
-	s.tcpHandler.Run()
+	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			log.Printf("Error with accept connection: %v\n", err)
+			break
+		}
+		log.Printf("New connection: %s\n", conn.RemoteAddr().String())
+
+		go s.handler.Handle(conn)
+	}
 }

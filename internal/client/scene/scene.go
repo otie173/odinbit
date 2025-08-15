@@ -45,7 +45,15 @@ func (h *Handler) drawFunc(fn func()) {
 	rl.EndDrawing()
 }
 
-func (h *Handler) Update() {
+func (h *Handler) GetScene() common.Scene {
+	return h.currentScene
+}
+
+func (h *Handler) SetScene(scene common.Scene) {
+	h.currentScene = scene
+}
+
+func (h *Handler) Handle() {
 	switch h.currentScene {
 	case common.Title:
 		h.drawFunc(func() {
@@ -85,9 +93,9 @@ func (h *Handler) Update() {
 						return
 					}
 
-					if connection.IsConnected() {
-						connection.Write([]byte("Hello!"))
-					}
+					//if connection.IsConnected() {
+					//	connection.Write([]byte("Hello!"))
+					//}
 				}
 			}
 		})
