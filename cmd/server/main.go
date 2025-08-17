@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/otie173/odinbit/internal/client/pkg/server"
+	"github.com/otie173/odinbit/internal/pkg/server"
 )
 
 func main() {

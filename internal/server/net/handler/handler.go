@@ -15,13 +15,15 @@ func New() *Handler {
 func (h *Handler) Handle(conn net.Conn) {
 	defer conn.Close()
 
-	log.Printf("Handling connection: %s\n", conn.RemoteAddr().String())
+	log.Printf("New connection handling : %s\n", conn.RemoteAddr().String())
 
 	buffer := make([]byte, 1024)
 	for {
 		n, err := conn.Read(buffer)
 		if err != nil {
-			log.Printf("Problem with read data from %s with error %v\n", conn.RemoteAddr().String(), err)
+			log.Printf("Client %s was closed with error %s\n", conn.RemoteAddr().String(), err)
+			conn.Close()
+			return
 		}
 
 		data := string(buffer[:n])

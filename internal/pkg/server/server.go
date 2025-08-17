@@ -6,6 +6,8 @@ import (
 	"os"
 
 	"github.com/otie173/odinbit/internal/server/net/handler"
+	"github.com/otie173/odinbit/internal/server/texture"
+	"github.com/otie173/odinbit/internal/server/world"
 )
 
 // TODO: Server { world, players, entities}
@@ -14,16 +16,20 @@ import (
 type Server struct {
 	addr    string
 	handler *handler.Handler
+	world   *world.World
 }
 
 func New(addr string) *Server {
 	return &Server{
 		addr:    addr,
 		handler: handler.New(),
+		world:   world.New(),
 	}
 }
 
 func (s *Server) Load() {
+	texture.LoadTextures()
+	s.world.Generate()
 }
 
 func (s *Server) Run() {
@@ -41,8 +47,7 @@ func (s *Server) Run() {
 			log.Printf("Error with accept connection: %v\n", err)
 			break
 		}
-		log.Printf("New connection: %s\n", conn.RemoteAddr().String())
-
+		log.Printf("New connection accepted: %s\n", conn.RemoteAddr().String())
 		go s.handler.Handle(conn)
 	}
 }

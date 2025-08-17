@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/otie173/odinbit/internal/client/pkg/client"
+	"github.com/otie173/odinbit/internal/pkg/client"
 	"github.com/otie173/odinbit/resources"
 )
 
