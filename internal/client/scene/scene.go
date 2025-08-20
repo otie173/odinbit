@@ -2,13 +2,11 @@ package scene
 
 import (
 	"image/color"
-	"log"
 	"os"
 
 	"github.com/gen2brain/raylib-go/raygui"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/otie173/odinbit/internal/client/common"
-	"github.com/otie173/odinbit/internal/client/net/connection"
 )
 
 var (
@@ -80,24 +78,21 @@ func (h *Handler) Handle() {
 			if raygui.TextBox(rl.NewRectangle(x+40, y, 820, 80), &nickname, 64, nicknameEdit) {
 				nicknameEdit = !nicknameEdit
 			}
-			if raygui.TextBox(rl.NewRectangle(x+40, y+110, 820, 80), &password, 64, passwordEdit) {
-				passwordEdit = !passwordEdit
-			}
-			if raygui.TextBox(rl.NewRectangle(x+40, y+110*2, 820, 80), &ip, 64, ipEdit) {
+			if raygui.TextBox(rl.NewRectangle(x+40, y+110, 820, 80), &ip, 64, ipEdit) {
 				ipEdit = !ipEdit
 			}
-			if raygui.Button(rl.NewRectangle(float32(h.screenWidth/2-350/2), y+115*3, 350, 85), "Connect") {
-				if !connection.IsConnected() {
-					if err := connection.Connect(ip); err != nil {
-						log.Println(err)
-						return
-					}
-
-					//if connection.IsConnected() {
-					//	connection.Write([]byte("Hello!"))
-					//}
-				}
+			if raygui.Button(rl.NewRectangle(float32(h.screenWidth/2-350/2), y+100*3, 350, 85), "Connect") {
+				//if !connection.IsConnected() {
+				//	if err := connection.Connect(ip); err != nil {
+				//		log.Println(err)
+				//		return
 			}
+
+			//if connection.IsConnected() {
+			//	connection.Write([]byte("Hello!"))
+			//}
+			//}
+			//}
 		})
 	}
 }
