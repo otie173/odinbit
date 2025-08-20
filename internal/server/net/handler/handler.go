@@ -13,9 +13,9 @@ type Handler struct {
 	dispatcher *dispatcher.Dispatcher
 }
 
-func New() *Handler {
+func New(dispatcher *dispatcher.Dispatcher) *Handler {
 	return &Handler{
-		dispatcher: dispatcher.New(),
+		dispatcher: dispatcher,
 	}
 }
 
@@ -48,6 +48,6 @@ func (h *Handler) Handle(conn net.Conn) {
 			conn.Close()
 			return
 		}
-		h.dispatcher.Dispatch(pkt.Type, pkt.Payload)
+		h.dispatcher.Dispatch(conn, pkt.Type, pkt.Payload)
 	}
 }

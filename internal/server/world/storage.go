@@ -1,9 +1,11 @@
 package world
 
-import "github.com/otie173/odinbit/internal/server/common"
+import (
+	"github.com/otie173/odinbit/internal/server/common"
+)
 
 type storage struct {
-	blocks [common.WorldSize][common.WorldSize]block
+	blocks [common.WorldSize][common.WorldSize]Block
 }
 
 func newStorage() *storage {
@@ -11,11 +13,11 @@ func newStorage() *storage {
 }
 
 func (s *storage) addBlock(id int, passable bool, x, y int) {
-	block := block{textureID: id, passable: passable}
+	block := Block{textureID: id, passable: passable}
 	s.blocks[x][y] = block
 }
 
 func (s *storage) removeBlock(x, y int) {
-	block := block{textureID: -1, passable: true}
+	block := Block{textureID: -1, passable: true}
 	s.blocks[x][y] = block
 }

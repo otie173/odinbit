@@ -5,30 +5,39 @@ import (
 	"net"
 	"os"
 
+	"github.com/otie173/odinbit/internal/server/net/dispatcher"
 	"github.com/otie173/odinbit/internal/server/net/handler"
 	"github.com/otie173/odinbit/internal/server/texture"
 	"github.com/otie173/odinbit/internal/server/world"
 )
 
-// TODO: Server { world, players, entities}
-// нужно все разделить на компоненты
-// чтобы передавать в аргументы функции
 type Server struct {
-	addr    string
-	handler *handler.Handler
-	world   *world.World
+	addr        string
+	textures    *texture.Storage
+	world       *world.World
+	mainHandler *handler.Handler
 }
 
 func New(addr string) *Server {
+	textures := texture.New()
+	wrld := world.New(textures)
+
+	textureHandler := texture.NewHandler(textures)
+	worldHandler := world.NewHandler(wrld)
+
+	dispatcher := dispatcher.New(textureHandler, worldHandler)
+	mainHandler := handler.New(dispatcher)
+
 	return &Server{
-		addr:    addr,
-		handler: handler.New(),
-		world:   world.New(),
+		addr:        addr,
+		textures:    textures,
+		world:       wrld,
+		mainHandler: mainHandler,
 	}
 }
 
 func (s *Server) Load() {
-	texture.LoadTextures()
+	s.textures.LoadTextures()
 	s.world.Generate()
 }
 
@@ -48,6 +57,6 @@ func (s *Server) Run() {
 			break
 		}
 		log.Printf("New connection accepted: %s\n", conn.RemoteAddr().String())
-		go s.handler.Handle(conn)
+		go s.mainHandler.Handle(conn)
 	}
 }

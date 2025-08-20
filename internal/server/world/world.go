@@ -1,6 +1,11 @@
 package world
 
-type block struct {
+import (
+	"github.com/otie173/odinbit/internal/server/common"
+	"github.com/otie173/odinbit/internal/server/texture"
+)
+
+type Block struct {
 	textureID int
 	passable  bool
 }
@@ -10,11 +15,14 @@ type World struct {
 	generator *generator
 }
 
-func New() *World {
-	storage := newStorage()
-	generator := newGenerator(storage)
+func New(textureStorage *texture.Storage) *World {
+	blockStorage := newStorage()
+	generator := newGenerator(textureStorage, blockStorage)
 
-	return &World{storage: storage, generator: generator}
+	return &World{
+		storage:   blockStorage,
+		generator: generator,
+	}
 }
 
 func (w *World) AddBlock(id int, passable bool, x, y int) {
@@ -27,4 +35,8 @@ func (w *World) RemoveBlock(x, y int) {
 
 func (w *World) Generate() {
 	w.generator.generateWorld()
+}
+
+func (w *World) GetWorld() [common.WorldSize][common.WorldSize]Block {
+	return w.storage.blocks
 }

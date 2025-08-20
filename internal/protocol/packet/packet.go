@@ -1,5 +1,10 @@
 package packet
 
+import (
+	"github.com/otie173/odinbit/internal/server/common"
+	"github.com/otie173/odinbit/internal/server/world"
+)
+
 type Packet struct {
 	Type    PacketType
 	Payload []byte
@@ -14,6 +19,14 @@ const (
 	GetWorldType
 )
 
+type Ping struct{}
+
 type Handshake struct {
 	Username string
+}
+
+type GetTextures struct{}
+
+type GetWorld struct {
+	World [common.WorldSize][common.WorldSize]world.Block
 }

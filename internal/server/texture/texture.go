@@ -4,11 +4,8 @@ import (
 	"log"
 	"path/filepath"
 	"strings"
-)
 
-var (
-	counter int = 1
-	storage map[string]Texture
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 type Texture struct {
@@ -16,14 +13,23 @@ type Texture struct {
 	path string
 }
 
-func loadTexture(name, path string) {
-	texture := Texture{id: counter, path: path}
-	storage[name] = texture
-	counter++
+type Storage struct {
+	counter int
+	storage map[string]Texture
 }
 
-func LoadTextures() {
-	storage = make(map[string]Texture, 128)
+func New() *Storage {
+	counter := 0
+	storage := make(map[string]Texture, 128)
+
+	return &Storage{
+		counter: counter,
+		storage: storage,
+	}
+}
+
+func (s *Storage) LoadTextures() {
+	s.storage = make(map[string]Texture, 128)
 
 	files, err := filepath.Glob("resources/textures/*")
 	if err != nil {
@@ -34,14 +40,24 @@ func LoadTextures() {
 		name := strings.TrimSuffix(filepath.Base(file), ".png")
 		path := filepath.Base(file)
 
-		loadTexture(name, path)
+		texture := Texture{id: s.counter, path: path}
+		s.storage[name] = texture
+		s.counter++
 	}
 }
 
-func GetID(name string) int {
-	val, ok := storage[name]
+func (s *Storage) GetID(name string) int {
+	val, ok := s.storage[name]
 	if !ok {
 		return -1
 	}
 	return val.id
+}
+
+func (s *Storage) GetTextures() ([]byte, error) {
+	binaryTextures, err := msgpack.Marshal(s.storage)
+	if err != nil {
+		return nil, err
+	}
+	return binaryTextures, nil
 }
