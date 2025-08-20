@@ -32,19 +32,17 @@ func (h *Handler) Handle(conn net.Conn) {
 
 	log.Printf("New connection handling : %s\n", conn.RemoteAddr().String())
 	buffer := make([]byte, 1024)
-	data := make([]byte, 1024)
 	for {
 		n, err := conn.Read(buffer)
 		if err != nil {
-			log.Printf("Read buffer error from %s: %s\n", conn.RemoteAddr().String(), err)
+			log.Printf("Read buffer error from %s: %v\n", conn.RemoteAddr().String(), err)
 			conn.Close()
 			return
 		}
-		data = buffer[:n]
 
-		pkt, err := parsePacket(data)
+		pkt, err := parsePacket(buffer[:n])
 		if err != nil {
-			log.Printf("Parse error from %s: %s\n", conn.RemoteAddr().String(), err)
+			log.Printf("Parse error from %s: %v\n", conn.RemoteAddr().String(), err)
 			conn.Close()
 			return
 		}
