@@ -1,10 +1,19 @@
 package packet
 
-type Packet int
+type Packet struct {
+	Type    PacketType
+	Payload []byte
+}
+
+type PacketType int
 
 const (
-	Ping Packet = iota
-	Auth
-	GetTextures
-	GetWorld
+	PingType PacketType = iota
+	HandshakeType
+	GetTexturesType
+	GetWorldType
 )
+
+type Handshake struct {
+	Username string
+}
