@@ -4,7 +4,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/otie173/odinbit/internal/client/common"
 	"github.com/otie173/odinbit/internal/client/device"
-	"github.com/otie173/odinbit/internal/client/net/connection"
+	"github.com/otie173/odinbit/internal/client/net"
 	"github.com/otie173/odinbit/internal/client/scene"
 	"github.com/otie173/odinbit/internal/client/texture"
 )
@@ -14,15 +14,16 @@ type Client struct {
 	screenWidth, screenHeight int32
 	deviceHandler             *device.Handler
 	sceneHandler              *scene.Handler
-	connHandler               *connection.Handler
+	netHandler                *net.Handler
 	textureStorage            *texture.Storage
 }
 
 func New(title string, screenWidth, screenHeight int32) *Client {
-	connHandler := connection.New()
-	sceneHandler := scene.New(screenWidth, screenHeight, common.Title, connHandler)
-	deviceHandler := device.New(sceneHandler)
 	textureStorage := texture.New()
+	netDispatcher := net.NewDispatcher(textureStorage)
+	netHandler := net.NewHandler(netDispatcher)
+	sceneHandler := scene.New(screenWidth, screenHeight, common.Title, netHandler)
+	deviceHandler := device.New(sceneHandler)
 
 	return &Client{
 		title:          title,
@@ -30,7 +31,7 @@ func New(title string, screenWidth, screenHeight int32) *Client {
 		screenHeight:   screenHeight,
 		deviceHandler:  deviceHandler,
 		sceneHandler:   sceneHandler,
-		connHandler:    connHandler,
+		netHandler:     netHandler,
 		textureStorage: textureStorage,
 	}
 }

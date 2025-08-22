@@ -9,12 +9,12 @@ import (
 	"github.com/vmihailenco/msgpack/v5"
 )
 
-type Handler struct {
+type TCPHandler struct {
 	dispatcher *dispatcher.Dispatcher
 }
 
-func New(dispatcher *dispatcher.Dispatcher) *Handler {
-	return &Handler{
+func NewHandler(dispatcher *dispatcher.Dispatcher) *TCPHandler {
+	return &TCPHandler{
 		dispatcher: dispatcher,
 	}
 }
@@ -27,7 +27,7 @@ func parsePacket(buffer []byte) (packet.Packet, error) {
 	return pkt, nil
 }
 
-func (h *Handler) Handle(conn net.Conn) {
+func (h *TCPHandler) Handle(conn net.Conn) {
 	defer conn.Close()
 
 	log.Printf("New connection handling : %s\n", conn.RemoteAddr().String())

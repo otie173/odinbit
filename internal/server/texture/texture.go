@@ -9,8 +9,8 @@ import (
 )
 
 type Texture struct {
-	id   int
-	path string
+	Id   int
+	Path string
 }
 
 type Storage struct {
@@ -38,9 +38,9 @@ func (s *Storage) LoadTextures() {
 
 	for _, file := range files {
 		name := strings.TrimSuffix(filepath.Base(file), ".png")
-		path := filepath.Base(file)
+		path := file
 
-		texture := Texture{id: s.counter, path: path}
+		texture := Texture{Id: s.counter, Path: path}
 		s.storage[name] = texture
 		s.counter++
 	}
@@ -51,7 +51,7 @@ func (s *Storage) GetID(name string) int {
 	if !ok {
 		return -1
 	}
-	return val.id
+	return val.Id
 }
 
 func (s *Storage) GetTextures() ([]byte, error) {

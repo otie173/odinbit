@@ -15,7 +15,8 @@ type Server struct {
 	addr        string
 	textures    *texture.Storage
 	world       *world.World
-	mainHandler *handler.Handler
+	httpHandler *http
+	tcpHandler *handler.Handler
 }
 
 func New(addr string) *Server {
@@ -32,7 +33,8 @@ func New(addr string) *Server {
 		addr:        addr,
 		textures:    textures,
 		world:       wrld,
-		mainHandler: mainHandler,
+		httpHandler:
+		tcpHandler: mainHandler,
 	}
 }
 

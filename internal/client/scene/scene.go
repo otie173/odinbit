@@ -8,7 +8,7 @@ import (
 	"github.com/gen2brain/raylib-go/raygui"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/otie173/odinbit/internal/client/common"
-	"github.com/otie173/odinbit/internal/client/net/connection"
+	"github.com/otie173/odinbit/internal/client/net"
 	"github.com/otie173/odinbit/internal/protocol/packet"
 )
 
@@ -26,15 +26,15 @@ type Handler struct {
 	screenWidth  int32
 	screenHeight int32
 	currentScene common.Scene
-	connHandler  *connection.Handler
+	netHandler   *net.Handler
 }
 
-func New(screenWidth, screenHeight int32, scene common.Scene, connHandler *connection.Handler) *Handler {
+func New(screenWidth, screenHeight int32, scene common.Scene, netHandler *net.Handler) *Handler {
 	return &Handler{
 		screenWidth:  screenWidth,
 		screenHeight: screenHeight,
 		currentScene: scene,
-		connHandler:  connHandler,
+		netHandler:   netHandler,
 	}
 }
 
@@ -84,20 +84,21 @@ func (h *Handler) Handle() {
 				ipEdit = !ipEdit
 			}
 			if raygui.Button(rl.NewRectangle(float32(h.screenWidth/2-350/2), y+100*3, 350, 85), "Connect") {
-				if !h.connHandler.IsConnected() {
-					if err := h.connHandler.Connect(ip); err != nil {
+				if !h.netHandler.IsConnected() {
+					if err := h.netHandler.Connect(ip); err != nil {
 						log.Println(err)
 						return
 					} else {
 						log.Printf("Connected to %s\n", ip)
+						go h.netHandler.Handle()
 
-						pkt := packet.Handshake{Username: "otie173"}
-						data, err := h.connHandler.ConvertPacket(packet.HandshakeType, pkt)
+						pkt := packet.GetTextures{}
+						data, err := h.netHandler.ConvertPacket(packet.GetTexturesType, pkt)
 						if err != nil {
 							log.Printf("Error convert packet to binary format: %v\n", err)
 						}
 
-						if err := h.connHandler.Write(data); err != nil {
+						if err := h.netHandler.Write(data); err != nil {
 							log.Printf("Error with write data to server: %v\n", err)
 						}
 					}
