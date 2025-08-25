@@ -1,7 +1,6 @@
 package texture
 
 import (
-	"log"
 	"path/filepath"
 	"strings"
 
@@ -29,6 +28,4 @@ func (s *Storage) LoadTexture(id int, path string) {
 
 	s.texture[textureName] = id
 	s.id[id] = texture
-	log.Println(texture, path)
-	log.Println(s.texture, s.id)
 }

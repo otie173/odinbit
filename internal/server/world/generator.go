@@ -32,17 +32,17 @@ func newGenerator(textureStorage *texture.Storage, blockStorage *storage) *gener
 
 func (g *generator) generateBarrier() {
 	for i := 0; i < common.WorldSize; i++ {
-		g.blockStorage.blocks[i][0] = Block{textureID: g.textureStorage.GetID("barrier")}
+		g.blockStorage.blocks[i][0] = Block{TextureID: g.textureStorage.GetID("barrier")}
 	}
 	for j := 0; j < common.WorldSize; j++ {
-		g.blockStorage.blocks[0][j] = Block{textureID: g.textureStorage.GetID("barrier")}
+		g.blockStorage.blocks[0][j] = Block{TextureID: g.textureStorage.GetID("barrier")}
 	}
 
 	for i := 0; i < common.WorldSize; i++ {
-		g.blockStorage.blocks[i][common.WorldSize-1] = Block{textureID: g.textureStorage.GetID("barrier")}
+		g.blockStorage.blocks[i][common.WorldSize-1] = Block{TextureID: g.textureStorage.GetID("barrier")}
 	}
 	for j := 0; j < common.WorldSize; j++ {
-		g.blockStorage.blocks[common.WorldSize-1][j] = Block{textureID: g.textureStorage.GetID("barrier")}
+		g.blockStorage.blocks[common.WorldSize-1][j] = Block{TextureID: g.textureStorage.GetID("barrier")}
 	}
 }
 
@@ -59,8 +59,8 @@ func (g *generator) generateResource(name string, multiplier float32, passable b
 		x := rand.IntN(common.WorldSize)
 		y := rand.IntN(common.WorldSize)
 		g.blockStorage.blocks[x][y] = Block{
-			textureID: g.textureStorage.GetID(strings.TrimSuffix(textureName, ".png")),
-			passable:  passable,
+			TextureID: g.textureStorage.GetID(strings.TrimSuffix(textureName, ".png")),
+			Passable:  passable,
 		}
 	}
 }

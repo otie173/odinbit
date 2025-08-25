@@ -7,6 +7,7 @@ import (
 	"github.com/otie173/odinbit/internal/client/net"
 	"github.com/otie173/odinbit/internal/client/scene"
 	"github.com/otie173/odinbit/internal/client/texture"
+	"github.com/otie173/odinbit/internal/client/world"
 )
 
 type Client struct {
@@ -16,13 +17,16 @@ type Client struct {
 	sceneHandler              *scene.Handler
 	netHandler                *net.Handler
 	textureStorage            *texture.Storage
+	world                     *world.World
 }
 
 func New(title string, screenWidth, screenHeight int32) *Client {
 	textureStorage := texture.New()
 	netDispatcher := net.NewDispatcher(textureStorage)
-	netHandler := net.NewHandler(netDispatcher)
-	sceneHandler := scene.New(screenWidth, screenHeight, common.Title, netHandler)
+	netLoader := net.NewLoader()
+	netHandler := net.NewHandler(netDispatcher, netLoader)
+	world := world.New(textureStorage)
+	sceneHandler := scene.New(screenWidth, screenHeight, common.Title, netHandler, world)
 	deviceHandler := device.New(sceneHandler)
 
 	return &Client{
@@ -33,6 +37,7 @@ func New(title string, screenWidth, screenHeight int32) *Client {
 		sceneHandler:   sceneHandler,
 		netHandler:     netHandler,
 		textureStorage: textureStorage,
+		world:          world,
 	}
 }
 

@@ -1,13 +1,12 @@
 package world
 
 import (
-	"github.com/otie173/odinbit/internal/server/common"
 	"github.com/otie173/odinbit/internal/server/texture"
 )
 
 type Block struct {
-	textureID int
-	passable  bool
+	TextureID int
+	Passable  bool
 }
 
 type World struct {
@@ -37,6 +36,10 @@ func (w *World) Generate() {
 	w.generator.generateWorld()
 }
 
-func (w *World) GetWorld() [common.WorldSize][common.WorldSize]Block {
-	return w.storage.blocks
+func (w *World) GetWorld() ([]byte, error) {
+	binaryWorld, err := w.storage.getWorld()
+	if err != nil {
+		return nil, err
+	}
+	return binaryWorld, nil
 }

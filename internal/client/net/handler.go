@@ -12,11 +12,13 @@ type Handler struct {
 	connection net.Conn
 	connected  bool
 	dispatcher *Dispatcher
+	loader     *Loader
 }
 
-func NewHandler(dispatcher *Dispatcher) *Handler {
+func NewHandler(dispatcher *Dispatcher, loader *Loader) *Handler {
 	return &Handler{
 		dispatcher: dispatcher,
+		loader:     loader,
 	}
 }
 
@@ -61,6 +63,26 @@ func parsePacket(buffer []byte) (packet.Packet, error) {
 	return pkt, nil
 }
 
+func (h *Handler) LoadTextures(addr string) ([]byte, error) {
+	data, err := h.loader.LoadTextures(addr)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (h *Handler) LoadWorld(addr string) ([]byte, error) {
+	data, err := h.loader.LoadWorld(addr)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (h *Handler) Dispatch(conn *net.Conn, pktType packet.PacketType, data []byte) {
+	h.dispatcher.Dispatch(conn, pktType, data)
+}
+
 func (h *Handler) Handle() {
 	log.Println("Началась обработка соединения")
 	buffer := make([]byte, 1024)
@@ -75,7 +97,7 @@ func (h *Handler) Handle() {
 		if err != nil {
 			log.Printf("Error with parse packet from server: %v\n", err)
 		}
-		h.dispatcher.Dispatch(h.connection, pkt.Type, pkt.Payload)
+		h.dispatcher.Dispatch(&h.connection, pkt.Type, pkt.Payload)
 	}
 }
 

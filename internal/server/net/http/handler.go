@@ -6,18 +6,21 @@ import (
 
 	"github.com/otie173/odinbit/internal/protocol/packet"
 	"github.com/otie173/odinbit/internal/server/texture"
+	"github.com/otie173/odinbit/internal/server/world"
 	"github.com/vmihailenco/msgpack/v5"
 )
 
 type Handler struct {
 	router         *Router
 	textureStorage *texture.Storage
+	world          *world.World
 }
 
-func NewHandler(router *Router, storage *texture.Storage) *Handler {
+func NewHandler(router *Router, storage *texture.Storage, world *world.World) *Handler {
 	h := &Handler{
 		router:         router,
 		textureStorage: storage,
+		world:          world,
 	}
 
 	h.router.setupRoutes(h)
@@ -35,6 +38,21 @@ func (h *Handler) ping(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("ping"))
 }
 
+func createPacket(pktType packet.PacketType, pktData []byte) packet.Packet {
+	return packet.Packet{
+		Type:    pktType,
+		Payload: pktData,
+	}
+}
+
+func createBPacket(pkt packet.Packet) ([]byte, error) {
+	binaryPkt, err := msgpack.Marshal(&pkt)
+	if err != nil {
+		return nil, err
+	}
+	return binaryPkt, nil
+}
+
 func (h *Handler) getTextures(w http.ResponseWriter, r *http.Request) {
 	data, err := h.textureStorage.GetTextures()
 	if err != nil {
@@ -43,11 +61,7 @@ func (h *Handler) getTextures(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pkt := packet.Packet{
-		Type:    packet.GetTexturesType,
-		Payload: data,
-	}
-
+	pkt := createPacket(packet.GetTexturesType, data)
 	binaryPkt, err := msgpack.Marshal(&pkt)
 	if err != nil {
 		log.Printf("Error! Cant marshal packet: %v\n", err)
@@ -57,5 +71,23 @@ func (h *Handler) getTextures(w http.ResponseWriter, r *http.Request) {
 	if _, err := w.Write(binaryPkt); err != nil {
 		log.Printf("Error! Cant send binary packet: %v\n", err)
 	}
+}
 
+func (h *Handler) getWorld(w http.ResponseWriter, r *http.Request) {
+	data, err := h.world.GetWorld()
+	if err != nil {
+		log.Printf("Error! Cant get world data: %v\n", err)
+		return
+	}
+
+	pkt := createPacket(packet.GetWorldType, data)
+	binaryPkt, err := createBPacket(pkt)
+	if err != nil {
+		log.Printf("Error! Cant create binary packet of world: %v\n", err)
+	}
+
+	w.Header().Set("Content-Type", "application/msgpack")
+	if _, err := w.Write(binaryPkt); err != nil {
+		log.Printf("Error! Cant send binary packet of world: %v\n", err)
+	}
 }

@@ -2,7 +2,6 @@ package packet
 
 import (
 	"github.com/otie173/odinbit/internal/server/common"
-	"github.com/otie173/odinbit/internal/server/texture"
 	"github.com/otie173/odinbit/internal/server/world"
 )
 
@@ -27,7 +26,7 @@ type Handshake struct {
 }
 
 type GetTextures struct {
-	Textures map[string]texture.Texture
+	Textures map[string]ServerTexture
 }
 
 type GetWorld struct {

@@ -9,7 +9,9 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/otie173/odinbit/internal/client/common"
 	"github.com/otie173/odinbit/internal/client/net"
+	"github.com/otie173/odinbit/internal/client/world"
 	"github.com/otie173/odinbit/internal/protocol/packet"
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 var (
@@ -27,14 +29,16 @@ type Handler struct {
 	screenHeight int32
 	currentScene common.Scene
 	netHandler   *net.Handler
+	world        *world.World
 }
 
-func New(screenWidth, screenHeight int32, scene common.Scene, netHandler *net.Handler) *Handler {
+func New(screenWidth, screenHeight int32, scene common.Scene, netHandler *net.Handler, world *world.World) *Handler {
 	return &Handler{
 		screenWidth:  screenWidth,
 		screenHeight: screenHeight,
 		currentScene: scene,
 		netHandler:   netHandler,
+		world:        world,
 	}
 }
 
@@ -85,25 +89,44 @@ func (h *Handler) Handle() {
 			}
 			if raygui.Button(rl.NewRectangle(float32(h.screenWidth/2-350/2), y+100*3, 350, 85), "Connect") {
 				if !h.netHandler.IsConnected() {
+					data, err := h.netHandler.LoadTextures("http://0.0.0.0:9999")
+					if err != nil {
+						log.Printf("Error! Cant load textures from server: %v\n", err)
+						return
+					}
+
+					pkt := packet.Packet{}
+					if err := msgpack.Unmarshal(data, &pkt); err != nil {
+						log.Printf("Error! Cant unmarshal body: %v\n", err)
+						return
+					}
+					h.netHandler.Dispatch(nil, pkt.Type, pkt.Payload)
+
+					data, err = h.netHandler.LoadWorld("http://0.0.0.0:9999")
+					if err != nil {
+						log.Printf("Error! Cant load world from server: %v\n", err)
+					}
+
+					if err := msgpack.Unmarshal(data, &pkt); err != nil {
+						log.Printf("Error! Cant unmarshal body: %v\n", err)
+						return
+					}
+					h.netHandler.Dispatch(nil, pkt.Type, pkt.Payload)
+
 					if err := h.netHandler.Connect(ip); err != nil {
-						log.Println(err)
+						log.Printf("Error! Cant connect to server: %v\n", err)
 						return
 					} else {
-						log.Printf("Connected to %s\n", ip)
+						log.Printf("Success! Connected to %s\n", ip)
+						h.currentScene = common.Game
 						go h.netHandler.Handle()
-
-						pkt := packet.GetTextures{}
-						data, err := h.netHandler.ConvertPacket(packet.GetTexturesType, pkt)
-						if err != nil {
-							log.Printf("Error convert packet to binary format: %v\n", err)
-						}
-
-						if err := h.netHandler.Write(data); err != nil {
-							log.Printf("Error with write data to server: %v\n", err)
-						}
 					}
 				}
 			}
+		})
+	case common.Game:
+		h.drawFunc(func() {
+
 		})
 	}
 }

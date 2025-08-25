@@ -30,7 +30,7 @@ func New(addr string) *Server {
 
 	mux := chi.NewRouter()
 	router := http.NewRouter(mux)
-	httpHandler := http.NewHandler(router, textures)
+	httpHandler := http.NewHandler(router, textures, wrld)
 
 	dispatcher := tcp.NewDispatcher(textureHandler, worldHandler)
 	tcpHandler := tcp.NewHandler(dispatcher)
