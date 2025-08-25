@@ -5,6 +5,7 @@ go 1.24.4
 require (
 	github.com/gen2brain/raylib-go/raygui v0.0.0-20250617194346-eddd038123ee
 	github.com/gen2brain/raylib-go/raylib v0.55.1
+	github.com/go-chi/chi/v5 v5.2.2
 	github.com/vmihailenco/msgpack/v5 v5.4.1
 )
 
