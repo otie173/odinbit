@@ -7,7 +7,7 @@ import (
 	"github.com/otie173/odinbit/internal/client/texture"
 	"github.com/otie173/odinbit/internal/protocol/packet"
 	"github.com/otie173/odinbit/internal/server/common"
-	"github.com/otie173/odinbit/internal/server/world"
+	"github.com/otie173/odinbit/internal/server/game/world"
 	"github.com/vmihailenco/msgpack/v5"
 )
 

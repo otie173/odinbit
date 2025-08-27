@@ -8,12 +8,12 @@ import (
 	"github.com/vmihailenco/msgpack/v5"
 )
 
-type Handler struct {
+type Listener struct {
 	dispatcher *Dispatcher
 }
 
-func NewHandler(dispatcher *Dispatcher) *Handler {
-	return &Handler{
+func NewListener(dispatcher *Dispatcher) *Listener {
+	return &Listener{
 		dispatcher: dispatcher,
 	}
 }
@@ -26,10 +26,10 @@ func parsePacket(buffer []byte) (packet.Packet, error) {
 	return pkt, nil
 }
 
-func (h *Handler) handle(conn net.Conn) {
+func (h *Listener) listen(conn net.Conn) {
 	defer conn.Close()
 
-	log.Printf("New connection handling : %s\n", conn.RemoteAddr().String())
+	log.Printf("New connection listening : %s\n", conn.RemoteAddr().String())
 	buffer := make([]byte, 1024)
 	for {
 		n, err := conn.Read(buffer)
@@ -49,7 +49,7 @@ func (h *Handler) handle(conn net.Conn) {
 	}
 }
 
-func (h *Handler) Run(addr string) error {
+func (h *Listener) Run(addr string) error {
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
@@ -63,7 +63,7 @@ func (h *Handler) Run(addr string) error {
 			break
 		}
 		log.Printf("New connection accepted: %s\n", conn.RemoteAddr().String())
-		go h.handle(conn)
+		go h.listen(conn)
 	}
 	return nil
 }

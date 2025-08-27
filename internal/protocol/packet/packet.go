@@ -2,7 +2,7 @@ package packet
 
 import (
 	"github.com/otie173/odinbit/internal/server/common"
-	"github.com/otie173/odinbit/internal/server/world"
+	"github.com/otie173/odinbit/internal/server/game/world"
 )
 
 type Packet struct {

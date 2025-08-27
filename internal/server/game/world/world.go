@@ -1,7 +1,7 @@
 package world
 
 import (
-	"github.com/otie173/odinbit/internal/server/texture"
+	"github.com/otie173/odinbit/internal/server/game/texture"
 )
 
 type Block struct {

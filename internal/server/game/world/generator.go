@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/otie173/odinbit/internal/server/common"
-	"github.com/otie173/odinbit/internal/server/texture"
+	"github.com/otie173/odinbit/internal/server/game/texture"
 )
 
 const (

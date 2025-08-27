@@ -7,10 +7,10 @@ import (
 	"syscall"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/otie173/odinbit/internal/server/game/texture"
+	"github.com/otie173/odinbit/internal/server/game/world"
 	"github.com/otie173/odinbit/internal/server/net/http"
 	"github.com/otie173/odinbit/internal/server/net/tcp"
-	"github.com/otie173/odinbit/internal/server/texture"
-	"github.com/otie173/odinbit/internal/server/world"
 )
 
 type Server struct {
@@ -18,7 +18,7 @@ type Server struct {
 	textures    *texture.Storage
 	world       *world.World
 	httpHandler *http.Handler
-	tcpHandler  *tcp.Handler
+	tcpHandler  *tcp.Listener
 }
 
 func New(addr string) *Server {
@@ -33,7 +33,7 @@ func New(addr string) *Server {
 	httpHandler := http.NewHandler(router, textures, wrld)
 
 	dispatcher := tcp.NewDispatcher(textureHandler, worldHandler)
-	tcpHandler := tcp.NewHandler(dispatcher)
+	tcpHandler := tcp.NewListener(dispatcher)
 
 	return &Server{
 		addr:        addr,
@@ -72,5 +72,5 @@ func (s *Server) Run() {
 	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM)
 	<-stopChan
 
-	log.Println("Shutdown signal received. Shutting down server")
+	log.Println("Shutting down server...")
 }
