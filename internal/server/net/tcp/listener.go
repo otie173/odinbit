@@ -26,7 +26,7 @@ func parsePacket(buffer []byte) (packet.Packet, error) {
 	return pkt, nil
 }
 
-func (h *Listener) listen(conn net.Conn) {
+func (l *Listener) listen(conn net.Conn) {
 	defer conn.Close()
 
 	log.Printf("New connection listening : %s\n", conn.RemoteAddr().String())
@@ -45,11 +45,11 @@ func (h *Listener) listen(conn net.Conn) {
 			conn.Close()
 			return
 		}
-		h.dispatcher.Dispatch(conn, pkt.Type, pkt.Payload)
+		l.dispatcher.Dispatch(conn, pkt.Type, pkt.Payload)
 	}
 }
 
-func (h *Listener) Run(addr string) error {
+func (l *Listener) Run(addr string) error {
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
@@ -63,7 +63,7 @@ func (h *Listener) Run(addr string) error {
 			break
 		}
 		log.Printf("New connection accepted: %s\n", conn.RemoteAddr().String())
-		go h.listen(conn)
+		go l.listen(conn)
 	}
 	return nil
 }
