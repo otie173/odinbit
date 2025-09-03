@@ -72,22 +72,3 @@ func (h *Handler) getTextures(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error! Cant send binary packet: %v\n", err)
 	}
 }
-
-func (h *Handler) getWorld(w http.ResponseWriter, r *http.Request) {
-	data, err := h.world.GetWorld()
-	if err != nil {
-		log.Printf("Error! Cant get world data: %v\n", err)
-		return
-	}
-
-	pkt := createPacket(packet.GetWorldType, data)
-	binaryPkt, err := createBPacket(pkt)
-	if err != nil {
-		log.Printf("Error! Cant create binary packet of world: %v\n", err)
-	}
-
-	w.Header().Set("Content-Type", "application/msgpack")
-	if _, err := w.Write(binaryPkt); err != nil {
-		log.Printf("Error! Cant send binary packet of world: %v\n", err)
-	}
-}

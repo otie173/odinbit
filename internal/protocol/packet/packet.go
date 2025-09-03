@@ -1,7 +1,6 @@
 package packet
 
 import (
-	"github.com/otie173/odinbit/internal/server/common"
 	"github.com/otie173/odinbit/internal/server/game/world"
 )
 
@@ -30,5 +29,5 @@ type GetTextures struct {
 }
 
 type GetWorld struct {
-	World [common.WorldSize][common.WorldSize]world.Block
+	Blocks []world.Block
 }
