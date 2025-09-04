@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/otie173/odinbit/internal/pkg/server"
 	"github.com/otie173/odinbit/internal/server/game/texture"
@@ -23,11 +25,16 @@ func main() {
 	dispatcher := tcp.NewDispatcher(textureHandler, worldHandler)
 	listener := tcp.NewListener(dispatcher)
 
+	tps := 20
+	tickDuration := time.Second / time.Duration(tps)
+	ticker := time.NewTicker(tickDuration)
+
 	components := manager.Components{
 		Textures:  textures,
 		Overworld: overworld,
 		Handler:   handler,
 		Listener:  listener,
+		Ticker:    ticker,
 	}
 	manager := manager.New(components)
 

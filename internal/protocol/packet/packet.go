@@ -15,7 +15,7 @@ const (
 	PingType PacketType = iota
 	HandshakeType
 	GetTexturesType
-	GetWorldType
+	UpdateWorldType
 )
 
 type Ping struct{}
@@ -28,6 +28,6 @@ type GetTextures struct {
 	Textures map[string]ServerTexture
 }
 
-type GetWorld struct {
+type UpdateWorld struct {
 	Blocks []world.Block
 }

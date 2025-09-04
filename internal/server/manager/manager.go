@@ -23,7 +23,7 @@ type Components struct {
 	Broadcaster *tcp.Broadcaster
 
 	// System things
-	Ticker time.Ticker
+	Ticker *time.Ticker
 }
 
 type Manager struct {
