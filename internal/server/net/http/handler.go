@@ -11,16 +11,16 @@ import (
 )
 
 type Handler struct {
-	router         *Router
-	textureStorage *texture.Storage
-	world          *world.World
+	router    *Router
+	textures  *texture.TexturePack
+	overworld *world.World
 }
 
-func NewHandler(router *Router, storage *texture.Storage, world *world.World) *Handler {
+func NewHandler(router *Router, textures *texture.TexturePack, overworld *world.World) *Handler {
 	h := &Handler{
-		router:         router,
-		textureStorage: storage,
-		world:          world,
+		router:    router,
+		textures:  textures,
+		overworld: overworld,
 	}
 
 	h.router.setupRoutes(h)
@@ -28,14 +28,14 @@ func NewHandler(router *Router, storage *texture.Storage, world *world.World) *H
 }
 
 func (h *Handler) Run(addr string) error {
-	if err := http.ListenAndServe(addr, h.router.mux); err != nil {
+	if err := http.ListenAndServe(addr, h.router); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (h *Handler) ping(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("ping"))
+	w.WriteHeader(http.StatusOK)
 }
 
 func createPacket(pktType packet.PacketType, pktData []byte) packet.Packet {
@@ -45,16 +45,16 @@ func createPacket(pktType packet.PacketType, pktData []byte) packet.Packet {
 	}
 }
 
-func createBPacket(pkt packet.Packet) ([]byte, error) {
-	binaryPkt, err := msgpack.Marshal(&pkt)
-	if err != nil {
-		return nil, err
-	}
-	return binaryPkt, nil
-}
+// func createBPacket(pkt packet.Packet) ([]byte, error) {
+// 	binaryPkt, err := msgpack.Marshal(&pkt)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return binaryPkt, nil
+// }
 
 func (h *Handler) getTextures(w http.ResponseWriter, r *http.Request) {
-	data, err := h.textureStorage.GetTextures()
+	data, err := h.textures.GetTextures()
 	if err != nil {
 		http.Error(w, "Internal error", http.StatusInternalServerError)
 		log.Printf("Error! Cant get textures: %v\n", err)

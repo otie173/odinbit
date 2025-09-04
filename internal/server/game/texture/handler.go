@@ -1,17 +1,17 @@
 package texture
 
 type Handler struct {
-	storage *Storage
+	textures *TexturePack
 }
 
-func NewHandler(storage *Storage) *Handler {
+func NewHandler(textures *TexturePack) *Handler {
 	return &Handler{
-		storage: storage,
+		textures: textures,
 	}
 }
 
 func (h *Handler) GetTextures() ([]byte, error) {
-	data, err := h.storage.GetTextures()
+	data, err := h.textures.GetTextures()
 	if err != nil {
 		return nil, err
 	}

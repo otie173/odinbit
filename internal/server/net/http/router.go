@@ -5,16 +5,16 @@ import (
 )
 
 type Router struct {
-	mux *chi.Mux
+	chi.Router
 }
 
-func NewRouter(mux *chi.Mux) *Router {
+func NewRouter(router chi.Router) *Router {
 	return &Router{
-		mux: mux,
+		Router: router,
 	}
 }
 
 func (r *Router) setupRoutes(handler *Handler) {
-	r.mux.Get("/ping", handler.ping)
-	r.mux.Get("/textures", handler.getTextures)
+	r.Get("/ping", handler.ping)
+	r.Get("/textures", handler.getTextures)
 }

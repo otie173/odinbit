@@ -17,20 +17,20 @@ type Texture struct {
 	Path string
 }
 
-type Storage struct {
+type TexturePack struct {
 	textures map[string]Texture
 }
 
-func NewStorage() *Storage {
+func NewPack() *TexturePack {
 	textures := make(map[string]Texture, 128)
 
-	return &Storage{
+	return &TexturePack{
 		textures: textures,
 	}
 }
 
-func (s *Storage) LoadTextures() {
-	s.textures = make(map[string]Texture, 128)
+func (t *TexturePack) LoadTextures() {
+	t.textures = make(map[string]Texture, 128)
 
 	files, err := filepath.Glob("resources/textures/*")
 	if err != nil {
@@ -42,21 +42,21 @@ func (s *Storage) LoadTextures() {
 		path := file
 
 		texture := Texture{Id: counter, Path: path}
-		s.textures[name] = texture
+		t.textures[name] = texture
 		counter++
 	}
 }
 
-func (s *Storage) GetID(name string) int {
-	val, ok := s.textures[name]
+func (t *TexturePack) GetID(name string) int {
+	val, ok := t.textures[name]
 	if !ok {
 		return -1
 	}
 	return val.Id
 }
 
-func (s *Storage) GetTextures() ([]byte, error) {
-	binaryTextures, err := msgpack.Marshal(s.textures)
+func (t *TexturePack) GetTextures() ([]byte, error) {
+	binaryTextures, err := msgpack.Marshal(t.textures)
 	if err != nil {
 		return nil, err
 	}

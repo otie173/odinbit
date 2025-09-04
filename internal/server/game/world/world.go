@@ -14,9 +14,9 @@ type World struct {
 	generator *generator
 }
 
-func New(textureStorage *texture.Storage) *World {
+func New(textures *texture.TexturePack) *World {
 	blockStorage := newStorage()
-	generator := newGenerator(textureStorage, blockStorage)
+	generator := newGenerator(textures, blockStorage)
 
 	return &World{
 		storage:   blockStorage,

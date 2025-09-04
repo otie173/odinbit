@@ -1,23 +1,53 @@
 package manager
 
 import (
+	"log"
+	"time"
+
+	"github.com/otie173/odinbit/internal/server/game/player"
 	"github.com/otie173/odinbit/internal/server/game/texture"
 	"github.com/otie173/odinbit/internal/server/game/world"
 	"github.com/otie173/odinbit/internal/server/net/http"
 	"github.com/otie173/odinbit/internal/server/net/tcp"
 )
 
-type Config struct {
-	Textures *texture.Storage
-	World    *world.World
-	Handler  *http.Handler
-	Listener *tcp.Listener
+type Components struct {
+	// Game things
+	Textures  *texture.TexturePack
+	Overworld *world.World
+	Players   *player.Storage
+
+	// Network things
+	Handler     *http.Handler
+	Listener    *tcp.Listener
+	Broadcaster *tcp.Broadcaster
+
+	// System things
+	Ticker time.Ticker
 }
 
 type Manager struct {
-	Cfg Config
+	Components Components
 }
 
-func New(cfg Config) *Manager {
-	return &Manager{Cfg: cfg}
+func New(components Components) *Manager {
+	return &Manager{
+		Components: components,
+	}
+}
+
+func (m *Manager) HandleNetwork(httpAddr, tcpAddr string) {
+	go func() {
+		if err := m.Components.Handler.Run(httpAddr); err != nil {
+			log.Fatalf("Error! Cant run HTTP handler: %v\n", err)
+		}
+	}()
+	log.Printf("HTTP handler running on: %s\n", httpAddr)
+
+	go func() {
+		if err := m.Components.Listener.Run(tcpAddr); err != nil {
+			log.Fatalf("Error! Cant run TCP listener: %v\n", err)
+		}
+	}()
+	log.Printf("TCP listener running on: %s\n", tcpAddr)
 }

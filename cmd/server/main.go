@@ -11,28 +11,27 @@ import (
 )
 
 func main() {
-	textures := texture.NewStorage()
-	wrld := world.New(textures)
+	textures := texture.NewPack()
+	overworld := world.New(textures)
 
 	textureHandler := texture.NewHandler(textures)
-	worldHandler := world.NewHandler(wrld)
+	worldHandler := world.NewHandler(overworld)
 
-	mux := chi.NewRouter()
-	router := http.NewRouter(mux)
-	handler := http.NewHandler(router, textures, wrld)
+	router := http.NewRouter(chi.NewRouter())
+	handler := http.NewHandler(router, textures, overworld)
 
 	dispatcher := tcp.NewDispatcher(textureHandler, worldHandler)
 	listener := tcp.NewListener(dispatcher)
 
-	managerCfg := manager.Config{
-		Textures: textures,
-		World:    wrld,
-		Handler:  handler,
-		Listener: listener,
+	components := manager.Components{
+		Textures:  textures,
+		Overworld: overworld,
+		Handler:   handler,
+		Listener:  listener,
 	}
-	manager := manager.New(managerCfg)
+	manager := manager.New(components)
 
-	server := server.New("0.0.0.0:8080")
+	server := server.New("0.0.0.0:8080", manager)
 	server.Load()
 	server.Run()
 }
