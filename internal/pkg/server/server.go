@@ -9,45 +9,27 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/otie173/odinbit/internal/server/game/texture"
 	"github.com/otie173/odinbit/internal/server/game/world"
+	"github.com/otie173/odinbit/internal/server/manager"
 	"github.com/otie173/odinbit/internal/server/net/http"
 	"github.com/otie173/odinbit/internal/server/net/tcp"
 	"github.com/otie173/odinbit/internal/server/ticker"
 )
 
 type Server struct {
-	addr        string
-	textures    *texture.Storage
-	world       *world.World
-	httpHandler *http.Handler
-	tcpHandler  *tcp.Listener
+	addr    string
+	manager *manager.Manager
 }
 
-func New(addr string) *Server {
-	textures := texture.New()
-	wrld := world.New(textures)
-
-	textureHandler := texture.NewHandler(textures)
-	worldHandler := world.NewHandler(wrld)
-
-	mux := chi.NewRouter()
-	router := http.NewRouter(mux)
-	httpHandler := http.NewHandler(router, textures, wrld)
-
-	dispatcher := tcp.NewDispatcher(textureHandler, worldHandler)
-	tcpHandler := tcp.NewListener(dispatcher)
-
+func New(addr string, manager *manager.Manager) *Server {
 	return &Server{
-		addr:        addr,
-		textures:    textures,
-		world:       wrld,
-		httpHandler: httpHandler,
-		tcpHandler:  tcpHandler,
+		addr:    addr,
+		manager: manager,
 	}
 }
 
 func (s *Server) Load() {
-	s.textures.LoadTextures()
-	s.world.Generate()
+	s.manager.Cfg.Textures.LoadTextures()
+	s.manager.Cfg.World.Generate()
 }
 
 // FIXME: Add new fields with addr for http & tcp handlers

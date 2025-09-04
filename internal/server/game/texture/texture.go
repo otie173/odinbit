@@ -8,28 +8,29 @@ import (
 	"github.com/vmihailenco/msgpack/v5"
 )
 
+var (
+	counter int = 0
+)
+
 type Texture struct {
 	Id   int
 	Path string
 }
 
 type Storage struct {
-	counter int
-	storage map[string]Texture
+	textures map[string]Texture
 }
 
-func New() *Storage {
-	counter := 0
-	storage := make(map[string]Texture, 128)
+func NewStorage() *Storage {
+	textures := make(map[string]Texture, 128)
 
 	return &Storage{
-		counter: counter,
-		storage: storage,
+		textures: textures,
 	}
 }
 
 func (s *Storage) LoadTextures() {
-	s.storage = make(map[string]Texture, 128)
+	s.textures = make(map[string]Texture, 128)
 
 	files, err := filepath.Glob("resources/textures/*")
 	if err != nil {
@@ -40,14 +41,14 @@ func (s *Storage) LoadTextures() {
 		name := strings.TrimSuffix(filepath.Base(file), ".png")
 		path := file
 
-		texture := Texture{Id: s.counter, Path: path}
-		s.storage[name] = texture
-		s.counter++
+		texture := Texture{Id: counter, Path: path}
+		s.textures[name] = texture
+		counter++
 	}
 }
 
 func (s *Storage) GetID(name string) int {
-	val, ok := s.storage[name]
+	val, ok := s.textures[name]
 	if !ok {
 		return -1
 	}
@@ -55,7 +56,7 @@ func (s *Storage) GetID(name string) int {
 }
 
 func (s *Storage) GetTextures() ([]byte, error) {
-	binaryTextures, err := msgpack.Marshal(s.storage)
+	binaryTextures, err := msgpack.Marshal(s.textures)
 	if err != nil {
 		return nil, err
 	}
