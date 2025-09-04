@@ -17,5 +17,4 @@ func NewRouter(mux *chi.Mux) *Router {
 func (r *Router) setupRoutes(handler *Handler) {
 	r.mux.Get("/ping", handler.ping)
 	r.mux.Get("/textures", handler.getTextures)
-	r.mux.Get("/world", handler.getWorld)
 }
