@@ -2,20 +2,20 @@ package manager
 
 import (
 	"log"
-	"time"
 
 	"github.com/otie173/odinbit/internal/server/game/player"
 	"github.com/otie173/odinbit/internal/server/game/texture"
 	"github.com/otie173/odinbit/internal/server/game/world"
 	"github.com/otie173/odinbit/internal/server/net/http"
 	"github.com/otie173/odinbit/internal/server/net/tcp"
+	"github.com/otie173/odinbit/internal/server/ticker"
 )
 
 type Components struct {
 	// Game things
 	Textures  *texture.TexturePack
 	Overworld *world.World
-	Players   *player.Storage
+	Players   player.Storage
 
 	// Network things
 	Handler     *http.Handler
@@ -23,7 +23,7 @@ type Components struct {
 	Broadcaster *tcp.Broadcaster
 
 	// System things
-	Ticker *time.Ticker
+	Ticker *ticker.Ticker
 }
 
 type Manager struct {
@@ -50,4 +50,9 @@ func (m *Manager) HandleNetwork(httpAddr, tcpAddr string) {
 		}
 	}()
 	log.Printf("TCP listener running on: %s\n", tcpAddr)
+}
+
+func (m *Manager) HandleGame() {
+	m.Components.Ticker.Run(func() {
+	})
 }

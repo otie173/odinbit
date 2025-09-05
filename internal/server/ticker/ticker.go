@@ -6,27 +6,27 @@ import (
 )
 
 type Ticker struct {
-	tps    int
-	onTick func()
+	ticker   *time.Ticker
+	duration time.Duration
 }
 
-func New(tps int, onTick func()) *Ticker {
+func New(tps int) *Ticker {
+	tickDuration := time.Second / time.Duration(tps)
+	ticker := time.NewTicker(tickDuration)
+
 	return &Ticker{
-		tps:    tps,
-		onTick: onTick,
+		ticker:   ticker,
+		duration: tickDuration,
 	}
 }
 
-func (t *Ticker) Run() {
-	tickDuration := time.Second / time.Duration(t.tps)
-	ticker := time.NewTicker(tickDuration)
-
-	for range ticker.C {
+func (t *Ticker) Run(onTick func()) {
+	for range t.ticker.C {
 		start := time.Now()
-		t.onTick()
+		onTick()
 		elapsed := time.Since(start)
 
-		if elapsed > tickDuration {
+		if elapsed > t.duration {
 			log.Printf("Warning! Tick took too long: %v\n", elapsed)
 		}
 		//log.Printf("Info! Tick too only: %v\n", elapsed)

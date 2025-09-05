@@ -1,20 +1,21 @@
 package main
 
 import (
-	"time"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/otie173/odinbit/internal/pkg/server"
+	"github.com/otie173/odinbit/internal/server/game/player"
 	"github.com/otie173/odinbit/internal/server/game/texture"
 	"github.com/otie173/odinbit/internal/server/game/world"
 	"github.com/otie173/odinbit/internal/server/manager"
 	"github.com/otie173/odinbit/internal/server/net/http"
 	"github.com/otie173/odinbit/internal/server/net/tcp"
+	"github.com/otie173/odinbit/internal/server/ticker"
 )
 
 func main() {
 	textures := texture.NewPack()
 	overworld := world.New(textures)
+	players := player.NewStorage(16)
 
 	textureHandler := texture.NewHandler(textures)
 	worldHandler := world.NewHandler(overworld)
@@ -26,12 +27,12 @@ func main() {
 	listener := tcp.NewListener(dispatcher)
 
 	tps := 20
-	tickDuration := time.Second / time.Duration(tps)
-	ticker := time.NewTicker(tickDuration)
+	ticker := ticker.New(tps)
 
 	components := manager.Components{
 		Textures:  textures,
 		Overworld: overworld,
+		Players:   players,
 		Handler:   handler,
 		Listener:  listener,
 		Ticker:    ticker,
