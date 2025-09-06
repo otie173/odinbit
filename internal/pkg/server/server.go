@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/otie173/odinbit/internal/server/manager"
+	"github.com/otie173/odinbit/internal/server/core/manager"
 )
 
 type Server struct {

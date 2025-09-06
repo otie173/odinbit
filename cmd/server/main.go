@@ -3,13 +3,13 @@ package main
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/otie173/odinbit/internal/pkg/server"
+	"github.com/otie173/odinbit/internal/server/core/manager"
+	"github.com/otie173/odinbit/internal/server/core/ticker"
 	"github.com/otie173/odinbit/internal/server/game/player"
 	"github.com/otie173/odinbit/internal/server/game/texture"
 	"github.com/otie173/odinbit/internal/server/game/world"
-	"github.com/otie173/odinbit/internal/server/manager"
 	"github.com/otie173/odinbit/internal/server/net/http"
 	"github.com/otie173/odinbit/internal/server/net/tcp"
-	"github.com/otie173/odinbit/internal/server/ticker"
 )
 
 func main() {
