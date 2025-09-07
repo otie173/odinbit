@@ -24,13 +24,15 @@ func (d *Dispatcher) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory,
 	case packet.CategoryTexture:
 		switch pktOpcode {
 		case packet.OpcodeTextureData:
-			pktStructure := packet.TextureData{Textures: make(map[string]packet.ServerTexture, 128)}
+			var pktStructure packet.TextureData
 
 			if err := msgpack.Unmarshal(pktData, &pktStructure); err != nil {
 				log.Printf("Error! Cant unmarshal texture data: %v\n", err)
 			}
 
-			log.Println(pktStructure.Textures)
+			for _, texture := range pktStructure.Textures {
+				d.textureStorage.LoadTexture(texture.Id, texture.Path)
+			}
 		}
 	}
 }

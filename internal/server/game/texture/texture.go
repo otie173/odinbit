@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/otie173/odinbit/internal/protocol/packet"
 	"github.com/vmihailenco/msgpack/v5"
 )
 
@@ -18,11 +19,11 @@ type Texture struct {
 }
 
 type TexturePack struct {
-	textures map[string]Texture
+	textures map[string]packet.ServerTexture
 }
 
 func NewPack() *TexturePack {
-	textures := make(map[string]Texture, 128)
+	textures := make(map[string]packet.ServerTexture, 128)
 
 	return &TexturePack{
 		textures: textures,
@@ -30,7 +31,7 @@ func NewPack() *TexturePack {
 }
 
 func (t *TexturePack) LoadTextures() {
-	t.textures = make(map[string]Texture, 128)
+	t.textures = make(map[string]packet.ServerTexture, 128)
 
 	files, err := filepath.Glob("resources/textures/*")
 	if err != nil {
@@ -41,7 +42,7 @@ func (t *TexturePack) LoadTextures() {
 		name := strings.TrimSuffix(filepath.Base(file), ".png")
 		path := file
 
-		texture := Texture{Id: counter, Path: path}
+		texture := packet.ServerTexture{Id: counter, Path: path}
 		t.textures[name] = texture
 		counter++
 	}
@@ -56,7 +57,8 @@ func (t *TexturePack) GetID(name string) int {
 }
 
 func (t *TexturePack) GetTextures() ([]byte, error) {
-	binaryTextures, err := msgpack.Marshal(t.textures)
+	texturesStruct := packet.TextureData{Textures: t.textures}
+	binaryTextures, err := msgpack.Marshal(texturesStruct)
 	if err != nil {
 		return nil, err
 	}
