@@ -42,12 +42,12 @@ func (h *Handler) Disconnect() {
 	h.connection.Close()
 }
 
-func (h *Handler) ConvertPacket(pktType packet.PacketType, pktData interface{}) ([]byte, error) {
+func (h *Handler) ConvertPacket(pktCategory packet.PacketCategory, pktOpcode packet.PacketOpcode, pktData any) ([]byte, error) {
 	data, err := msgpack.Marshal(&pktData)
 	if err != nil {
 		return nil, err
 	}
-	packet := packet.Packet{Type: pktType, Payload: data}
+	packet := packet.Packet{Category: pktCategory, Opcode: pktOpcode, Payload: data}
 	binaryPacket, err := msgpack.Marshal(&packet)
 	if err != nil {
 		return nil, err
@@ -79,8 +79,8 @@ func (h *Handler) LoadWorld(addr string) ([]byte, error) {
 	return data, nil
 }
 
-func (h *Handler) Dispatch(conn *net.Conn, pktType packet.PacketType, data []byte) {
-	h.dispatcher.Dispatch(conn, pktType, data)
+func (h *Handler) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory, pktOpcode packet.PacketOpcode, data []byte) {
+	h.dispatcher.Dispatch(conn, pktCategory, pktOpcode, data)
 }
 
 func (h *Handler) Handle() {
@@ -97,7 +97,7 @@ func (h *Handler) Handle() {
 		if err != nil {
 			log.Printf("Error with parse packet from server: %v\n", err)
 		}
-		h.dispatcher.Dispatch(&h.connection, pkt.Type, pkt.Payload)
+		h.dispatcher.Dispatch(&h.connection, pkt.Category, pkt.Opcode, pkt.Payload)
 	}
 }
 

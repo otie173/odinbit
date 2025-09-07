@@ -1,12 +1,10 @@
 package net
 
 import (
-	"log"
 	"net"
 
 	"github.com/otie173/odinbit/internal/client/texture"
 	"github.com/otie173/odinbit/internal/protocol/packet"
-	"github.com/vmihailenco/msgpack/v5"
 )
 
 type Dispatcher struct {
@@ -19,17 +17,5 @@ func NewDispatcher(storage *texture.Storage) *Dispatcher {
 	}
 }
 
-func (d *Dispatcher) Dispatch(conn *net.Conn, pktType packet.PacketType, data []byte) {
-	switch pktType {
-	case packet.GetTexturesType:
-		texturesPkt := packet.GetTextures{Textures: make(map[string]packet.ServerTexture, 128)}
-
-		if err := msgpack.Unmarshal(data, &texturesPkt.Textures); err != nil {
-			log.Printf("Error! Cant unmarshal textures from server: %v\n", err)
-		}
-
-		for _, texture := range texturesPkt.Textures {
-			d.textureStorage.LoadTexture(texture.Id, texture.Path)
-		}
-	}
+func (d *Dispatcher) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory, pktOpcode packet.PacketOpcode, data []byte) {
 }

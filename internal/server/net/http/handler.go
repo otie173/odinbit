@@ -38,10 +38,11 @@ func (h *Handler) ping(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func createPacket(pktType packet.PacketType, pktData []byte) packet.Packet {
+func createPacket(pktCategory packet.PacketCategory, pktOpcode packet.PacketOpcode, pktData []byte) packet.Packet {
 	return packet.Packet{
-		Type:    pktType,
-		Payload: pktData,
+		Category: pktCategory,
+		Opcode:   pktOpcode,
+		Payload:  pktData,
 	}
 }
 

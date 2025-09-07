@@ -100,7 +100,7 @@ func (h *Handler) Handle() {
 						log.Printf("Error! Cant unmarshal body: %v\n", err)
 						return
 					}
-					h.netHandler.Dispatch(nil, pkt.Type, pkt.Payload)
+					h.netHandler.Dispatch(nil, pkt.Category, pkt.Opcode, pkt.Payload)
 
 					data, err = h.netHandler.LoadWorld("http://0.0.0.0:9999")
 					if err != nil {
