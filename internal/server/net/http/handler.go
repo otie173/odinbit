@@ -46,13 +46,13 @@ func createPacket(pktCategory packet.PacketCategory, pktOpcode packet.PacketOpco
 	}
 }
 
-// func createBPacket(pkt packet.Packet) ([]byte, error) {
-// 	binaryPkt, err := msgpack.Marshal(&pkt)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return binaryPkt, nil
-// }
+func createBPacket(pkt packet.Packet) ([]byte, error) {
+	binaryPkt, err := msgpack.Marshal(&pkt)
+	if err != nil {
+		return nil, err
+	}
+	return binaryPkt, nil
+}
 
 func (h *Handler) getTextures(w http.ResponseWriter, r *http.Request) {
 	data, err := h.textures.GetTextures()
@@ -62,8 +62,8 @@ func (h *Handler) getTextures(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pkt := createPacket(packet.GetTexturesType, data)
-	binaryPkt, err := msgpack.Marshal(&pkt)
+	pkt := createPacket(packet.CategoryTexture, packet.OpcodeTextureData, data)
+	binaryPkt, err := createBPacket(pkt)
 	if err != nil {
 		log.Printf("Error! Cant marshal packet: %v\n", err)
 	}

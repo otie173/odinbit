@@ -1,28 +1,21 @@
 package packet
 
-type OpcodeMapping interface {
-	register()
-}
-
-type mapping struct {
+type Mapping struct {
 	opcodesMapping map[PacketOpcode]any
 }
 
-func New() *mapping {
-	return &mapping{}
+func New() *Mapping {
+	opcodesMapping := make(map[PacketOpcode]any)
+
+	return &Mapping{
+		opcodesMapping: opcodesMapping,
+	}
 }
 
-func (m *mapping) Load() {
-	m.register(packet.)
+func (m *Mapping) Load() {
+
 }
 
-func (m *mapping) register(opcode PacketOpcode, structure any) {
+func (m *Mapping) register(opcode PacketOpcode, structure any) {
 	m.opcodesMapping[opcode] = structure
-}
-
-type RequestTexturesStruct struct {
-}
-
-type GetTexturesStruct struct {
-	Textures []ServerTexture
 }

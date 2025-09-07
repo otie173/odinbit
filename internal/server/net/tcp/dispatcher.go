@@ -1,13 +1,11 @@
 package tcp
 
 import (
-	"log"
 	"net"
 
 	"github.com/otie173/odinbit/internal/protocol/packet"
 	"github.com/otie173/odinbit/internal/server/game/texture"
 	"github.com/otie173/odinbit/internal/server/game/world"
-	"github.com/vmihailenco/msgpack/v5"
 )
 
 type Dispatcher struct {
@@ -22,5 +20,5 @@ func NewDispatcher(textureHandler *texture.Handler, worldHandler *world.Handler)
 	}
 }
 
-func (d *Dispatcher) Dispatch(conn net.Conn, pktCategory packet.PacketCategory, pktOpcode packet.PacketOpcode, data []byte) {
+func (d *Dispatcher) Dispatch(conn net.Conn, pktCategory packet.PacketCategory, pktOpcode packet.PacketOpcode, pktData []byte) {
 }

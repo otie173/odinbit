@@ -45,7 +45,7 @@ func (l *Listener) listen(conn net.Conn) {
 			conn.Close()
 			return
 		}
-		l.dispatcher.Dispatch(conn, pkt.Type, pkt.Payload)
+		l.dispatcher.Dispatch(conn, pkt.Category, pkt.Opcode, pkt.Payload)
 	}
 }
 

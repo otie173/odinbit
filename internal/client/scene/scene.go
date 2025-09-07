@@ -102,17 +102,6 @@ func (h *Handler) Handle() {
 					}
 					h.netHandler.Dispatch(nil, pkt.Category, pkt.Opcode, pkt.Payload)
 
-					data, err = h.netHandler.LoadWorld("http://0.0.0.0:9999")
-					if err != nil {
-						log.Printf("Error! Cant load world from server: %v\n", err)
-					}
-
-					if err := msgpack.Unmarshal(data, &pkt); err != nil {
-						log.Printf("Error! Cant unmarshal body: %v\n", err)
-						return
-					}
-					h.netHandler.Dispatch(nil, pkt.Type, pkt.Payload)
-
 					if err := h.netHandler.Connect(ip); err != nil {
 						log.Printf("Error! Cant connect to server: %v\n", err)
 						return

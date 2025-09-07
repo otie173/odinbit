@@ -11,14 +11,18 @@ type Packet struct {
 
 // Enum for packet categories
 const (
-	Texture PacketCategory = iota
-	World
-	Player
-	Inventory
+	CategoryTexture PacketCategory = iota
+	CategoryWorld
+	CategoryPlayer
+	CategoryInventory
 )
 
-// Enum for packet opcodes
+// Enum for texture packet opcodes
 const (
-	GetTextures PacketOpcode = iota
-	GetWorld
+	OpcodeTextureData PacketOpcode = 1000 + iota
+)
+
+// Enum for world packet opcodes
+const (
+	OpcodeSetBlock PacketOpcode = 2000 + iota
 )
