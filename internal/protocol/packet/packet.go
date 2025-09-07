@@ -4,18 +4,36 @@ import (
 	"github.com/otie173/odinbit/internal/server/game/world"
 )
 
+type PacketCategory int
+type PacketOpcode int
+
 type Packet struct {
-	Type    PacketType
-	Payload []byte
+	Category PacketCategory
+	Opcode   PacketOpcode
+	Payload  []byte
 }
 
-type PacketType int
-
+// Enum for packet categories
 const (
-	PingType PacketType = iota
-	HandshakeType
-	GetTexturesType
-	UpdateWorldType
+	Texture PacketCategory = iota
+	World
+	Player
+	Inventory
+)
+
+// Enum for packet opcodes
+const (
+// Texture opcodes
+// SOON
+
+// World opcodes
+// SOON
+
+// Player opcodes
+// SOON
+
+// Inventory opcodes
+// SOON
 )
 
 type Ping struct{}
