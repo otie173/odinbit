@@ -17,12 +17,17 @@ const (
 	CategoryInventory
 )
 
-// Enum for texture packet opcodes
+// Enum for texture opcodes
 const (
 	OpcodeTextureData PacketOpcode = 1000 + iota
 )
 
-// Enum for world packet opcodes
+// Enum for world opcodes
 const (
 	OpcodeSetBlock PacketOpcode = 2000 + iota
+)
+
+// Enum for player opcode
+const (
+	OpcodeHandshake PacketOpcode = 3000 + iota
 )

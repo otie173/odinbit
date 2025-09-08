@@ -108,6 +108,26 @@ func (h *Handler) Handle() {
 					} else {
 						log.Printf("Success! Connected to %s\n", ip)
 						h.currentScene = common.Game
+
+						pktStructure := packet.PlayerHandshake{Username: nickname}
+						binaryStructure, err := msgpack.Marshal(&pktStructure)
+						if err != nil {
+							log.Printf("Error! Cant marshal player handshake structure: %v\n", err)
+						}
+
+						pkt := packet.Packet{
+							Category: packet.CategoryPlayer,
+							Opcode:   packet.OpcodeHandshake,
+							Payload:  binaryStructure,
+						}
+
+						data, err := msgpack.Marshal(&pkt)
+						if err != nil {
+							log.Printf("Error! Cant marshal player handshake packet: %v\n", err)
+						}
+
+						h.netHandler.Write(data)
+
 						go h.netHandler.Handle()
 					}
 				}

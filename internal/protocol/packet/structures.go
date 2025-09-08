@@ -6,3 +6,7 @@ type TextureRequest struct{}
 type TextureData struct {
 	Textures map[string]ServerTexture
 }
+
+type PlayerHandshake struct {
+	Username string
+}
