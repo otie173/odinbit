@@ -24,7 +24,8 @@ const (
 
 // Enum for world opcodes
 const (
-	OpcodeSetBlock PacketOpcode = 2000 + iota
+	OpcodeWorldUpdate PacketOpcode = 2000 + iota
+	OpcodeSetBlock
 )
 
 // Enum for player opcode
