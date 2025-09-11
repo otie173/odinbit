@@ -15,7 +15,7 @@ import (
 func main() {
 	textures := texture.NewPack()
 	overworld := world.New(textures)
-	players := player.NewStorage(16)
+	playerStorage := player.NewStorage(1)
 
 	textureHandler := texture.NewHandler(textures)
 	worldHandler := world.NewHandler(overworld)
@@ -23,7 +23,7 @@ func main() {
 	router := http.NewRouter(chi.NewRouter())
 	handler := http.NewHandler(router, textures, overworld)
 
-	dispatcher := tcp.NewDispatcher(textureHandler, worldHandler)
+	dispatcher := tcp.NewDispatcher(playerStorage, textureHandler, worldHandler)
 	listener := tcp.NewListener(dispatcher)
 
 	tps := 20
@@ -32,7 +32,7 @@ func main() {
 	components := manager.Components{
 		Textures:  textures,
 		Overworld: overworld,
-		Players:   players,
+		Players:   playerStorage,
 		Handler:   handler,
 		Listener:  listener,
 		Ticker:    ticker,

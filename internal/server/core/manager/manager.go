@@ -3,12 +3,14 @@ package manager
 import (
 	"log"
 
+	"github.com/otie173/odinbit/internal/protocol/packet"
 	"github.com/otie173/odinbit/internal/server/core/ticker"
 	"github.com/otie173/odinbit/internal/server/game/player"
 	"github.com/otie173/odinbit/internal/server/game/texture"
 	"github.com/otie173/odinbit/internal/server/game/world"
 	"github.com/otie173/odinbit/internal/server/net/http"
 	"github.com/otie173/odinbit/internal/server/net/tcp"
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 type Components struct {
@@ -54,5 +56,23 @@ func (m *Manager) HandleNetwork(httpAddr, tcpAddr string) {
 
 func (m *Manager) HandleGame() {
 	m.Components.Ticker.Run(func() {
+		binaryOverworld, err := m.Components.Overworld.GetWorld()
+		if err != nil {
+			log.Printf("Error! Cant get binary overworld: %v\n", err)
+		}
+
+		pktStructure := packet.Packet{
+			Category: packet.CategoryWorld,
+			Opcode:   packet.OpcodeWorldUpdate,
+			Payload:  binaryOverworld,
+		}
+
+		binaryPkt, err := msgpack.Marshal(&pktStructure)
+		if err != nil {
+			log.Printf("Error! Cant marshal world update packet: %v\n", err)
+		}
+
+		players := m.Components.Players.GetPlayers()
+		m.Components.Broadcaster.Broadcast(binaryPkt, players)
 	})
 }
