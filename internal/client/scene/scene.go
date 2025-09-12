@@ -20,8 +20,11 @@ var (
 	nickname     string = "Nickname"
 	nicknameEdit bool   = false
 
-	ip     string = "Address"
-	ipEdit bool   = false
+	httpAddress     string = "HTTP address"
+	httpAddressEdit bool   = false
+
+	tcpAddress     string = "TCP address"
+	tcpAddressEdit bool   = false
 )
 
 type Handler struct {
@@ -84,10 +87,14 @@ func (h *Handler) Handle() {
 			if raygui.TextBox(rl.NewRectangle(x+40, y, 820, 80), &nickname, 64, nicknameEdit) {
 				nicknameEdit = !nicknameEdit
 			}
-			if raygui.TextBox(rl.NewRectangle(x+40, y+110, 820, 80), &ip, 64, ipEdit) {
-				ipEdit = !ipEdit
+			if raygui.TextBox(rl.NewRectangle(x+40, y+110, 820, 80), &httpAddress, 16, httpAddressEdit) {
+				httpAddressEdit = !httpAddressEdit
 			}
-			if raygui.Button(rl.NewRectangle(float32(h.screenWidth/2-350/2), y+100*3, 350, 85), "Connect") {
+			if raygui.TextBox(rl.NewRectangle(x+40, y+110*2, 820, 80), &tcpAddress, 64, tcpAddressEdit) {
+				tcpAddressEdit = !tcpAddressEdit
+			}
+
+			if raygui.Button(rl.NewRectangle(float32(h.screenWidth/2-350/2), y+115*3, 350, 85), "Connect") {
 				if !h.netHandler.IsConnected() {
 					data, err := h.netHandler.LoadTextures("http://0.0.0.0:9999")
 					if err != nil {
@@ -102,11 +109,11 @@ func (h *Handler) Handle() {
 					}
 					h.netHandler.Dispatch(nil, pkt.Category, pkt.Opcode, pkt.Payload)
 
-					if err := h.netHandler.Connect(ip); err != nil {
+					if err := h.netHandler.Connect(tcpAddress); err != nil {
 						log.Printf("Error! Cant connect to server: %v\n", err)
 						return
 					} else {
-						log.Printf("Success! Connected to %s\n", ip)
+						log.Printf("Success! Connected to %s\n", tcpAddress)
 						h.currentScene = common.Game
 
 						pktStructure := packet.PlayerHandshake{Username: nickname}
