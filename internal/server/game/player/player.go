@@ -14,12 +14,13 @@ type Player struct {
 	Y    int
 }
 
-func NewPlayer(conn net.Conn, name string) *Player {
+func NewPlayer(conn net.Conn, name string, x, y int) *Player {
 	player := &Player{
 		Id:   idCounter,
+		Conn: conn,
 		Name: name,
-		X:    0,
-		Y:    0,
+		X:    x,
+		Y:    y,
 	}
 	idCounter++
 

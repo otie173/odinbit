@@ -10,3 +10,9 @@ type TextureData struct {
 type PlayerHandshake struct {
 	Username string
 }
+
+type WorldUpdate struct {
+	Blocks         []byte
+	StartX, StartY int
+	EndX, EndY     int
+}

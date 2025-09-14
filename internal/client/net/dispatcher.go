@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/otie173/odinbit/internal/client/texture"
+	"github.com/otie173/odinbit/internal/client/world"
 	"github.com/otie173/odinbit/internal/protocol/packet"
 	"github.com/vmihailenco/msgpack/v5"
 )
@@ -33,6 +34,27 @@ func (d *Dispatcher) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory,
 			for _, texture := range pktStructure.Textures {
 				d.textureStorage.LoadTexture(texture.Id, texture.Path)
 			}
+		}
+	case packet.CategoryWorld:
+		switch pktOpcode {
+		case packet.OpcodeWorldUpdate:
+			var pktStructure packet.WorldUpdate
+			var blocks []world.Block
+
+			if err := msgpack.Unmarshal(pktData, &pktStructure); err != nil {
+				log.Printf("Error! Cant unmarshal binary world area: %v\n", err)
+			}
+
+			if err := msgpack.Unmarshal(pktStructure.Blocks, &blocks); err != nil {
+				log.Printf("Error! Cant unmarshal packet structure data to overworld: %v\n", err)
+			}
+			world.Overworld.Blocks = blocks
+			world.Overworld.StartX = pktStructure.StartX
+			world.Overworld.StartY = pktStructure.StartY
+			world.Overworld.EndX = pktStructure.EndX
+			world.Overworld.EndY = pktStructure.EndY
+
+			// log.Println(pktStructure.StartX, pktStructure.StartY, pktStructure.EndX, pktStructure.EndY)
 		}
 	}
 }

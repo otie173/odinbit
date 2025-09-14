@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/otie173/odinbit/internal/protocol/packet"
+	"github.com/otie173/odinbit/internal/server/common"
 	"github.com/otie173/odinbit/internal/server/game/player"
 	"github.com/otie173/odinbit/internal/server/game/texture"
 	"github.com/otie173/odinbit/internal/server/game/world"
@@ -37,7 +38,7 @@ func (d *Dispatcher) Dispatch(conn net.Conn, pktCategory packet.PacketCategory, 
 				log.Printf("Error! Cant unmarshal player handshake data: %v\n", err)
 			}
 
-			player := player.NewPlayer(conn, pktStructure.Username)
+			player := player.NewPlayer(conn, pktStructure.Username, common.WorldSize/2, common.WorldSize/2)
 			d.playerStorage.AddPlayer(player)
 			log.Printf("Hi, %s!\n", pktStructure.Username)
 		}

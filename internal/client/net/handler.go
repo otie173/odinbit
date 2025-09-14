@@ -85,7 +85,7 @@ func (h *Handler) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory, pk
 
 func (h *Handler) Handle() {
 	log.Println("Началась обработка соединения")
-	buffer := make([]byte, 1024)
+	buffer := make([]byte, 1024*1024) // 1MB buffer
 
 	for {
 		n, err := h.connection.Read(buffer)

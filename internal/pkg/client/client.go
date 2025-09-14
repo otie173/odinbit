@@ -2,6 +2,7 @@ package client
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/otie173/odinbit/internal/client/camera"
 	"github.com/otie173/odinbit/internal/client/common"
 	"github.com/otie173/odinbit/internal/client/device"
 	"github.com/otie173/odinbit/internal/client/net"
@@ -17,7 +18,6 @@ type Client struct {
 	sceneHandler              *scene.Handler
 	netHandler                *net.Handler
 	textureStorage            *texture.Storage
-	world                     *world.World
 }
 
 func New(title string, screenWidth, screenHeight int32) *Client {
@@ -25,8 +25,7 @@ func New(title string, screenWidth, screenHeight int32) *Client {
 	netDispatcher := net.NewDispatcher(textureStorage)
 	netLoader := net.NewLoader()
 	netHandler := net.NewHandler(netDispatcher, netLoader)
-	world := world.New(textureStorage)
-	sceneHandler := scene.New(screenWidth, screenHeight, common.Title, netHandler, world)
+	sceneHandler := scene.New(screenWidth, screenHeight, common.Title, netHandler)
 	deviceHandler := device.New(sceneHandler)
 
 	return &Client{
@@ -37,7 +36,6 @@ func New(title string, screenWidth, screenHeight int32) *Client {
 		sceneHandler:   sceneHandler,
 		netHandler:     netHandler,
 		textureStorage: textureStorage,
-		world:          world,
 	}
 }
 
@@ -47,11 +45,14 @@ func (c *Client) Load() {
 	rl.ToggleFullscreen()
 	rl.SetTargetFPS(60)
 	rl.SetExitKey(0)
+	camera.LoadCamera()
+	world.Overworld.Textures = c.textureStorage
 }
 
 func (c *Client) update() {
 	c.sceneHandler.Handle()
 	c.deviceHandler.Handle()
+	camera.UpdateCamera()
 }
 
 func (c *Client) Run() {

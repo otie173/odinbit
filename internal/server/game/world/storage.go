@@ -30,3 +30,19 @@ func (s *storage) getWorld() ([]byte, error) {
 	}
 	return data, err
 }
+
+func (s *storage) getWorldArea(x, y int) ([]byte, error) {
+	var blocks []Block
+
+	for i := x - common.ViewRadius; i <= x+common.ViewRadius; i++ {
+		for j := y - common.ViewRadius; j < y+common.ViewRadius; j++ {
+			blocks = append(blocks, s.blocks[i][j])
+		}
+	}
+
+	data, err := msgpack.Marshal(&blocks)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}

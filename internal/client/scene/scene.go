@@ -7,6 +7,7 @@ import (
 
 	"github.com/gen2brain/raylib-go/raygui"
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/otie173/odinbit/internal/client/camera"
 	"github.com/otie173/odinbit/internal/client/common"
 	"github.com/otie173/odinbit/internal/client/net"
 	"github.com/otie173/odinbit/internal/client/world"
@@ -32,16 +33,14 @@ type Handler struct {
 	screenHeight int32
 	currentScene common.Scene
 	netHandler   *net.Handler
-	world        *world.World
 }
 
-func New(screenWidth, screenHeight int32, scene common.Scene, netHandler *net.Handler, world *world.World) *Handler {
+func New(screenWidth, screenHeight int32, scene common.Scene, netHandler *net.Handler) *Handler {
 	return &Handler{
 		screenWidth:  screenWidth,
 		screenHeight: screenHeight,
 		currentScene: scene,
 		netHandler:   netHandler,
-		world:        world,
 	}
 }
 
@@ -141,8 +140,24 @@ func (h *Handler) Handle() {
 			}
 		})
 	case common.Game:
-		h.drawFunc(func() {
-
-		})
+		rl.BeginDrawing()
+		rl.ClearBackground(bkgColor)
+		rl.BeginMode2D(camera.Camera)
+		index := 0
+		for x := world.Overworld.StartX; x < world.Overworld.EndX; x++ {
+			for y := world.Overworld.StartY; y < world.Overworld.EndY; y++ {
+				if index < len(world.Overworld.Blocks) {
+					block := world.Overworld.Blocks[index]
+					texture := world.GetBlock(block.TextureID)
+					rec := rl.NewRectangle(float32(x*12), float32(y*12), 12, 12)
+					if block.TextureID != 0 {
+						rl.DrawTextureRec(texture, rec, rl.NewVector2(rec.X, rec.Y), rl.White)
+					}
+					index++
+				}
+			}
+		}
+		rl.EndMode2D()
+		rl.EndDrawing()
 	}
 }

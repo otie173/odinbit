@@ -1,35 +1,26 @@
 package world
 
 import (
-	"log"
-
+	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/otie173/odinbit/internal/client/texture"
-	"github.com/vmihailenco/msgpack/v5"
 )
+
+var (
+	Overworld World
+)
+
+type World struct {
+	Textures       *texture.Storage
+	Blocks         []Block
+	StartX, StartY int
+	EndX, EndY     int
+}
 
 type Block struct {
 	TextureID int
 	Passable  bool
 }
 
-type World struct {
-	blockStorage   *storage
-	textureStorage *texture.Storage
-}
-
-func New(textureStorage *texture.Storage) *World {
-	blockStorage := newStorage()
-
-	return &World{
-		blockStorage:   blockStorage,
-		textureStorage: textureStorage,
-	}
-}
-
-func (w *World) LoadStorage(data []byte) error {
-	if err := msgpack.Unmarshal(data, &w.blockStorage); err != nil {
-		return err
-	}
-	log.Println(w.blockStorage)
-	return nil
+func GetBlock(id int) rl.Texture2D {
+	return Overworld.Textures.GetById(id)
 }

@@ -7,6 +7,8 @@ import (
 type Block struct {
 	TextureID int
 	Passable  bool
+	X         int
+	Y         int
 }
 
 type World struct {
@@ -42,4 +44,12 @@ func (w *World) GetWorld() ([]byte, error) {
 		return nil, err
 	}
 	return binaryWorld, nil
+}
+
+func (w *World) GetWorldArea(x, y int) ([]byte, error) {
+	binaryWorldArea, err := w.storage.getWorldArea(x, y)
+	if err != nil {
+		return nil, err
+	}
+	return binaryWorldArea, nil
 }
