@@ -10,11 +10,11 @@ type Player struct {
 	Id   int
 	Conn net.Conn
 	Name string
-	X    int
-	Y    int
+	X    int16
+	Y    int16
 }
 
-func NewPlayer(conn net.Conn, name string, x, y int) *Player {
+func NewPlayer(conn net.Conn, name string, x, y int16) *Player {
 	player := &Player{
 		Id:   idCounter,
 		Conn: conn,

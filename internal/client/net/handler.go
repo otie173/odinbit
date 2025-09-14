@@ -4,6 +4,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/kelindar/binary"
 	"github.com/otie173/odinbit/internal/protocol/packet"
 	"github.com/vmihailenco/msgpack/v5"
 )
@@ -63,6 +64,15 @@ func parsePacket(buffer []byte) (packet.Packet, error) {
 	return pkt, nil
 }
 
+func parseBinaryPacket(buffer []byte) (packet.Packet, error) {
+	pkt := packet.Packet{}
+	if err := binary.Unmarshal(buffer, &pkt); err != nil {
+		return packet.Packet{}, err
+	}
+
+	return pkt, nil
+}
+
 func (h *Handler) LoadTextures(addr string) ([]byte, error) {
 	data, err := h.loader.LoadTextures(addr)
 	if err != nil {
@@ -93,7 +103,7 @@ func (h *Handler) Handle() {
 			log.Printf("Error with read buffer from server: %v\n", err)
 		}
 
-		pkt, err := parsePacket(buffer[:n])
+		pkt, err := parseBinaryPacket(buffer[:n])
 		if err != nil {
 			log.Printf("Error with parse packet from server: %v\n", err)
 		}

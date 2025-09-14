@@ -8,13 +8,13 @@ import (
 )
 
 type Storage struct {
-	texture map[string]int
-	id      map[int]rl.Texture2D
+	texture map[string]uint8
+	id      map[uint8]rl.Texture2D
 }
 
 func New() *Storage {
-	texture := make(map[string]int, 128)
-	id := make(map[int]rl.Texture2D)
+	texture := make(map[string]uint8, 128)
+	id := make(map[uint8]rl.Texture2D)
 
 	return &Storage{
 		texture: texture,
@@ -22,7 +22,7 @@ func New() *Storage {
 	}
 }
 
-func (s *Storage) LoadTexture(id int, path string) {
+func (s *Storage) LoadTexture(id uint8, path string) {
 	texture := rl.LoadTexture(path)
 	textureName := strings.TrimSuffix(filepath.Base(path), ".png")
 
@@ -30,6 +30,6 @@ func (s *Storage) LoadTexture(id int, path string) {
 	s.id[id] = texture
 }
 
-func (s *Storage) GetById(blockId int) rl.Texture2D {
+func (s *Storage) GetById(blockId uint8) rl.Texture2D {
 	return s.id[blockId]
 }

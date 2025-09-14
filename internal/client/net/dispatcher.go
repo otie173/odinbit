@@ -4,6 +4,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/kelindar/binary"
 	"github.com/otie173/odinbit/internal/client/texture"
 	"github.com/otie173/odinbit/internal/client/world"
 	"github.com/otie173/odinbit/internal/protocol/packet"
@@ -38,14 +39,16 @@ func (d *Dispatcher) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory,
 	case packet.CategoryWorld:
 		switch pktOpcode {
 		case packet.OpcodeWorldUpdate:
+			log.Println("Received world area with size in bytes: ", len(pktData))
+
 			var pktStructure packet.WorldUpdate
 			var blocks []world.Block
 
-			if err := msgpack.Unmarshal(pktData, &pktStructure); err != nil {
+			if err := binary.Unmarshal(pktData, &pktStructure); err != nil {
 				log.Printf("Error! Cant unmarshal binary world area: %v\n", err)
 			}
 
-			if err := msgpack.Unmarshal(pktStructure.Blocks, &blocks); err != nil {
+			if err := binary.Unmarshal(pktStructure.Blocks, &blocks); err != nil {
 				log.Printf("Error! Cant unmarshal packet structure data to overworld: %v\n", err)
 			}
 			world.Overworld.Blocks = blocks

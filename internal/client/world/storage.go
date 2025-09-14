@@ -12,12 +12,12 @@ func newStorage() *storage {
 	return &storage{}
 }
 
-func (s *storage) addBlock(id int, passable bool, x, y int) {
+func (s *storage) addBlock(id uint8, passable bool, x, y int) {
 	block := Block{TextureID: id, Passable: passable}
 	s.blocks[x][y] = block
 }
 
 func (s *storage) removeBlock(x, y int) {
-	block := Block{TextureID: -1, Passable: true}
+	block := Block{TextureID: 0, Passable: true}
 	s.blocks[x][y] = block
 }

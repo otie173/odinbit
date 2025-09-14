@@ -3,6 +3,7 @@ package manager
 import (
 	"log"
 
+	"github.com/kelindar/binary"
 	"github.com/otie173/odinbit/internal/protocol/packet"
 	"github.com/otie173/odinbit/internal/server/common"
 	"github.com/otie173/odinbit/internal/server/core/ticker"
@@ -11,7 +12,6 @@ import (
 	"github.com/otie173/odinbit/internal/server/game/world"
 	"github.com/otie173/odinbit/internal/server/net/http"
 	"github.com/otie173/odinbit/internal/server/net/tcp"
-	"github.com/vmihailenco/msgpack/v5"
 )
 
 type Components struct {
@@ -73,7 +73,7 @@ func (m *Manager) HandleGame() {
 			}
 			log.Println(pktStructure.StartX, pktStructure.StartY, pktStructure.EndX, pktStructure.EndY, player.X, player.Y)
 
-			binaryStructure, err := msgpack.Marshal(&pktStructure)
+			binaryStructure, err := binary.Marshal(&pktStructure)
 			if err != nil {
 				log.Printf("Error! Cant marshal world update structure to binary format: %v\n", err)
 			}
@@ -84,7 +84,7 @@ func (m *Manager) HandleGame() {
 				Payload:  binaryStructure,
 			}
 
-			binaryPkt, err := msgpack.Marshal(&pkt)
+			binaryPkt, err := binary.Marshal(&pkt)
 			if err != nil {
 				log.Printf("Error! Cant marshal world update packet: %v\n", err)
 			}

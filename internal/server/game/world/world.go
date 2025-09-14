@@ -5,10 +5,9 @@ import (
 )
 
 type Block struct {
-	TextureID int
+	_msgpack  struct{} `msgpack:",as_array"`
+	TextureID uint8
 	Passable  bool
-	X         int
-	Y         int
 }
 
 type World struct {
@@ -26,11 +25,11 @@ func New(textures *texture.TexturePack) *World {
 	}
 }
 
-func (w *World) AddBlock(id int, passable bool, x, y int) {
+func (w *World) AddBlock(id uint8, passable bool, x, y int16) {
 	w.storage.addBlock(id, passable, x, y)
 }
 
-func (w *World) RemoveBlock(x, y int) {
+func (w *World) RemoveBlock(x, y int16) {
 	w.storage.removeBlock(x, y)
 }
 
@@ -46,7 +45,7 @@ func (w *World) GetWorld() ([]byte, error) {
 	return binaryWorld, nil
 }
 
-func (w *World) GetWorldArea(x, y int) ([]byte, error) {
+func (w *World) GetWorldArea(x, y int16) ([]byte, error) {
 	binaryWorldArea, err := w.storage.getWorldArea(x, y)
 	if err != nil {
 		return nil, err

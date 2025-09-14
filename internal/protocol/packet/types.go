@@ -1,11 +1,11 @@
 package packet
 
 type ServerTexture struct {
-	Id   int
+	Id   uint8
 	Path string
 }
 
 type ServerBlock struct {
-	TextureID int
+	TextureID uint8
 	Passable  bool
 }

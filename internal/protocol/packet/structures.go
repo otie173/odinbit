@@ -12,7 +12,8 @@ type PlayerHandshake struct {
 }
 
 type WorldUpdate struct {
+	_msgpack       struct{} `msgpack:",as_array"`
 	Blocks         []byte
-	StartX, StartY int
-	EndX, EndY     int
+	StartX, StartY int16
+	EndX, EndY     int16
 }

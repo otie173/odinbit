@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	counter int = 0
+	counter uint8 = 1
 )
 
 type Texture struct {
@@ -48,10 +48,10 @@ func (t *TexturePack) LoadTextures() {
 	}
 }
 
-func (t *TexturePack) GetID(name string) int {
+func (t *TexturePack) GetID(name string) uint8 {
 	val, ok := t.textures[name]
 	if !ok {
-		return -1
+		return 0
 	}
 	return val.Id
 }

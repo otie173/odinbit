@@ -12,15 +12,15 @@ var (
 type World struct {
 	Textures       *texture.Storage
 	Blocks         []Block
-	StartX, StartY int
-	EndX, EndY     int
+	StartX, StartY int16
+	EndX, EndY     int16
 }
 
 type Block struct {
-	TextureID int
+	TextureID uint8
 	Passable  bool
 }
 
-func GetBlock(id int) rl.Texture2D {
+func GetBlock(id uint8) rl.Texture2D {
 	return Overworld.Textures.GetById(id)
 }
