@@ -12,6 +12,8 @@ require (
 
 require (
 	github.com/ebitengine/purego v0.8.4 // indirect
+	github.com/klauspost/compress v1.17.11 // indirect
+	github.com/minio/minlz v1.0.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	golang.org/x/exp v0.0.0-20250711185948-6ae5c78190dc // indirect
 	golang.org/x/sys v0.34.0 // indirect

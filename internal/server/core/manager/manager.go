@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/kelindar/binary"
+	"github.com/minio/minlz"
 	"github.com/otie173/odinbit/internal/protocol/packet"
 	"github.com/otie173/odinbit/internal/server/common"
 	"github.com/otie173/odinbit/internal/server/core/ticker"
@@ -37,6 +38,14 @@ func New(components Components) *Manager {
 	return &Manager{
 		Components: components,
 	}
+}
+
+func (m *Manager) compressPacket(binaryPacket []byte) ([]byte, error) {
+	compressedData, err := minlz.Encode(nil, binaryPacket, minlz.LevelSmallest)
+	if err != nil {
+		return nil, err
+	}
+	return compressedData, nil
 }
 
 func (m *Manager) HandleNetwork(httpAddr, tcpAddr string) {
@@ -89,7 +98,12 @@ func (m *Manager) HandleGame() {
 				log.Printf("Error! Cant marshal world update packet: %v\n", err)
 			}
 
-			if _, err := player.Conn.Write(binaryPkt); err != nil {
+			compressedPkt, err := m.compressPacket(binaryPkt)
+			if err != nil {
+				log.Printf("Error! Cant compress world update packet: %v\n", err)
+			}
+
+			if _, err := player.Conn.Write(compressedPkt); err != nil {
 				log.Printf("Error! Cant send binary packet of world area to player: %v\n", err)
 			}
 		}

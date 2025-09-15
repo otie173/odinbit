@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/kelindar/binary"
+	"github.com/minio/minlz"
 	"github.com/otie173/odinbit/internal/protocol/packet"
 	"github.com/vmihailenco/msgpack/v5"
 )
@@ -93,6 +94,15 @@ func (h *Handler) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory, pk
 	h.dispatcher.Dispatch(conn, pktCategory, pktOpcode, data)
 }
 
+func (h *Handler) decompressPacket(compressedPkt []byte) ([]byte, error) {
+	log.Printf("Info! Compressed packet lenght: %d\n", len(compressedPkt))
+	decompressedData, err := minlz.Decode(nil, compressedPkt)
+	if err != nil {
+		return nil, err
+	}
+	return decompressedData, nil
+}
+
 func (h *Handler) Handle() {
 	log.Println("Началась обработка соединения")
 	buffer := make([]byte, 1024*1024) // 1MB buffer
@@ -103,7 +113,12 @@ func (h *Handler) Handle() {
 			log.Printf("Error with read buffer from server: %v\n", err)
 		}
 
-		pkt, err := parseBinaryPacket(buffer[:n])
+		compressedPkt, err := h.decompressPacket(buffer[:n])
+		if err != nil {
+			log.Printf("Error! Cant decompress packet: %v\n", err)
+		}
+
+		pkt, err := parseBinaryPacket(compressedPkt)
 		if err != nil {
 			log.Printf("Error with parse packet from server: %v\n", err)
 		}
