@@ -35,7 +35,7 @@ func (s *storage) getWorld() ([]byte, error) {
 func (s *storage) getWorldArea(x, y int16) ([]byte, error) {
 	var blocks []Block
 
-	for i := x - common.ViewRadius; i <= x+common.ViewRadius; i++ {
+	for i := x - common.ViewRadius; i < x+common.ViewRadius; i++ {
 		for j := y - common.ViewRadius; j < y+common.ViewRadius; j++ {
 			blocks = append(blocks, s.blocks[i][j])
 		}
@@ -46,9 +46,5 @@ func (s *storage) getWorldArea(x, y int16) ([]byte, error) {
 		return nil, err
 	}
 
-	// data, err := msgpack.Marshal(&blocks)
-	// if err != nil {
-	// 	return nil, err
-	// }
 	return data, nil
 }
