@@ -47,6 +47,7 @@ func (c *Client) Load() {
 	rl.SetExitKey(0)
 	camera.LoadCamera()
 	world.Overworld.Textures = c.textureStorage
+	scene.BkgTexture = rl.LoadTexture("resources/backgrounds/background1.png")
 }
 
 func (c *Client) update() {

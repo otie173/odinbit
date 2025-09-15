@@ -17,7 +17,9 @@ import (
 )
 
 var (
-	bkgColor = color.RGBA{34, 35, 35, 255}
+	bkgColor         = color.RGBA{34, 35, 35, 255}
+	transparentColor = color.RGBA{34, 34, 35, 200}
+	BkgTexture       rl.Texture2D
 
 	nickname     string = "Nickname"
 	nicknameEdit bool   = false
@@ -66,9 +68,10 @@ func (h *Handler) Handle() {
 		h.drawFunc(func() {
 			x := float32(h.screenWidth/2 - 900/2)
 			y := float32(340)
+			rl.DrawTexture(BkgTexture, 0, 0, rl.White)
+			rl.DrawRectangle(int32(x), int32(h.screenHeight/2-550/2), 900, 550, transparentColor)
 			raygui.SetStyle(raygui.DEFAULT, raygui.TEXT_SIZE, 32)
 			raygui.GroupBox(rl.NewRectangle(x, float32(h.screenHeight/2-550/2), 900, 550), "Odinbit")
-
 			if raygui.Button(rl.NewRectangle(x+40, y, 820, 100), "Singleplayer") {
 			}
 			if raygui.Button(rl.NewRectangle(x+40, y+150, 820, 100), "Multiplayer") {

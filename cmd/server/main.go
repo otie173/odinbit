@@ -24,7 +24,7 @@ func main() {
 	handler := http.NewHandler(router, textures, overworld)
 
 	dispatcher := tcp.NewDispatcher(playerStorage, textureHandler, worldHandler)
-	listener := tcp.NewListener(dispatcher)
+	listener := tcp.NewListener(playerStorage, dispatcher)
 
 	tps := 20
 	ticker := ticker.New(tps)

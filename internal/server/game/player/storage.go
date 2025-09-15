@@ -10,7 +10,7 @@ import (
 type Storage interface {
 	GetPlayers() []*Player
 	AddPlayer(player *Player)
-	RemovePlayer(player *Player)
+	RemovePlayer(playerConn net.Conn)
 }
 
 type filestorage struct {
@@ -47,12 +47,23 @@ func (s *filestorage) AddPlayer(player *Player) {
 	s.mu.Lock()
 	if len(s.players) < s.capacity {
 		s.players = append(s.players, player)
+		s.playersMap[player.Conn] = player
 	} else {
 		log.Println("Error! Cant add new player to storage: no more space")
 	}
 	s.mu.Unlock()
 }
 
-func (s *filestorage) RemovePlayer(player *Player) {
+func (s *filestorage) RemovePlayer(playerConn net.Conn) {
+	removedPlayer := s.playersMap[playerConn]
+	players := make([]*Player, 0, s.capacity)
 
+	s.mu.Lock()
+	for _, player := range s.players {
+		if player != removedPlayer {
+			players = append(players, player)
+		}
+	}
+	s.players = players
+	s.mu.Unlock()
 }
