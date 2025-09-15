@@ -2,7 +2,7 @@ package common
 
 const (
 	WorldSize  = 512
-	ViewRadius = 16
+	ViewRadius = 10
 )
 
 type AreaPositions struct {

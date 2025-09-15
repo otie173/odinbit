@@ -14,13 +14,13 @@ func newStorage() *storage {
 	return &storage{}
 }
 
-func (s *storage) addBlock(id uint8, passable bool, x, y int16) {
+func (s *storage) addBlock(id uint8, passable uint8, x, y int16) {
 	block := Block{TextureID: id, Passable: passable}
 	s.blocks[x][y] = block
 }
 
 func (s *storage) removeBlock(x, y int16) {
-	block := Block{TextureID: 0, Passable: true}
+	block := Block{TextureID: 0, Passable: 1}
 	s.blocks[x][y] = block
 }
 

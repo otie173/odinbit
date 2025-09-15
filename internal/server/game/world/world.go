@@ -5,9 +5,8 @@ import (
 )
 
 type Block struct {
-	_msgpack  struct{} `msgpack:",as_array"`
 	TextureID uint8
-	Passable  bool
+	Passable  uint8
 }
 
 type World struct {
@@ -25,7 +24,7 @@ func New(textures *texture.TexturePack) *World {
 	}
 }
 
-func (w *World) AddBlock(id uint8, passable bool, x, y int16) {
+func (w *World) AddBlock(id uint8, passable uint8, x, y int16) {
 	w.storage.addBlock(id, passable, x, y)
 }
 

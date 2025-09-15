@@ -46,7 +46,7 @@ func (g *generator) generateBarrier() {
 	}
 }
 
-func (g *generator) generateResource(name string, multiplier float32, passable bool, textures ...int) {
+func (g *generator) generateResource(name string, multiplier float32, passable uint8, textures ...int) {
 	count := common.WorldSize * multiplier
 
 	for i := 0; i <= int(count); i++ {
@@ -66,11 +66,11 @@ func (g *generator) generateResource(name string, multiplier float32, passable b
 }
 
 func (g *generator) generateWorld() {
-	g.generateResource("grass", grassMultiplier, true, 1, 2, 7, 8)
-	g.generateResource("grass", tallGrassMultiplier, false, 3, 4, 5, 6)
-	g.generateResource("tree", treeMultiplier, false, 4)
-	g.generateResource("tree", deadTreeMultiplier, false, 2, 3)
-	g.generateResource("stone", stoneMultiplier, false, 2, 3)
-	g.generateResource("mushroom", mushroomMultiplier, false, 1, 2)
+	g.generateResource("grass", grassMultiplier, 1, 1, 2, 7, 8)
+	g.generateResource("grass", tallGrassMultiplier, 0, 3, 4, 5, 6)
+	g.generateResource("tree", treeMultiplier, 0, 4)
+	g.generateResource("tree", deadTreeMultiplier, 0, 2, 3)
+	g.generateResource("stone", stoneMultiplier, 0, 2, 3)
+	g.generateResource("mushroom", mushroomMultiplier, 0, 1, 2)
 	g.generateBarrier()
 }

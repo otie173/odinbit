@@ -4,6 +4,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/minio/minlz"
 	"github.com/otie173/odinbit/internal/protocol/packet"
 	"github.com/vmihailenco/msgpack/v5"
 )
@@ -18,7 +19,15 @@ func NewListener(dispatcher *Dispatcher) *Listener {
 	}
 }
 
-func parsePacket(buffer []byte) (packet.Packet, error) {
+func (l *Listener) decompressPacket(compressedPkt []byte) ([]byte, error) {
+	decompressedPkt, err := minlz.Decode(nil, compressedPkt)
+	if err != nil {
+		return nil, err
+	}
+	return decompressedPkt, nil
+}
+
+func (l *Listener) parsePacket(buffer []byte) (packet.Packet, error) {
 	pkt := packet.Packet{}
 	if err := msgpack.Unmarshal(buffer, &pkt); err != nil {
 		return packet.Packet{}, err
@@ -39,7 +48,12 @@ func (l *Listener) listen(conn net.Conn) {
 			return
 		}
 
-		pkt, err := parsePacket(buffer[:n])
+		decompressedPkt, err := l.decompressPacket(buffer[:n])
+		if err != nil {
+			log.Printf("Error! Cant decompress packet from %s: %v\n", conn.RemoteAddr().String(), err)
+		}
+
+		pkt, err := l.parsePacket(decompressedPkt)
 		if err != nil {
 			log.Printf("Error! Cant parse packet from %s: %v\n", conn.RemoteAddr().String(), err)
 			conn.Close()
