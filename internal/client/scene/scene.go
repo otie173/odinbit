@@ -7,6 +7,7 @@ import (
 
 	"github.com/gen2brain/raylib-go/raygui"
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/kelindar/binary"
 	"github.com/otie173/odinbit/internal/client/camera"
 	"github.com/otie173/odinbit/internal/client/common"
 	"github.com/otie173/odinbit/internal/client/net"
@@ -116,7 +117,7 @@ func (h *Handler) Handle() {
 						h.currentScene = common.Game
 
 						pktStructure := packet.PlayerHandshake{Username: nickname}
-						binaryStructure, err := msgpack.Marshal(&pktStructure)
+						binaryStructure, err := binary.Marshal(&pktStructure)
 						if err != nil {
 							log.Printf("Error! Cant marshal player handshake structure: %v\n", err)
 						}
@@ -127,12 +128,17 @@ func (h *Handler) Handle() {
 							Payload:  binaryStructure,
 						}
 
-						data, err := msgpack.Marshal(&pkt)
+						data, err := binary.Marshal(&pkt)
 						if err != nil {
 							log.Printf("Error! Cant marshal player handshake packet: %v\n", err)
 						}
 
-						h.netHandler.Write(data)
+						compressedPkt, err := net.CompressPkt(data)
+						if err != nil {
+							log.Printf("Error! Cant compress player handshake packet: %v\n", err)
+						}
+
+						h.netHandler.Write(compressedPkt)
 
 						go h.netHandler.Handle()
 					}

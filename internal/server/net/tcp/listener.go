@@ -4,9 +4,9 @@ import (
 	"log"
 	"net"
 
+	"github.com/kelindar/binary"
 	"github.com/minio/minlz"
 	"github.com/otie173/odinbit/internal/protocol/packet"
-	"github.com/vmihailenco/msgpack/v5"
 )
 
 type Listener struct {
@@ -29,7 +29,7 @@ func (l *Listener) decompressPacket(compressedPkt []byte) ([]byte, error) {
 
 func (l *Listener) parsePacket(buffer []byte) (packet.Packet, error) {
 	pkt := packet.Packet{}
-	if err := msgpack.Unmarshal(buffer, &pkt); err != nil {
+	if err := binary.Unmarshal(buffer, &pkt); err != nil {
 		return packet.Packet{}, err
 	}
 	return pkt, nil
