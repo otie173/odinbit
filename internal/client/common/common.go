@@ -6,4 +6,5 @@ const (
 	Title Scene = iota
 	Connect
 	Game
+	ConnClosed
 )

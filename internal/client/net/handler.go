@@ -119,6 +119,9 @@ func (h *Handler) Handle() {
 		n, err := h.connection.Read(buffer)
 		if err != nil {
 			log.Printf("Error with read buffer from server: %v\n", err)
+			h.connection.Close()
+			h.connected = false
+			return
 		}
 
 		compressedPkt, err := h.decompressPacket(buffer[:n])

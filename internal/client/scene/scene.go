@@ -21,6 +21,8 @@ var (
 	transparentColor = color.RGBA{34, 34, 35, 200}
 	BkgTexture       rl.Texture2D
 
+	selectedMode int = 1
+
 	nickname     string = "Nickname"
 	nicknameEdit bool   = false
 
@@ -29,6 +31,11 @@ var (
 
 	tcpAddress     string = "TCP address"
 	tcpAddressEdit bool   = false
+)
+
+const (
+	singleplayer int = iota
+	multiplayer
 )
 
 type Handler struct {
@@ -73,8 +80,10 @@ func (h *Handler) Handle() {
 			raygui.SetStyle(raygui.DEFAULT, raygui.TEXT_SIZE, 32)
 			raygui.GroupBox(rl.NewRectangle(x, float32(h.screenHeight/2-550/2), 900, 550), "Odinbit")
 			if raygui.Button(rl.NewRectangle(x+40, y, 820, 100), "Singleplayer") {
+				selectedMode = singleplayer
 			}
 			if raygui.Button(rl.NewRectangle(x+40, y+150, 820, 100), "Multiplayer") {
+				selectedMode = multiplayer
 				h.currentScene = common.Connect
 			}
 			if raygui.Button(rl.NewRectangle(x+40, y+150*2, 820, 100), "Exit") {
@@ -149,6 +158,10 @@ func (h *Handler) Handle() {
 			}
 		})
 	case common.Game:
+		if selectedMode == multiplayer && !h.netHandler.IsConnected() {
+			h.SetScene(common.ConnClosed)
+		}
+
 		rl.BeginDrawing()
 		rl.ClearBackground(bkgColor)
 		rl.BeginMode2D(camera.Camera)
@@ -167,6 +180,31 @@ func (h *Handler) Handle() {
 			}
 		}
 		rl.EndMode2D()
+		rl.EndDrawing()
+	case common.ConnClosed:
+		rl.BeginDrawing()
+		rl.ClearBackground(bkgColor)
+		rl.DrawTexture(BkgTexture, 0, 0, rl.White)
+
+		x := float32(h.screenWidth/2 - 900/2)
+		groupBoxHeight := float32(350)
+		groupBoxY := float32(h.screenHeight/2) - groupBoxHeight/2
+
+		rl.DrawRectangle(int32(x), int32(groupBoxY), 900, int32(groupBoxHeight), transparentColor)
+		raygui.GroupBox(rl.NewRectangle(x, groupBoxY, 900, groupBoxHeight), "Notification")
+
+		text := "Connection closed"
+		fontSize := int32(32)
+		textSize := rl.MeasureTextEx(raygui.GetFont(), text, float32(fontSize), 2)
+		textX := x + 450 - float32(textSize.X)/2
+		textY := groupBoxY + 120
+		raygui.Label(rl.NewRectangle(textX, textY, textSize.X, textSize.Y), text)
+
+		buttonY := groupBoxY + groupBoxHeight - 105
+		if raygui.Button(rl.NewRectangle(float32(h.screenWidth/2-300/2), buttonY, 300, 70), "Okay ;(") {
+			h.SetScene(common.Title)
+		}
+
 		rl.EndDrawing()
 	}
 }
