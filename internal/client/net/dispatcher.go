@@ -39,7 +39,7 @@ func (d *Dispatcher) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory,
 	case packet.CategoryWorld:
 		switch pktOpcode {
 		case packet.OpcodeWorldUpdate:
-			log.Println("Received world area with size in bytes: ", len(pktData))
+			//log.Println("Received world area with size in bytes: ", len(pktData))
 
 			var pktStructure packet.WorldUpdate
 			var blocks []world.Block

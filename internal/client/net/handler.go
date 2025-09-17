@@ -95,7 +95,7 @@ func (h *Handler) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory, pk
 }
 
 func (h *Handler) decompressPacket(compressedPkt []byte) ([]byte, error) {
-	log.Printf("Info! Compressed packet lenght: %d\n", len(compressedPkt))
+	//log.Printf("Info! Compressed packet lenght: %d\n", len(compressedPkt))
 	decompressedData, err := minlz.Decode(nil, compressedPkt)
 	if err != nil {
 		return nil, err

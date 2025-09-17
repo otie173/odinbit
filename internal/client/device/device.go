@@ -1,6 +1,7 @@
 package device
 
 import (
+	"log"
 	"math"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -27,8 +28,18 @@ func (h *Handler) Handle() {
 
 	if rl.IsKeyDown(rl.KeyW) && h.sceneHandler.GetScene() == common.Game {
 		mousePos := rl.GetScreenToWorld2D(rl.GetMousePosition(), camera.Camera)
-		playerX := float32(math.Floor(float64(mousePos.X) / 12))
-		playerY := float32(math.Floor(float64(mousePos.Y) / 12))
-		player.ChangePos(playerX, playerY)
+		newPlayerX := float32(math.Floor(float64(mousePos.X) / 12))
+		newPlayerY := float32(math.Floor(float64(mousePos.Y) / 12))
+		oldPlayerX := math.Floor(float64(player.GamePlayer.CurrentX))
+		oldPlayerY := math.Floor(float64(player.GamePlayer.CurrentY))
+		log.Println(oldPlayerX, oldPlayerY, oldPlayerX, oldPlayerY)
+
+		deltaX := math.Abs(float64(newPlayerX) - oldPlayerX)
+		deltaY := math.Abs(float64(newPlayerY) - oldPlayerY)
+		log.Println(deltaX, deltaY)
+
+		if deltaX <= 4 && deltaY <= 4 {
+			player.ChangePos(newPlayerX, newPlayerY)
+		}
 	}
 }
