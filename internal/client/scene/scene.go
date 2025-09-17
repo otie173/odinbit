@@ -11,6 +11,7 @@ import (
 	"github.com/otie173/odinbit/internal/client/camera"
 	"github.com/otie173/odinbit/internal/client/common"
 	"github.com/otie173/odinbit/internal/client/net"
+	"github.com/otie173/odinbit/internal/client/player"
 	"github.com/otie173/odinbit/internal/client/world"
 	"github.com/otie173/odinbit/internal/protocol/packet"
 	"github.com/vmihailenco/msgpack/v5"
@@ -95,6 +96,8 @@ func (h *Handler) Handle() {
 		h.drawFunc(func() {
 			x := float32(h.screenWidth/2 - 900/2)
 			y := float32(340)
+			rl.DrawTexture(BkgTexture, 0, 0, rl.White)
+			rl.DrawRectangle(int32(x), int32(h.screenHeight/2-550/2), 900, 550, transparentColor)
 			raygui.GroupBox(rl.NewRectangle(x, float32(h.screenHeight/2-550/2), 900, 550), "Connect")
 			if raygui.TextBox(rl.NewRectangle(x+40, y, 820, 80), &nickname, 64, nicknameEdit) {
 				nicknameEdit = !nicknameEdit
@@ -179,6 +182,7 @@ func (h *Handler) Handle() {
 				}
 			}
 		}
+		player.DrawPlayer()
 		rl.EndMode2D()
 		rl.EndDrawing()
 	case common.ConnClosed:

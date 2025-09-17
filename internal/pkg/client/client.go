@@ -6,6 +6,7 @@ import (
 	"github.com/otie173/odinbit/internal/client/common"
 	"github.com/otie173/odinbit/internal/client/device"
 	"github.com/otie173/odinbit/internal/client/net"
+	"github.com/otie173/odinbit/internal/client/player"
 	"github.com/otie173/odinbit/internal/client/scene"
 	"github.com/otie173/odinbit/internal/client/texture"
 	"github.com/otie173/odinbit/internal/client/world"
@@ -43,17 +44,19 @@ func (c *Client) Load() {
 	rl.InitWindow(c.screenWidth, c.screenHeight, c.title)
 	rl.SetConfigFlags(rl.FlagVsyncHint | rl.FlagWindowUnfocused | rl.FlagFullscreenMode)
 	rl.ToggleFullscreen()
-	rl.SetTargetFPS(60)
+	rl.SetTargetFPS(int32(rl.GetMonitorRefreshRate(rl.GetCurrentMonitor())))
 	rl.SetExitKey(0)
 	camera.LoadCamera()
 	world.Overworld.Textures = c.textureStorage
 	scene.BkgTexture = rl.LoadTexture("resources/backgrounds/background1.png")
+	texture.PlayerTexture = rl.LoadTexture("resources/textures/player.png")
 }
 
 func (c *Client) update() {
 	c.sceneHandler.Handle()
 	c.deviceHandler.Handle()
 	camera.UpdateCamera()
+	player.UpdatePos()
 }
 
 func (c *Client) Run() {

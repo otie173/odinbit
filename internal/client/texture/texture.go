@@ -7,6 +7,10 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+var (
+	PlayerTexture rl.Texture2D
+)
+
 type Storage struct {
 	texture map[string]uint8
 	id      map[uint8]rl.Texture2D
