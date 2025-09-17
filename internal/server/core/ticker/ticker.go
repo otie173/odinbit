@@ -29,6 +29,6 @@ func (t *Ticker) Run(onTick func()) {
 		if elapsed > t.duration {
 			log.Printf("Warning! Tick took too long: %v\n", elapsed)
 		}
-		log.Printf("Info! Tick took only: %v\n", elapsed)
+		//log.Printf("Info! Tick took only: %v\n", elapsed)
 	}
 }

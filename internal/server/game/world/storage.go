@@ -32,11 +32,11 @@ func (s *storage) getWorld() ([]byte, error) {
 	return data, err
 }
 
-func (s *storage) getWorldArea(x, y int16) ([]byte, error) {
+func (s *storage) getWorldArea(x, y float32) ([]byte, error) {
 	var blocks []Block
 
-	for i := x - common.ViewRadius; i < x+common.ViewRadius; i++ {
-		for j := y - common.ViewRadius; j < y+common.ViewRadius; j++ {
+	for i := int(x - common.ViewRadius); i < int(x+common.ViewRadius); i++ {
+		for j := int(y - common.ViewRadius); j < int(y+common.ViewRadius); j++ {
 			blocks = append(blocks, s.blocks[i][j])
 		}
 	}

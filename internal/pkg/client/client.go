@@ -57,6 +57,10 @@ func (c *Client) update() {
 	c.deviceHandler.Handle()
 	camera.UpdateCamera()
 	player.UpdatePos()
+
+	if c.sceneHandler.GetScene() == common.Game {
+		player.UpdateServerPos(c.netHandler)
+	}
 }
 
 func (c *Client) Run() {

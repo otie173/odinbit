@@ -44,7 +44,7 @@ func (w *World) GetWorld() ([]byte, error) {
 	return binaryWorld, nil
 }
 
-func (w *World) GetWorldArea(x, y int16) ([]byte, error) {
+func (w *World) GetWorldArea(x, y float32) ([]byte, error) {
 	binaryWorldArea, err := w.storage.getWorldArea(x, y)
 	if err != nil {
 		return nil, err

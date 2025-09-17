@@ -1,8 +1,13 @@
 package player
 
 import (
+	"log"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/kelindar/binary"
+	"github.com/otie173/odinbit/internal/client/net"
 	"github.com/otie173/odinbit/internal/client/texture"
+	"github.com/otie173/odinbit/internal/protocol/packet"
 	"github.com/otie173/odinbit/internal/server/common"
 )
 
@@ -43,6 +48,44 @@ func UpdatePos() {
 
 	GamePlayer.CurrentX += dx * step
 	GamePlayer.CurrentY += dy * step
+}
+
+func UpdateServerPos(handler *net.Handler) {
+	if GamePlayer.CurrentX != GamePlayer.TargetX || GamePlayer.CurrentY != GamePlayer.TargetY {
+		pktStructure := packet.PlayerMove{
+			CurrentX: GamePlayer.CurrentX,
+			TargetX:  GamePlayer.TargetX,
+			CurrentY: GamePlayer.CurrentY,
+			TargetY:  GamePlayer.TargetY,
+		}
+
+		binaryStructure, err := binary.Marshal(&pktStructure)
+		if err != nil {
+			log.Printf("Error! Cant marshal player move structure: %v\n", err)
+		}
+
+		pkt := packet.Packet{
+			Category: packet.CategoryPlayer,
+			Opcode:   packet.OpcodeMove,
+			Payload:  binaryStructure,
+		}
+
+		data, err := binary.Marshal(&pkt)
+		if err != nil {
+			log.Printf("Error! Cant marshal player move packet: %v\n", err)
+		}
+
+		compressedPkt, err := net.CompressPkt(data)
+		if err != nil {
+			log.Printf("Error! Cant compress binary player move packet: %v\n", err)
+		}
+
+		if err := handler.Write(compressedPkt); err != nil {
+			log.Printf("Error! Cant write player move packet data to server: %v\n", err)
+		} else {
+			log.Printf("Info! Player move packet data was sended")
+		}
+	}
 }
 
 func DrawPlayer() {

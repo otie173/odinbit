@@ -7,20 +7,20 @@ var (
 )
 
 type Player struct {
-	Id   int
-	Conn net.Conn
-	Name string
-	X    int16
-	Y    int16
+	Id                int
+	Conn              net.Conn
+	Name              string
+	CurrentX, TargetX float32
+	CurrentY, TargetY float32
 }
 
-func NewPlayer(conn net.Conn, name string, x, y int16) *Player {
+func NewPlayer(conn net.Conn, name string, x, y float32) *Player {
 	player := &Player{
-		Id:   idCounter,
-		Conn: conn,
-		Name: name,
-		X:    x,
-		Y:    y,
+		Id:       idCounter,
+		Conn:     conn,
+		Name:     name,
+		CurrentX: x,
+		CurrentY: y,
 	}
 	idCounter++
 

@@ -16,3 +16,8 @@ type WorldUpdate struct {
 	StartX, StartY int16
 	EndX, EndY     int16
 }
+
+type PlayerMove struct {
+	CurrentX, TargetX float32
+	CurrentY, TargetY float32
+}

@@ -8,6 +8,7 @@ import (
 )
 
 type Storage interface {
+	GetPlayer(conn net.Conn) *Player
 	GetPlayers() []*Player
 	AddPlayer(player *Player)
 	RemovePlayer(playerConn net.Conn)
@@ -37,6 +38,10 @@ func NewStorage(capacity int) *filestorage {
 		players:    players,
 		playersMap: playersMap,
 	}
+}
+
+func (s *filestorage) GetPlayer(conn net.Conn) *Player {
+	return s.playersMap[conn]
 }
 
 func (s *filestorage) GetPlayers() []*Player {

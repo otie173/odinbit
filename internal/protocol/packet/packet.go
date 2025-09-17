@@ -31,4 +31,5 @@ const (
 // Enum for player opcode
 const (
 	OpcodeHandshake PacketOpcode = 3000 + iota
+	OpcodeMove
 )

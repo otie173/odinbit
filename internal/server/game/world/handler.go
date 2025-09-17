@@ -33,19 +33,19 @@ func (h *Handler) compressPacket(binaryPacket []byte) ([]byte, error) {
 func (h *Handler) Handle() {
 	players := h.players.GetPlayers()
 	for _, player := range players {
-		binaryOverworldArea, err := h.World.GetWorldArea(player.X, player.Y)
+		binaryOverworldArea, err := h.World.GetWorldArea(player.CurrentX, player.CurrentY)
 		if err != nil {
 			log.Printf("Error! Cant get binary overworld area: %v\n", err)
 		}
 
 		pktStructure := packet.WorldUpdate{
 			Blocks: binaryOverworldArea,
-			StartX: player.X - common.ViewRadius,
-			StartY: player.Y - common.ViewRadius,
-			EndX:   player.X + common.ViewRadius,
-			EndY:   player.Y + common.ViewRadius,
+			StartX: int16(player.CurrentX - common.ViewRadius),
+			StartY: int16(player.CurrentY - common.ViewRadius),
+			EndX:   int16(player.CurrentX + common.ViewRadius),
+			EndY:   int16(player.CurrentY + common.ViewRadius),
 		}
-		log.Println(pktStructure.StartX, pktStructure.StartY, pktStructure.EndX, pktStructure.EndY, player.X, player.Y)
+		log.Println(pktStructure.StartX, pktStructure.StartY, pktStructure.EndX, pktStructure.EndY, player.CurrentX, player.CurrentY)
 
 		binaryStructure, err := binary.Marshal(&pktStructure)
 		if err != nil {
