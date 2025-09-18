@@ -1,7 +1,6 @@
 package device
 
 import (
-	"log"
 	"math"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -32,11 +31,11 @@ func (h *Handler) Handle() {
 		newPlayerY := float32(math.Floor(float64(mousePos.Y) / 12))
 		oldPlayerX := math.Floor(float64(player.GamePlayer.CurrentX))
 		oldPlayerY := math.Floor(float64(player.GamePlayer.CurrentY))
-		log.Println(oldPlayerX, oldPlayerY, oldPlayerX, oldPlayerY)
+		//log.Println(oldPlayerX, oldPlayerY, oldPlayerX, oldPlayerY)
 
 		deltaX := math.Abs(float64(newPlayerX) - oldPlayerX)
 		deltaY := math.Abs(float64(newPlayerY) - oldPlayerY)
-		log.Println(deltaX, deltaY)
+		//log.Println(deltaX, deltaY)
 
 		if deltaX <= 4 && deltaY <= 4 {
 			if newPlayerX > 0 && newPlayerX < 512 && newPlayerY > 0 && newPlayerY < 512 {

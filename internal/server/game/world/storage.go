@@ -1,7 +1,6 @@
 package world
 
 import (
-	"log"
 	"math"
 
 	"github.com/kelindar/binary"
@@ -82,7 +81,7 @@ func (s *storage) getWorldArea(x, y float32) ([]byte, common.AreaPositions, erro
 	areaHeight := endY - startY
 	blocks := make([]Block, 0, areaWidth*areaHeight)
 
-	log.Println(startX, endX, startY, endY)
+	//log.Println(startX, endX, startY, endY)
 	for i := startX; i < endX; i++ {
 		for j := startY; j < endY; j++ {
 			blocks = append(blocks, s.blocks[i][j])

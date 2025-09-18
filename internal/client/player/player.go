@@ -82,8 +82,6 @@ func UpdateServerPos(handler *net.Handler) {
 
 		if err := handler.Write(compressedPkt); err != nil {
 			log.Printf("Error! Cant write player move packet data to server: %v\n", err)
-		} else {
-			log.Printf("Info! Player move packet data was sended")
 		}
 	}
 }
