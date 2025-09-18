@@ -45,7 +45,7 @@ func (h *Handler) Handle() {
 			EndX:   int16(player.CurrentX + common.ViewRadius),
 			EndY:   int16(player.CurrentY + common.ViewRadius),
 		}
-		log.Println(pktStructure.StartX, pktStructure.StartY, pktStructure.EndX, pktStructure.EndY, player.CurrentX, player.CurrentY)
+		//log.Println(pktStructure.StartX, pktStructure.StartY, pktStructure.EndX, pktStructure.EndY, player.CurrentX, player.CurrentY)
 
 		binaryStructure, err := binary.Marshal(&pktStructure)
 		if err != nil {
