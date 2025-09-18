@@ -43,7 +43,7 @@ func (d *Dispatcher) Dispatch(conn net.Conn, pktCategory packet.PacketCategory, 
 			d.playerStorage.AddPlayer(player)
 			log.Printf("Hi, %s!\n", pktStructure.Username)
 		case packet.OpcodeMove:
-			log.Printf("Info! Player with conn %s is move\n", conn.RemoteAddr())
+			//log.Printf("Info! Player with conn %s is move\n", conn.RemoteAddr())
 
 			pktStructure := packet.PlayerMove{}
 

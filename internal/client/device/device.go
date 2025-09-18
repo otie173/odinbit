@@ -39,7 +39,9 @@ func (h *Handler) Handle() {
 		log.Println(deltaX, deltaY)
 
 		if deltaX <= 4 && deltaY <= 4 {
-			player.ChangePos(newPlayerX, newPlayerY)
+			if newPlayerX > 0 && newPlayerX < 512 && newPlayerY > 0 && newPlayerY < 512 {
+				player.ChangePos(newPlayerX, newPlayerY)
+			}
 		}
 	}
 }

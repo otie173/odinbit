@@ -33,10 +33,17 @@ func (s *storage) getWorld() ([]byte, error) {
 }
 
 func (s *storage) getWorldArea(x, y float32) ([]byte, error) {
-	var blocks []Block
+	startX := int(x - common.ViewRadius)
+	endX := int(x + common.ViewRadius)
+	startY := int(y - common.ViewRadius)
+	endY := int(y + common.ViewRadius)
 
-	for i := int(x - common.ViewRadius); i < int(x+common.ViewRadius); i++ {
-		for j := int(y - common.ViewRadius); j < int(y+common.ViewRadius); j++ {
+	areaWidth := endX - startX + 1
+	areaHeight := endY - startY + 1
+	blocks := make([]Block, 0, areaWidth*areaHeight)
+
+	for i := startX; i < endX; i++ {
+		for j := startY; j < endY; j++ {
 			blocks = append(blocks, s.blocks[i][j])
 		}
 	}
@@ -45,6 +52,5 @@ func (s *storage) getWorldArea(x, y float32) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return data, nil
 }
