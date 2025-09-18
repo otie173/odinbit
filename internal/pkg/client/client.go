@@ -41,9 +41,8 @@ func New(title string, screenWidth, screenHeight int32) *Client {
 }
 
 func (c *Client) Load() {
-	rl.InitWindow(c.screenWidth, c.screenHeight, c.title)
 	rl.SetConfigFlags(rl.FlagVsyncHint | rl.FlagWindowUnfocused | rl.FlagFullscreenMode)
-	rl.ToggleFullscreen()
+	rl.InitWindow(c.screenWidth, c.screenHeight, c.title)
 	rl.SetTargetFPS(int32(rl.GetMonitorRefreshRate(rl.GetCurrentMonitor())))
 	rl.SetExitKey(0)
 	camera.LoadCamera()

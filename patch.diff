@@ -284,7 +284,7 @@ index e743423..3cff62e 100644
  	rl.SetExitKey(0)
  	camera.LoadCamera()
 diff --git a/internal/server/game/world/handler.go b/internal/server/game/world/handler.go
-index f167ca6..2f74d68 100644
+index ccfb7e6..24e9234 100644
 --- a/internal/server/game/world/handler.go
 +++ b/internal/server/game/world/handler.go
 @@ -6,7 +6,6 @@ import (
@@ -316,22 +316,21 @@ index f167ca6..2f74d68 100644
 +			EndX:   int16(area.EndX),
 +			EndY:   int16(area.EndY),
  		}
- 		log.Println(pktStructure.StartX, pktStructure.StartY, pktStructure.EndX, pktStructure.EndY, player.CurrentX, player.CurrentY)
+ 		//log.Println(pktStructure.StartX, pktStructure.StartY, pktStructure.EndX, pktStructure.EndY, player.CurrentX, player.CurrentY)
  
 diff --git a/internal/server/game/world/storage.go b/internal/server/game/world/storage.go
-index de9be9f..cdd6438 100644
+index 7cc9905..30a5dda 100644
 --- a/internal/server/game/world/storage.go
 +++ b/internal/server/game/world/storage.go
-@@ -1,6 +1,8 @@
- package world
+@@ -2,6 +2,7 @@ package world
  
  import (
+ 	"log"
 +	"math"
-+
+ 
  	"github.com/kelindar/binary"
  	"github.com/otie173/odinbit/internal/server/common"
- 	"github.com/vmihailenco/msgpack/v5"
-@@ -32,14 +34,51 @@ func (s *storage) getWorld() ([]byte, error) {
+@@ -34,14 +35,51 @@ func (s *storage) getWorld() ([]byte, error) {
  	return data, err
  }
  
@@ -344,7 +343,9 @@ index de9be9f..cdd6438 100644
 +	radius := float64(common.ViewRadius)
 +	start = int(math.Floor(float64(coord) - radius))
 +	end = int(math.Ceil(float64(coord) + radius))
-+
+ 
+-	areaWidth := endX - startX + 1
+-	areaHeight := endY - startY + 1
 +	width := end - start
 +	if width <= 0 {
 +		width = 1
@@ -382,15 +383,13 @@ index de9be9f..cdd6438 100644
 +func (s *storage) getWorldArea(x, y float32) ([]byte, common.AreaPositions, error) {
 +	startX, endX := computeAreaBounds(x)
 +	startY, endY := computeAreaBounds(y)
- 
--	areaWidth := endX - startX + 1
--	areaHeight := endY - startY + 1
++
 +	areaWidth := endX - startX
 +	areaHeight := endY - startY
  	blocks := make([]Block, 0, areaWidth*areaHeight)
  
- 	for i := startX; i < endX; i++ {
-@@ -50,7 +89,8 @@ func (s *storage) getWorldArea(x, y float32) ([]byte, error) {
+ 	log.Println(startX, endX, startY, endY)
+@@ -53,7 +91,8 @@ func (s *storage) getWorldArea(x, y float32) ([]byte, error) {
  
  	data, err := binary.Marshal(&blocks)
  	if err != nil {

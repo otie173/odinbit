@@ -3,6 +3,7 @@ package scene
 import (
 	"image/color"
 	"log"
+	"math"
 	"os"
 
 	"github.com/gen2brain/raylib-go/raygui"
@@ -44,15 +45,56 @@ type Handler struct {
 	screenHeight int32
 	currentScene common.Scene
 	netHandler   *net.Handler
+	uiScale      float32
 }
 
 func New(screenWidth, screenHeight int32, scene common.Scene, netHandler *net.Handler) *Handler {
+	scaleX := float32(screenWidth) / float32(common.BaseRenderWidth)
+	scaleY := float32(screenHeight) / float32(common.BaseRenderHeight)
+	uiScale := float32(math.Min(float64(scaleX), float64(scaleY)))
+	if uiScale <= 0 {
+		uiScale = 1
+	}
 	return &Handler{
 		screenWidth:  screenWidth,
 		screenHeight: screenHeight,
 		currentScene: scene,
 		netHandler:   netHandler,
+		uiScale:      uiScale,
 	}
+}
+
+func roundToInt32(v float32) int32 {
+	return int32(math.Round(float64(v)))
+}
+
+func sizeToInt32(v float32) int32 {
+	val := int32(math.Round(float64(v)))
+	if val < 1 {
+		return 1
+	}
+	return val
+}
+
+func (h *Handler) scale(v float32) float32 {
+	return v * h.uiScale
+}
+
+func (h *Handler) scaledInt(v int32) int32 {
+	scaled := int32(math.Round(float64(float32(v) * h.uiScale)))
+	if scaled < 1 {
+		return 1
+	}
+	return scaled
+}
+
+func (h *Handler) drawBackground() {
+	if BkgTexture.ID == 0 {
+		return
+	}
+	source := rl.NewRectangle(0, 0, float32(BkgTexture.Width), float32(BkgTexture.Height))
+	dest := rl.NewRectangle(0, 0, float32(h.screenWidth), float32(h.screenHeight))
+	rl.DrawTexturePro(BkgTexture, source, dest, rl.NewVector2(0, 0), 0, rl.White)
 }
 
 func (h *Handler) drawFunc(fn func()) {
@@ -74,42 +116,62 @@ func (h *Handler) Handle() {
 	switch h.currentScene {
 	case common.Title:
 		h.drawFunc(func() {
-			x := float32(h.screenWidth/2 - 900/2)
-			y := float32(340)
-			rl.DrawTexture(BkgTexture, 0, 0, rl.White)
-			rl.DrawRectangle(int32(x), int32(h.screenHeight/2-550/2), 900, 550, transparentColor)
-			raygui.SetStyle(raygui.DEFAULT, raygui.TEXT_SIZE, 32)
-			raygui.GroupBox(rl.NewRectangle(x, float32(h.screenHeight/2-550/2), 900, 550), "Odinbit")
-			if raygui.Button(rl.NewRectangle(x+40, y, 820, 100), "Singleplayer") {
+			h.drawBackground()
+			panelWidth := h.scale(900)
+			panelHeight := h.scale(550)
+			panelX := float32(h.screenWidth)/2 - panelWidth/2
+			panelY := float32(h.screenHeight)/2 - panelHeight/2
+			buttonX := panelX + h.scale(40)
+			buttonY := panelY + h.scale(75)
+			buttonWidth := h.scale(820)
+			buttonHeight := h.scale(100)
+			buttonSpacing := h.scale(150)
+
+			rl.DrawRectangle(roundToInt32(panelX), roundToInt32(panelY), sizeToInt32(panelWidth), sizeToInt32(panelHeight), transparentColor)
+			raygui.SetStyle(raygui.DEFAULT, raygui.TEXT_SIZE, int64(h.scaledInt(32)))
+			raygui.GroupBox(rl.NewRectangle(panelX, panelY, panelWidth, panelHeight), "Odinbit")
+			if raygui.Button(rl.NewRectangle(buttonX, buttonY, buttonWidth, buttonHeight), "Singleplayer") {
 				selectedMode = singleplayer
 			}
-			if raygui.Button(rl.NewRectangle(x+40, y+150, 820, 100), "Multiplayer") {
+			if raygui.Button(rl.NewRectangle(buttonX, buttonY+buttonSpacing, buttonWidth, buttonHeight), "Multiplayer") {
 				selectedMode = multiplayer
 				h.currentScene = common.Connect
 			}
-			if raygui.Button(rl.NewRectangle(x+40, y+150*2, 820, 100), "Exit") {
+			if raygui.Button(rl.NewRectangle(buttonX, buttonY+buttonSpacing*2, buttonWidth, buttonHeight), "Exit") {
 				rl.CloseWindow()
 				os.Exit(0)
 			}
 		})
 	case common.Connect:
 		h.drawFunc(func() {
-			x := float32(h.screenWidth/2 - 900/2)
-			y := float32(340)
-			rl.DrawTexture(BkgTexture, 0, 0, rl.White)
-			rl.DrawRectangle(int32(x), int32(h.screenHeight/2-550/2), 900, 550, transparentColor)
-			raygui.GroupBox(rl.NewRectangle(x, float32(h.screenHeight/2-550/2), 900, 550), "Connect")
-			if raygui.TextBox(rl.NewRectangle(x+40, y, 820, 80), &nickname, 64, nicknameEdit) {
+			h.drawBackground()
+			panelWidth := h.scale(900)
+			panelHeight := h.scale(550)
+			panelX := float32(h.screenWidth)/2 - panelWidth/2
+			panelY := float32(h.screenHeight)/2 - panelHeight/2
+			fieldX := panelX + h.scale(40)
+			fieldY := panelY + h.scale(75)
+			fieldWidth := h.scale(820)
+			fieldHeight := h.scale(80)
+			fieldSpacing := h.scale(110)
+
+			rl.DrawRectangle(roundToInt32(panelX), roundToInt32(panelY), sizeToInt32(panelWidth), sizeToInt32(panelHeight), transparentColor)
+			raygui.GroupBox(rl.NewRectangle(panelX, panelY, panelWidth, panelHeight), "Connect")
+			if raygui.TextBox(rl.NewRectangle(fieldX, fieldY, fieldWidth, fieldHeight), &nickname, 64, nicknameEdit) {
 				nicknameEdit = !nicknameEdit
 			}
-			if raygui.TextBox(rl.NewRectangle(x+40, y+110, 820, 80), &httpAddress, 16, httpAddressEdit) {
+			if raygui.TextBox(rl.NewRectangle(fieldX, fieldY+fieldSpacing, fieldWidth, fieldHeight), &httpAddress, 16, httpAddressEdit) {
 				httpAddressEdit = !httpAddressEdit
 			}
-			if raygui.TextBox(rl.NewRectangle(x+40, y+110*2, 820, 80), &tcpAddress, 64, tcpAddressEdit) {
+			if raygui.TextBox(rl.NewRectangle(fieldX, fieldY+fieldSpacing*2, fieldWidth, fieldHeight), &tcpAddress, 64, tcpAddressEdit) {
 				tcpAddressEdit = !tcpAddressEdit
 			}
 
-			if raygui.Button(rl.NewRectangle(float32(h.screenWidth/2-350/2), y+115*3, 350, 85), "Connect") {
+			buttonWidth := h.scale(350)
+			buttonHeight := h.scale(85)
+			buttonX := float32(h.screenWidth)/2 - buttonWidth/2
+			buttonY := panelY + h.scale(420)
+			if raygui.Button(rl.NewRectangle(buttonX, buttonY, buttonWidth, buttonHeight), "Connect") {
 				if !h.netHandler.IsConnected() {
 					data, err := h.netHandler.LoadTextures("http://0.0.0.0:9999")
 					if err != nil {
@@ -188,24 +250,29 @@ func (h *Handler) Handle() {
 	case common.ConnClosed:
 		rl.BeginDrawing()
 		rl.ClearBackground(bkgColor)
-		rl.DrawTexture(BkgTexture, 0, 0, rl.White)
+		h.drawBackground()
 
-		x := float32(h.screenWidth/2 - 900/2)
-		groupBoxHeight := float32(350)
-		groupBoxY := float32(h.screenHeight/2) - groupBoxHeight/2
+		panelWidth := h.scale(900)
+		panelHeight := h.scale(350)
+		panelX := float32(h.screenWidth)/2 - panelWidth/2
+		panelY := float32(h.screenHeight)/2 - panelHeight/2
 
-		rl.DrawRectangle(int32(x), int32(groupBoxY), 900, int32(groupBoxHeight), transparentColor)
-		raygui.GroupBox(rl.NewRectangle(x, groupBoxY, 900, groupBoxHeight), "Notification")
+		rl.DrawRectangle(roundToInt32(panelX), roundToInt32(panelY), sizeToInt32(panelWidth), sizeToInt32(panelHeight), transparentColor)
+		raygui.GroupBox(rl.NewRectangle(panelX, panelY, panelWidth, panelHeight), "Notification")
 
 		text := "Connection closed"
-		fontSize := int32(32)
-		textSize := rl.MeasureTextEx(raygui.GetFont(), text, float32(fontSize), 2)
-		textX := x + 450 - float32(textSize.X)/2
-		textY := groupBoxY + 120
+		fontSize := float32(h.scaledInt(32))
+		spacing := h.scale(2)
+		textSize := rl.MeasureTextEx(raygui.GetFont(), text, fontSize, spacing)
+		textX := panelX + panelWidth/2 - textSize.X/2
+		textY := panelY + h.scale(120)
 		raygui.Label(rl.NewRectangle(textX, textY, textSize.X, textSize.Y), text)
 
-		buttonY := groupBoxY + groupBoxHeight - 105
-		if raygui.Button(rl.NewRectangle(float32(h.screenWidth/2-300/2), buttonY, 300, 70), "Okay ;(") {
+		buttonWidth := h.scale(300)
+		buttonHeight := h.scale(70)
+		buttonX := float32(h.screenWidth)/2 - buttonWidth/2
+		buttonY := panelY + panelHeight - h.scale(105)
+		if raygui.Button(rl.NewRectangle(buttonX, buttonY, buttonWidth, buttonHeight), "Okay ;(") {
 			h.SetScene(common.Title)
 		}
 

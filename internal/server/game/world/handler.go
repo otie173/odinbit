@@ -6,7 +6,6 @@ import (
 	"github.com/kelindar/binary"
 	"github.com/minio/minlz"
 	"github.com/otie173/odinbit/internal/protocol/packet"
-	"github.com/otie173/odinbit/internal/server/common"
 	"github.com/otie173/odinbit/internal/server/game/player"
 )
 
@@ -33,17 +32,17 @@ func (h *Handler) compressPacket(binaryPacket []byte) ([]byte, error) {
 func (h *Handler) Handle() {
 	players := h.players.GetPlayers()
 	for _, player := range players {
-		binaryOverworldArea, err := h.World.GetWorldArea(player.CurrentX, player.CurrentY)
+		binaryOverworldArea, area, err := h.World.GetWorldArea(player.CurrentX, player.CurrentY)
 		if err != nil {
 			log.Printf("Error! Cant get binary overworld area: %v\n", err)
 		}
 
 		pktStructure := packet.WorldUpdate{
 			Blocks: binaryOverworldArea,
-			StartX: int16(player.CurrentX - common.ViewRadius),
-			StartY: int16(player.CurrentY - common.ViewRadius),
-			EndX:   int16(player.CurrentX + common.ViewRadius),
-			EndY:   int16(player.CurrentY + common.ViewRadius),
+			StartX: int16(area.StartX),
+			StartY: int16(area.StartY),
+			EndX:   int16(area.EndX),
+			EndY:   int16(area.EndY),
 		}
 		//log.Println(pktStructure.StartX, pktStructure.StartY, pktStructure.EndX, pktStructure.EndY, player.CurrentX, player.CurrentY)
 
