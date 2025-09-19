@@ -18,6 +18,6 @@ type WorldUpdate struct {
 }
 
 type PlayerMove struct {
-	CurrentX, TargetX float32
-	CurrentY, TargetY float32
+	CurrentX float32
+	CurrentY float32
 }

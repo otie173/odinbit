@@ -9,21 +9,17 @@ import (
 	"github.com/otie173/odinbit/internal/server/common"
 	"github.com/otie173/odinbit/internal/server/game/player"
 	"github.com/otie173/odinbit/internal/server/game/texture"
-	"github.com/otie173/odinbit/internal/server/game/world"
-	"github.com/vmihailenco/msgpack/v5"
 )
 
 type Dispatcher struct {
 	playerStorage  player.Storage
 	textureHandler *texture.Handler
-	worldHandler   *world.Handler
 }
 
-func NewDispatcher(playerStorage player.Storage, textureHandler *texture.Handler, worldHandler *world.Handler) *Dispatcher {
+func NewDispatcher(playerStorage player.Storage, textureHandler *texture.Handler) *Dispatcher {
 	return &Dispatcher{
 		playerStorage:  playerStorage,
 		textureHandler: textureHandler,
-		worldHandler:   worldHandler,
 	}
 }
 
@@ -35,7 +31,7 @@ func (d *Dispatcher) Dispatch(conn net.Conn, pktCategory packet.PacketCategory, 
 		case packet.OpcodeHandshake:
 			pktStructure := packet.PlayerHandshake{}
 
-			if err := msgpack.Unmarshal(pktData, &pktStructure); err != nil {
+			if err := binary.Unmarshal(pktData, &pktStructure); err != nil {
 				log.Printf("Error! Cant unmarshal player handshake data: %v\n", err)
 			}
 
@@ -43,8 +39,7 @@ func (d *Dispatcher) Dispatch(conn net.Conn, pktCategory packet.PacketCategory, 
 			d.playerStorage.AddPlayer(player)
 			log.Printf("Hi, %s!\n", pktStructure.Username)
 		case packet.OpcodeMove:
-			//log.Printf("Info! Player with conn %s is move\n", conn.RemoteAddr())
-
+			log.Printf("Info! Player with conn %s is move\n", conn.RemoteAddr())
 			pktStructure := packet.PlayerMove{}
 
 			if err := binary.Unmarshal(pktData, &pktStructure); err != nil {
@@ -52,10 +47,13 @@ func (d *Dispatcher) Dispatch(conn net.Conn, pktCategory packet.PacketCategory, 
 			}
 
 			player := d.playerStorage.GetPlayer(conn)
-			player.CurrentX = pktStructure.CurrentX
-			player.TargetX = pktStructure.TargetX
-			player.CurrentY = pktStructure.CurrentY
-			player.TargetY = pktStructure.TargetY
+			if player != nil {
+				player.CurrentX = pktStructure.CurrentX
+				player.CurrentY = pktStructure.CurrentY
+			} else {
+				log.Printf("Error! Cant handle opcode move")
+				conn.Close()
+			}
 
 		}
 	case packet.CategoryInventory:

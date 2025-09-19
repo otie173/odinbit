@@ -31,7 +31,7 @@ func (s *Server) Run() {
 	httpAddr := "0.0.0.0:9999"
 	tcpAddr := "0.0.0.0:8080"
 	s.manager.HandleNetwork(httpAddr, tcpAddr)
-	s.manager.HandleGame()
+	s.manager.RenderGame()
 
 	stopChan := make(chan os.Signal, 1)
 	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM)

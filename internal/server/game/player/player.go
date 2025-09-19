@@ -1,28 +1,23 @@
 package player
 
-import "net"
-
-var (
-	idCounter int = 0
+import (
+	"net"
 )
 
 type Player struct {
-	Id                int
-	Conn              net.Conn
-	Name              string
-	CurrentX, TargetX float32
-	CurrentY, TargetY float32
+	Conn     net.Conn
+	Name     string
+	CurrentX float32
+	CurrentY float32
 }
 
 func NewPlayer(conn net.Conn, name string, x, y float32) *Player {
 	player := &Player{
-		Id:       idCounter,
 		Conn:     conn,
 		Name:     name,
 		CurrentX: x,
 		CurrentY: y,
 	}
-	idCounter++
 
 	return player
 }

@@ -216,6 +216,7 @@ func (h *Handler) Handle() {
 						}
 
 						h.netHandler.Write(compressedPkt)
+						player.NetConnection = h.netHandler
 
 						go h.netHandler.Handle()
 					}

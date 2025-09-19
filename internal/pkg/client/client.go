@@ -10,6 +10,7 @@ import (
 	"github.com/otie173/odinbit/internal/client/scene"
 	"github.com/otie173/odinbit/internal/client/texture"
 	"github.com/otie173/odinbit/internal/client/world"
+	"github.com/otie173/odinbit/internal/server/core/ticker"
 )
 
 type Client struct {
@@ -19,6 +20,7 @@ type Client struct {
 	sceneHandler              *scene.Handler
 	netHandler                *net.Handler
 	textureStorage            *texture.Storage
+	ticker                    *ticker.Ticker
 }
 
 func New(title string, screenWidth, screenHeight int32) *Client {
@@ -48,18 +50,33 @@ func (c *Client) Load() {
 	camera.LoadCamera()
 	world.Overworld.Textures = c.textureStorage
 	scene.BkgTexture = rl.LoadTexture("resources/backgrounds/background1.png")
-	texture.PlayerTexture = rl.LoadTexture("resources/textures/player.png")
+	texture.PlayerTexture = rl.LoadTexture("resources/textures/ghost.png")
+	c.ticker = ticker.New(20)
+
+	go func() {
+		c.ticker.Run(func() {
+			if player.PlayerMoved {
+				player.UpdateServerPos()
+			}
+		})
+	}()
 }
 
 func (c *Client) update() {
 	c.sceneHandler.Handle()
 	c.deviceHandler.Handle()
 	camera.UpdateCamera()
-	player.UpdatePos()
 
-	if c.sceneHandler.GetScene() == common.Game {
-		player.UpdateServerPos(c.netHandler)
-	}
+	// c.ticker.Run(func() {
+	// 	if player.PlayerMoved {
+	// 		player.UpdateServerPos()
+	// 	}
+	// })
+	//player.UpdatePos()
+
+	// if c.sceneHandler.GetScene() == common.Game {
+	// 	player.UpdateServerPos(c.netHandler)
+	// }
 }
 
 func (c *Client) Run() {

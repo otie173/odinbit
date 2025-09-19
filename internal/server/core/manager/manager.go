@@ -17,7 +17,7 @@ type Components struct {
 	Overworld *world.World
 	Players   player.Storage
 
-	WorldHandler *world.Handler
+	WorldRenderer *world.Renderer
 
 	// Network things
 	Handler     *http.Handler
@@ -54,8 +54,8 @@ func (m *Manager) HandleNetwork(httpAddr, tcpAddr string) {
 	log.Printf("TCP listener running on: %s\n", tcpAddr)
 }
 
-func (m *Manager) HandleGame() {
+func (m *Manager) RenderGame() {
 	m.Components.Ticker.Run(func() {
-		m.Components.WorldHandler.Handle()
+		m.Components.WorldRenderer.Render()
 	})
 }

@@ -36,13 +36,15 @@ func LoadCamera() {
 }
 
 func UpdateCamera() {
+	player.PlayerMu.Lock()
 	targetX := player.GamePlayer.CurrentX*12 + 12/2
 	targetY := player.GamePlayer.CurrentY*12 + 12/2
+	player.PlayerMu.Unlock()
 
 	xVec := rl.NewVector2(targetX, Camera.Target.Y)
 	yVec := rl.NewVector2(Camera.Target.X, targetY)
 
-	duration := 0.5
+	duration := 0.25
 	step := rl.GetFrameTime() / float32(duration)
 
 	newX := rl.Vector2Lerp(Camera.Target, xVec, step).X
