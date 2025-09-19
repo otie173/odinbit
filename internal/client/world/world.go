@@ -1,12 +1,15 @@
 package world
 
 import (
+	"sync"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/otie173/odinbit/internal/client/texture"
 )
 
 var (
-	Overworld World
+	Overworld   World
+	OverworldMu sync.Mutex
 )
 
 type World struct {

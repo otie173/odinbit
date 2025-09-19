@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	PlayerMoved bool
+	PlayerMoved int32
 	PlayerMu    sync.Mutex
 	GamePlayer  = Player{
 		Name:     "otie173",

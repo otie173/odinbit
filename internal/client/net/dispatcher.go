@@ -51,11 +51,13 @@ func (d *Dispatcher) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory,
 			if err := binary.Unmarshal(pktStructure.Blocks, &blocks); err != nil {
 				log.Printf("Error! Cant unmarshal packet structure data to overworld: %v\n", err)
 			}
+			world.OverworldMu.Lock()
 			world.Overworld.Blocks = blocks
 			world.Overworld.StartX = pktStructure.StartX
 			world.Overworld.StartY = pktStructure.StartY
 			world.Overworld.EndX = pktStructure.EndX
 			world.Overworld.EndY = pktStructure.EndY
+			world.OverworldMu.Unlock()
 
 			// log.Println(pktStructure.StartX, pktStructure.StartY, pktStructure.EndX, pktStructure.EndY)
 		}

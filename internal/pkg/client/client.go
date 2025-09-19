@@ -1,6 +1,8 @@
 package client
 
 import (
+	"sync/atomic"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/otie173/odinbit/internal/client/camera"
 	"github.com/otie173/odinbit/internal/client/common"
@@ -55,7 +57,7 @@ func (c *Client) Load() {
 
 	go func() {
 		c.ticker.Run(func() {
-			if player.PlayerMoved {
+			if atomic.LoadInt32(&player.PlayerMoved) == 1 {
 				player.UpdateServerPos()
 			}
 		})

@@ -231,6 +231,7 @@ func (h *Handler) Handle() {
 		rl.BeginDrawing()
 		rl.ClearBackground(bkgColor)
 		rl.BeginMode2D(camera.Camera)
+		world.OverworldMu.Lock()
 		index := 0
 		for x := world.Overworld.StartX; x < world.Overworld.EndX; x++ {
 			for y := world.Overworld.StartY; y < world.Overworld.EndY; y++ {
@@ -245,6 +246,7 @@ func (h *Handler) Handle() {
 				}
 			}
 		}
+		world.OverworldMu.Unlock()
 		player.DrawPlayer()
 		rl.EndMode2D()
 		rl.EndDrawing()

@@ -5,6 +5,7 @@ import (
 
 	//"log"
 	"math"
+	"sync/atomic"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	//"github.com/otie173/odinbit/internal/client/camera"
@@ -53,9 +54,7 @@ func (h *Handler) Handle() {
 	player.PlayerMu.Lock()
 	newX := player.GamePlayer.CurrentX + moveX*speed
 	newY := player.GamePlayer.CurrentY + moveY*speed
-	player.PlayerMu.Unlock()
 
-	player.PlayerMu.Lock()
 	if moveX != 0 {
 		if moveX > 0 {
 			player.GamePlayer.Flipped = 0
@@ -69,10 +68,10 @@ func (h *Handler) Handle() {
 	if moveX != 0 || moveY != 0 {
 		player.GamePlayer.CurrentX = newX
 		player.GamePlayer.CurrentY = newY
-		player.PlayerMoved = true
+		atomic.StoreInt32(&player.PlayerMoved, 1)
 		//player.UpdateServerPos()
 	} else {
-		player.PlayerMoved = false
+		atomic.StoreInt32(&player.PlayerMoved, 0)
 	}
 	player.PlayerMu.Unlock()
 
