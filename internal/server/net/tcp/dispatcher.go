@@ -28,7 +28,7 @@ func (d *Dispatcher) Dispatch(conn net.Conn, pktCategory packet.PacketCategory, 
 	case packet.CategoryWorld:
 	case packet.CategoryPlayer:
 		switch pktOpcode {
-		case packet.OpcodeHandshake:
+		case packet.OpcodePlayerHandshake:
 			pktStructure := packet.PlayerHandshake{}
 
 			if err := binary.Unmarshal(pktData, &pktStructure); err != nil {
@@ -38,8 +38,8 @@ func (d *Dispatcher) Dispatch(conn net.Conn, pktCategory packet.PacketCategory, 
 			player := player.NewPlayer(conn, pktStructure.Username, common.WorldSize/2, common.WorldSize/2)
 			d.playerStorage.AddPlayer(player)
 			log.Printf("Hi, %s!\n", pktStructure.Username)
-		case packet.OpcodeMove:
-			log.Printf("Info! Player with conn %s is move\n", conn.RemoteAddr())
+		case packet.OpcodePlayerMove:
+			//log.Printf("Info! Player with conn %s is move\n", conn.RemoteAddr())
 			pktStructure := packet.PlayerMove{}
 
 			if err := binary.Unmarshal(pktData, &pktStructure); err != nil {
@@ -50,6 +50,7 @@ func (d *Dispatcher) Dispatch(conn net.Conn, pktCategory packet.PacketCategory, 
 			if player != nil {
 				player.CurrentX = pktStructure.CurrentX
 				player.CurrentY = pktStructure.CurrentY
+				player.Flipped = pktStructure.Flipped
 			} else {
 				log.Printf("Error! Cant handle opcode move")
 				conn.Close()

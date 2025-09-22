@@ -9,6 +9,7 @@ type Player struct {
 	Name     string
 	CurrentX float32
 	CurrentY float32
+	Flipped  byte
 }
 
 func NewPlayer(conn net.Conn, name string, x, y float32) *Player {

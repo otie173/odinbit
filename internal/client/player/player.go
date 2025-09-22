@@ -5,10 +5,7 @@ import (
 	"sync"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/kelindar/binary"
-	"github.com/otie173/odinbit/internal/client/net"
 	"github.com/otie173/odinbit/internal/client/texture"
-	"github.com/otie173/odinbit/internal/protocol/packet"
 	"github.com/otie173/odinbit/internal/server/common"
 )
 
@@ -21,7 +18,7 @@ var (
 		CurrentY: common.WorldSize / 2,
 	}
 	NetworkPlayers []Player = make([]Player, 0, 16)
-	NetConnection  *net.Handler
+	NetPlayersMu   sync.Mutex
 )
 
 const (
@@ -56,51 +53,27 @@ func RemoveNetworkPlayer(removedPlayer Player) {
 }
 
 func DrawNetworkPlayers() {
-	playerRec := rl.NewRectangle(0, 0, 12, 12)
+	// log.Println("Количество сетевых игроков для отрисовки:", len(NetworkPlayers))
 
 	if len(NetworkPlayers) > 0 {
-		for _, player := range NetworkPlayers {
-			playerVec := rl.NewVector2(player.CurrentX*12, player.CurrentY*12)
+		NetPlayersMu.Lock()
+		for _, netPlayer := range NetworkPlayers {
+			var playerRec rl.Rectangle
+			if netPlayer.Flipped == 0 {
+				playerRec = rl.NewRectangle(0, 0, -12, 12)
+			} else {
+				playerRec = rl.NewRectangle(0, 0, 12, 12)
+			}
+
+			playerVec := rl.NewVector2(netPlayer.CurrentX*12, netPlayer.CurrentY*12)
 			rl.DrawTextureRec(texture.PlayerTexture, playerRec, playerVec, rl.White)
 		}
-	}
-}
-
-func UpdateServerPos() {
-	PlayerMu.Lock()
-	pktStructure := packet.PlayerMove{
-		CurrentX: GamePlayer.CurrentX,
-		CurrentY: GamePlayer.CurrentY,
-	}
-	PlayerMu.Unlock()
-
-	binaryStructure, err := binary.Marshal(&pktStructure)
-	if err != nil {
-		log.Printf("Error! Cant marshal player move structure: %v\n", err)
-	}
-
-	pkt := packet.Packet{
-		Category: packet.CategoryPlayer,
-		Opcode:   packet.OpcodeMove,
-		Payload:  binaryStructure,
-	}
-
-	data, err := binary.Marshal(&pkt)
-	if err != nil {
-		log.Printf("Error! Cant marshal player move packet: %v\n", err)
-	}
-
-	compressedPkt, err := net.CompressPkt(data)
-	if err != nil {
-		log.Printf("Error! Cant compress binary player move packet: %v\n", err)
-	}
-
-	if err := NetConnection.Write(compressedPkt); err != nil {
-		log.Printf("Error! Cant write player move packet data to server: %v\n", err)
+		NetPlayersMu.Unlock()
 	}
 }
 
 func DrawPlayer() {
+	// log.Println("Рисую локального игрока:", GamePlayer.CurrentX, GamePlayer.CurrentY)
 	var playerRec rl.Rectangle
 	if GamePlayer.Flipped == 0 {
 		playerRec = rl.NewRectangle(0, 0, -12, 12)

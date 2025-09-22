@@ -50,7 +50,7 @@ func (h *Handler) Handle() {
 		moveY /= lenght
 	}
 
-	speed := 5.0 * rl.GetFrameTime()
+	speed := 4.25 * rl.GetFrameTime()
 	player.PlayerMu.Lock()
 	newX := player.GamePlayer.CurrentX + moveX*speed
 	newY := player.GamePlayer.CurrentY + moveY*speed

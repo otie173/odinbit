@@ -10,41 +10,41 @@ import (
 	"github.com/vmihailenco/msgpack/v5"
 )
 
-type Handler struct {
+type Listener struct {
 	connection net.Conn
 	connected  bool
 	dispatcher *Dispatcher
 	loader     *Loader
 }
 
-func NewHandler(dispatcher *Dispatcher, loader *Loader) *Handler {
-	return &Handler{
+func NewListener(dispatcher *Dispatcher, loader *Loader) *Listener {
+	return &Listener{
 		dispatcher: dispatcher,
 		loader:     loader,
 	}
 }
 
-func (h *Handler) IsConnected() bool {
-	return h.connected
+func (l *Listener) IsConnected() bool {
+	return l.connected
 }
 
-func (h *Handler) Connect(address string) error {
+func (l *Listener) Connect(address string) error {
 	conn, err := net.Dial("tcp", address)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 
-	h.connection = conn
-	h.connected = true
+	l.connection = conn
+	l.connected = true
 	return nil
 }
 
-func (h *Handler) Disconnect() {
-	h.connection.Close()
+func (l *Listener) Disconnect() {
+	l.connection.Close()
 }
 
-func (h *Handler) ConvertPacket(pktCategory packet.PacketCategory, pktOpcode packet.PacketOpcode, pktData any) ([]byte, error) {
+func (l *Listener) ConvertPacket(pktCategory packet.PacketCategory, pktOpcode packet.PacketOpcode, pktData any) ([]byte, error) {
 	data, err := msgpack.Marshal(&pktData)
 	if err != nil {
 		return nil, err
@@ -74,27 +74,27 @@ func parseBinaryPacket(buffer []byte) (packet.Packet, error) {
 	return pkt, nil
 }
 
-func (h *Handler) LoadTextures(addr string) ([]byte, error) {
-	data, err := h.loader.LoadTextures(addr)
+func (l *Listener) LoadTextures(addr string) ([]byte, error) {
+	data, err := l.loader.LoadTextures(addr)
 	if err != nil {
 		return nil, err
 	}
 	return data, nil
 }
 
-func (h *Handler) LoadWorld(addr string) ([]byte, error) {
-	data, err := h.loader.LoadWorld(addr)
+func (l *Listener) LoadWorld(addr string) ([]byte, error) {
+	data, err := l.loader.LoadWorld(addr)
 	if err != nil {
 		return nil, err
 	}
 	return data, nil
 }
 
-func (h *Handler) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory, pktOpcode packet.PacketOpcode, data []byte) {
-	h.dispatcher.Dispatch(conn, pktCategory, pktOpcode, data)
+func (l *Listener) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory, pktOpcode packet.PacketOpcode, data []byte) {
+	l.dispatcher.Dispatch(conn, pktCategory, pktOpcode, data)
 }
 
-func (h *Handler) decompressPacket(compressedPkt []byte) ([]byte, error) {
+func (l *Listener) decompressPacket(compressedPkt []byte) ([]byte, error) {
 	//log.Printf("Info! Compressed packet lenght: %d\n", len(compressedPkt))
 	decompressedData, err := minlz.Decode(nil, compressedPkt)
 	if err != nil {
@@ -111,20 +111,20 @@ func CompressPkt(pkt []byte) ([]byte, error) {
 	return compressedPkt, nil
 }
 
-func (h *Handler) Handle() {
+func (l *Listener) Handle() {
 	log.Println("Началась обработка соединения")
 	buffer := make([]byte, 1024*1024) // 1MB buffer
 
 	for {
-		n, err := h.connection.Read(buffer)
+		n, err := l.connection.Read(buffer)
 		if err != nil {
 			log.Printf("Error with read buffer from server: %v\n", err)
-			h.connection.Close()
-			h.connected = false
+			l.connection.Close()
+			l.connected = false
 			return
 		}
 
-		compressedPkt, err := h.decompressPacket(buffer[:n])
+		compressedPkt, err := l.decompressPacket(buffer[:n])
 		if err != nil {
 			log.Printf("Error! Cant decompress packet: %v\n", err)
 		}
@@ -133,12 +133,12 @@ func (h *Handler) Handle() {
 		if err != nil {
 			log.Printf("Error with parse packet from server: %v\n", err)
 		}
-		h.dispatcher.Dispatch(&h.connection, pkt.Category, pkt.Opcode, pkt.Payload)
+		l.dispatcher.Dispatch(&l.connection, pkt.Category, pkt.Opcode, pkt.Payload)
 	}
 }
 
-func (h *Handler) Write(data []byte) error {
-	if _, err := h.connection.Write(data); err != nil {
+func (l *Listener) Write(data []byte) error {
+	if _, err := l.connection.Write(data); err != nil {
 		return err
 	}
 	return nil

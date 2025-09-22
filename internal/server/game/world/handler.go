@@ -45,7 +45,6 @@ func (r *Renderer) Render() {
 				EndX:   int16(area.EndX),
 				EndY:   int16(area.EndY),
 			}
-			//log.Println(pktStructure.StartX, pktStructure.StartY, pktStructure.EndX, pktStructure.EndY, player.CurrentX, player.CurrentY)
 
 			binaryStructure, err := binary.Marshal(&pktStructure)
 			if err != nil {

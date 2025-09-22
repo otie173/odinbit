@@ -20,4 +20,9 @@ type WorldUpdate struct {
 type PlayerMove struct {
 	CurrentX float32
 	CurrentY float32
+	Flipped  byte
+}
+
+type PlayerUpdate struct {
+	Players []byte
 }

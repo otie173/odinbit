@@ -44,11 +44,11 @@ type Handler struct {
 	screenWidth  int32
 	screenHeight int32
 	currentScene common.Scene
-	netHandler   *net.Handler
+	netModule    *net.Module
 	uiScale      float32
 }
 
-func New(screenWidth, screenHeight int32, scene common.Scene, netHandler *net.Handler) *Handler {
+func New(screenWidth, screenHeight int32, scene common.Scene, netModule *net.Module) *Handler {
 	scaleX := float32(screenWidth) / float32(common.BaseRenderWidth)
 	scaleY := float32(screenHeight) / float32(common.BaseRenderHeight)
 	uiScale := float32(math.Min(float64(scaleX), float64(scaleY)))
@@ -59,7 +59,7 @@ func New(screenWidth, screenHeight int32, scene common.Scene, netHandler *net.Ha
 		screenWidth:  screenWidth,
 		screenHeight: screenHeight,
 		currentScene: scene,
-		netHandler:   netHandler,
+		netModule:    netModule,
 		uiScale:      uiScale,
 	}
 }
@@ -172,8 +172,8 @@ func (h *Handler) Handle() {
 			buttonX := float32(h.screenWidth)/2 - buttonWidth/2
 			buttonY := panelY + h.scale(420)
 			if raygui.Button(rl.NewRectangle(buttonX, buttonY, buttonWidth, buttonHeight), "Connect") {
-				if !h.netHandler.IsConnected() {
-					data, err := h.netHandler.LoadTextures("http://0.0.0.0:9999")
+				if !h.netModule.IsConnected() {
+					data, err := h.netModule.LoadTextures("http://0.0.0.0:9999")
 					if err != nil {
 						log.Printf("Error! Cant load textures from server: %v\n", err)
 						return
@@ -184,14 +184,13 @@ func (h *Handler) Handle() {
 						log.Printf("Error! Cant unmarshal body: %v\n", err)
 						return
 					}
-					h.netHandler.Dispatch(nil, pkt.Category, pkt.Opcode, pkt.Payload)
+					h.netModule.Dispatch(nil, pkt.Category, pkt.Opcode, pkt.Payload)
 
-					if err := h.netHandler.Connect(tcpAddress); err != nil {
+					if err := h.netModule.Connect(tcpAddress); err != nil {
 						log.Printf("Error! Cant connect to server: %v\n", err)
 						return
 					} else {
 						log.Printf("Success! Connected to %s\n", tcpAddress)
-						h.currentScene = common.Game
 
 						pktStructure := packet.PlayerHandshake{Username: nickname}
 						binaryStructure, err := binary.Marshal(&pktStructure)
@@ -201,7 +200,7 @@ func (h *Handler) Handle() {
 
 						pkt := packet.Packet{
 							Category: packet.CategoryPlayer,
-							Opcode:   packet.OpcodeHandshake,
+							Opcode:   packet.OpcodePlayerHandshake,
 							Payload:  binaryStructure,
 						}
 
@@ -215,16 +214,13 @@ func (h *Handler) Handle() {
 							log.Printf("Error! Cant compress player handshake packet: %v\n", err)
 						}
 
-						h.netHandler.Write(compressedPkt)
-						player.NetConnection = h.netHandler
-
-						go h.netHandler.Handle()
+						h.netModule.SendData(compressedPkt)
 					}
 				}
 			}
 		})
 	case common.Game:
-		if selectedMode == multiplayer && !h.netHandler.IsConnected() {
+		if selectedMode == multiplayer && !h.netModule.IsConnected() {
 			h.SetScene(common.ConnClosed)
 		}
 
@@ -248,6 +244,10 @@ func (h *Handler) Handle() {
 		}
 		world.OverworldMu.Unlock()
 		player.DrawPlayer()
+
+		if h.netModule.IsConnected() && h.netModule.IsReady() {
+			player.DrawNetworkPlayers()
+		}
 		rl.EndMode2D()
 		rl.EndDrawing()
 	case common.ConnClosed:

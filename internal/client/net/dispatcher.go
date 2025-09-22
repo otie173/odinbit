@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/kelindar/binary"
+	"github.com/otie173/odinbit/internal/client/player"
 	"github.com/otie173/odinbit/internal/client/texture"
 	"github.com/otie173/odinbit/internal/client/world"
 	"github.com/otie173/odinbit/internal/protocol/packet"
@@ -35,6 +36,25 @@ func (d *Dispatcher) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory,
 			for _, texture := range pktStructure.Textures {
 				d.textureStorage.LoadTexture(texture.Id, texture.Path)
 			}
+		}
+	case packet.CategoryPlayer:
+		switch pktOpcode {
+		case packet.OpcodePlayerUpdate:
+			pktStructure := packet.PlayerUpdate{}
+
+			if err := binary.Unmarshal(pktData, &pktStructure); err != nil {
+				log.Printf("Error! Cant unmarshal player update data to structure: %v\n", err)
+			}
+
+			netPlayers := make([]player.Player, 0, 16)
+			if err := binary.Unmarshal(pktStructure.Players, &netPlayers); err != nil {
+				log.Printf("Error! Cant unmarshal network players data: %v\n", err)
+			}
+
+			player.NetPlayersMu.Lock()
+			player.NetworkPlayers = netPlayers
+			player.NetPlayersMu.Unlock()
+
 		}
 	case packet.CategoryWorld:
 		switch pktOpcode {
