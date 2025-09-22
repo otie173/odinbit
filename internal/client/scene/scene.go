@@ -246,6 +246,7 @@ func (h *Handler) Handle() {
 		player.DrawPlayer()
 
 		if h.netModule.IsConnected() && h.netModule.IsReady() {
+			player.UpdateNetworkPlayers()
 			player.DrawNetworkPlayers()
 		}
 		rl.EndMode2D()

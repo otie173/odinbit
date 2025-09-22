@@ -52,7 +52,7 @@ func (d *Dispatcher) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory,
 			}
 
 			player.NetPlayersMu.Lock()
-			player.NetworkPlayers = netPlayers
+			player.NetworkPlayersRaw = netPlayers
 			player.NetPlayersMu.Unlock()
 
 		}

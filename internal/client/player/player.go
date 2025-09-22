@@ -17,8 +17,9 @@ var (
 		CurrentX: common.WorldSize / 2,
 		CurrentY: common.WorldSize / 2,
 	}
-	NetworkPlayers []Player = make([]Player, 0, 16)
-	NetPlayersMu   sync.Mutex
+	NetworkPlayers    []Player = make([]Player, 0, 16)
+	NetworkPlayersRaw []Player = make([]Player, 0, 16)
+	NetPlayersMu      sync.Mutex
 )
 
 const (
@@ -52,11 +53,42 @@ func RemoveNetworkPlayer(removedPlayer Player) {
 	NetworkPlayers = players
 }
 
+func UpdateNetworkPlayers() {
+	NetPlayersMu.Lock()
+	defer NetPlayersMu.Unlock()
+
+	delta := rl.GetFrameTime()
+
+	if len(NetworkPlayers) == 0 && len(NetworkPlayersRaw) > 0 {
+		NetworkPlayers = make([]Player, len(NetworkPlayersRaw))
+		copy(NetworkPlayers, NetworkPlayersRaw)
+		return
+	}
+
+	if len(NetworkPlayers) == 0 && len(NetworkPlayersRaw) == 0 {
+		return
+	}
+
+	for i := range NetworkPlayers {
+		for _, rawPlayer := range NetworkPlayersRaw {
+			diffX := rawPlayer.CurrentX - NetworkPlayers[i].CurrentX
+			diffY := rawPlayer.CurrentY - NetworkPlayers[i].CurrentY
+
+			NetworkPlayers[i].CurrentX += diffX * delta * 8.0
+			NetworkPlayers[i].CurrentY += diffY * delta * 8.0
+			NetworkPlayers[i].Flipped = rawPlayer.Flipped
+			break
+		}
+	}
+
+}
+
 func DrawNetworkPlayers() {
 	// log.Println("Количество сетевых игроков для отрисовки:", len(NetworkPlayers))
 
 	if len(NetworkPlayers) > 0 {
 		NetPlayersMu.Lock()
+		log.Println(NetworkPlayer)
 		for _, netPlayer := range NetworkPlayers {
 			var playerRec rl.Rectangle
 			if netPlayer.Flipped == 0 {
