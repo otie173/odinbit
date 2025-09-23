@@ -3,7 +3,6 @@ package world
 import (
 	"fmt"
 	"math/rand/v2"
-	"strings"
 
 	"github.com/otie173/odinbit/internal/server/common"
 	"github.com/otie173/odinbit/internal/server/game/texture"
@@ -31,36 +30,54 @@ func newGenerator(textures *texture.TexturePack, blockStorage *storage) *generat
 }
 
 func (g *generator) generateBarrier() {
-	for i := 0; i < common.WorldSize; i++ {
+	for i := range common.WorldSize {
 		g.blockStorage.blocks[i][0] = Block{TextureID: g.textures.GetID("barrier")}
 	}
-	for j := 0; j < common.WorldSize; j++ {
+	for j := range common.WorldSize {
 		g.blockStorage.blocks[0][j] = Block{TextureID: g.textures.GetID("barrier")}
 	}
 
-	for i := 0; i < common.WorldSize; i++ {
+	for i := range common.WorldSize {
 		g.blockStorage.blocks[i][common.WorldSize-1] = Block{TextureID: g.textures.GetID("barrier")}
 	}
-	for j := 0; j < common.WorldSize; j++ {
+	for j := range common.WorldSize {
 		g.blockStorage.blocks[common.WorldSize-1][j] = Block{TextureID: g.textures.GetID("barrier")}
 	}
 }
 
 func (g *generator) generateResource(name string, multiplier float32, passable uint8, textures ...int) {
-	count := common.WorldSize * multiplier
+	count := float32(common.WorldSize) * multiplier
 
 	for i := 0; i <= int(count); i++ {
 		var textureIndex int
 		var textureName string
 
 		textureIndex = rand.IntN(len(textures))
-		textureName = fmt.Sprintf("%s%d.png", name, textures[textureIndex])
+		textureName = fmt.Sprintf("%s%d", name, textures[textureIndex])
 
 		x := rand.IntN(common.WorldSize)
 		y := rand.IntN(common.WorldSize)
-		g.blockStorage.blocks[x][y] = Block{
-			TextureID: g.textures.GetID(strings.TrimSuffix(textureName, ".png")),
-			Passable:  passable,
+		g.blockStorage.addBlock(g.textures.GetID(textureName), passable, int16(x), int16(y))
+	}
+}
+
+func (g *generator) generateSchema(schema [][]string, startX, startY int16) {
+	for y, row := range schema {
+		for x, block := range row {
+			if block == "" {
+				continue
+			}
+
+			blockID := g.textures.GetID(block)
+			blockX := startX + int16(x)
+			blockY := startY + int16(y)
+
+			if blockX < 0 || int(blockX) > common.WorldSize ||
+				blockY < 0 || int(blockY) > common.WorldSize {
+				continue
+			}
+
+			g.blockStorage.blocks[blockX][blockY] = Block{TextureID: blockID, Passable: 0}
 		}
 	}
 }
@@ -72,5 +89,15 @@ func (g *generator) generateWorld() {
 	g.generateResource("tree", deadTreeMultiplier, 0, 2, 3)
 	g.generateResource("stone", stoneMultiplier, 0, 2, 3)
 	g.generateResource("mushroom", mushroomMultiplier, 0, 1, 2)
+
+	houseSchema := [][]string{
+		{"wall2", "wall2", "wall2", "wall2", "wall2"},
+		{"", "floor2", "floor2", "floor2", "wall2"},
+		{"wall2", "floor2", "floor2", "floor2", "wall2"},
+		{"wall2", "wall2", "wall2", "wall2", "wall2"},
+	}
+
+	g.generateSchema(houseSchema, 250, 250)
+
 	g.generateBarrier()
 }

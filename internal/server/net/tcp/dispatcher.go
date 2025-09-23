@@ -35,7 +35,7 @@ func (d *Dispatcher) Dispatch(conn net.Conn, pktCategory packet.PacketCategory, 
 				log.Printf("Error! Cant unmarshal player handshake data: %v\n", err)
 			}
 
-			player := player.NewPlayer(conn, pktStructure.Username, common.WorldSize/2, common.WorldSize/2)
+			player := player.NewPlayer(conn, pktStructure.Username, float32(common.WorldSize/2), float32(common.WorldSize)/2)
 			d.playerStorage.AddPlayer(player)
 			log.Printf("Hi, %s!\n", pktStructure.Username)
 		case packet.OpcodePlayerMove:

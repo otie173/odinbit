@@ -14,8 +14,8 @@ var (
 	PlayerMu    sync.Mutex
 	GamePlayer  = Player{
 		Name:     "otie173",
-		CurrentX: common.WorldSize / 2,
-		CurrentY: common.WorldSize / 2,
+		CurrentX: float32(common.WorldSize / 2),
+		CurrentY: float32(common.WorldSize / 2),
 	}
 	NetworkPlayers    []Player = make([]Player, 0, 16)
 	NetworkPlayersRaw []Player = make([]Player, 0, 16)
@@ -84,11 +84,8 @@ func UpdateNetworkPlayers() {
 }
 
 func DrawNetworkPlayers() {
-	// log.Println("Количество сетевых игроков для отрисовки:", len(NetworkPlayers))
-
 	if len(NetworkPlayers) > 0 {
 		NetPlayersMu.Lock()
-		log.Println(NetworkPlayer)
 		for _, netPlayer := range NetworkPlayers {
 			var playerRec rl.Rectangle
 			if netPlayer.Flipped == 0 {

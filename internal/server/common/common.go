@@ -1,7 +1,7 @@
 package common
 
 const (
-	WorldSize          = 512
+	WorldSize  int     = 512
 	ViewRadius float32 = 16
 )
 
