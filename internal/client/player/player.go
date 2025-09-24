@@ -57,29 +57,38 @@ func UpdateNetworkPlayers() {
 	NetPlayersMu.Lock()
 	defer NetPlayersMu.Unlock()
 
-	delta := rl.GetFrameTime()
-
-	if len(NetworkPlayers) == 0 && len(NetworkPlayersRaw) > 0 {
-		NetworkPlayers = make([]Player, len(NetworkPlayersRaw))
-		copy(NetworkPlayers, NetworkPlayersRaw)
-		return
-	}
-
 	if len(NetworkPlayers) == 0 && len(NetworkPlayersRaw) == 0 {
 		return
 	}
 
-	for i := range NetworkPlayers {
-		for _, rawPlayer := range NetworkPlayersRaw {
-			diffX := rawPlayer.CurrentX - NetworkPlayers[i].CurrentX
-			diffY := rawPlayer.CurrentY - NetworkPlayers[i].CurrentY
+	delta := rl.GetFrameTime()
+	newNetworkPlayers := make([]Player, 0, len(NetworkPlayersRaw))
 
-			NetworkPlayers[i].CurrentX += diffX * delta * 8.0
-			NetworkPlayers[i].CurrentY += diffY * delta * 8.0
-			NetworkPlayers[i].Flipped = rawPlayer.Flipped
-			break
+	for _, rawPlayer := range NetworkPlayersRaw {
+		var existingPlayer *Player
+		for i := range NetworkPlayers {
+			if NetworkPlayers[i].Name == rawPlayer.Name {
+				existingPlayer = &NetworkPlayers[i]
+				break
+			}
+		}
+
+		if existingPlayer != nil {
+			diffX := rawPlayer.CurrentX - existingPlayer.CurrentX
+			diffY := rawPlayer.CurrentY - existingPlayer.CurrentY
+
+			newPlayer := Player{
+				Name:     rawPlayer.Name,
+				CurrentX: existingPlayer.CurrentX + diffX*delta*8.0,
+				CurrentY: existingPlayer.CurrentY + diffY*delta*8.0,
+				Flipped:  rawPlayer.Flipped,
+			}
+			newNetworkPlayers = append(newNetworkPlayers, newPlayer)
+		} else {
+			newNetworkPlayers = append(newNetworkPlayers, rawPlayer)
 		}
 	}
+	NetworkPlayers = newNetworkPlayers
 
 }
 

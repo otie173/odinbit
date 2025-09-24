@@ -52,7 +52,7 @@ func (c *Client) Load() {
 	camera.LoadCamera()
 	world.Overworld.Textures = c.textureStorage
 	scene.BkgTexture = rl.LoadTexture("resources/backgrounds/background1.png")
-	texture.PlayerTexture = rl.LoadTexture("resources/textures/ghost.png")
+	texture.PlayerTexture = rl.LoadTexture("resources/textures/player.png")
 	c.ticker = ticker.New(10)
 
 	go func() {

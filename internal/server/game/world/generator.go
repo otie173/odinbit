@@ -91,12 +91,14 @@ func (g *generator) generateWorld() {
 	g.generateResource("mushroom", mushroomMultiplier, 0, 1, 2)
 
 	// houseSchema := [][]string{
-	// 	{"wall2", "wall2", "wall2", "wall2", "wall2"},
-	// 	{"", "floor2", "floor2", "floor2", "wall2"},
-	// 	{"wall2", "floor2", "floor2", "floor2", "wall2"},
-	// 	{"wall2", "wall2", "wall2", "wall2", "wall2"},
+	// 	{"wall", "wall", "wall", "wall", "wall"},
+	// 	{"", "", "", "", "wall"},
+	// 	{"wall", "", "", "", "wall"},
+	// 	{"wall", "wall", "wall", "wall", "wall"},
 	// }
-	//g.generateSchema(houseSchema, 250, 250)
+	// g.generateSchema(houseSchema, 250, 250)
+	block := Block{TextureID: g.textures.GetID("home"), Passable: 1}
+	g.blockStorage.addBlock(block.TextureID, block.Passable, 258, 259)
 
 	g.generateBarrier()
 }
