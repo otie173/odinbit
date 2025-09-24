@@ -39,7 +39,6 @@ func (d *Dispatcher) Dispatch(conn net.Conn, pktCategory packet.PacketCategory, 
 			d.playerStorage.AddPlayer(player)
 			log.Printf("Hi, %s!\n", pktStructure.Username)
 		case packet.OpcodePlayerMove:
-			//log.Printf("Info! Player with conn %s is move\n", conn.RemoteAddr())
 			pktStructure := packet.PlayerMove{}
 
 			if err := binary.Unmarshal(pktData, &pktStructure); err != nil {
@@ -55,7 +54,9 @@ func (d *Dispatcher) Dispatch(conn net.Conn, pktCategory packet.PacketCategory, 
 				log.Printf("Error! Cant handle opcode move")
 				conn.Close()
 			}
-
+		case packet.OpcodePlayerDisconnect:
+			log.Printf("Info! Player was disconnected: %s", conn.RemoteAddr().String())
+			d.playerStorage.RemovePlayer(conn)
 		}
 	case packet.CategoryInventory:
 	}

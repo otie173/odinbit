@@ -7,17 +7,14 @@ import (
 	"github.com/kelindar/binary"
 	"github.com/minio/minlz"
 	"github.com/otie173/odinbit/internal/protocol/packet"
-	"github.com/otie173/odinbit/internal/server/game/player"
 )
 
 type Listener struct {
-	players    player.Storage
 	dispatcher *Dispatcher
 }
 
-func NewListener(players player.Storage, dispatcher *Dispatcher) *Listener {
+func NewListener(dispatcher *Dispatcher) *Listener {
 	return &Listener{
-		players:    players,
 		dispatcher: dispatcher,
 	}
 }
@@ -48,8 +45,17 @@ func (l *Listener) listen(conn net.Conn) {
 		if err != nil {
 			log.Printf("Error! Cant read buffer from %s: %v\n", conn.RemoteAddr().String(), err)
 			log.Printf("Info! Closing this connection and removing player\n")
-			l.players.RemovePlayer(conn)
-			conn.Close()
+
+			pkt := packet.Packet{
+				Category: packet.CategoryPlayer,
+				Opcode:   packet.OpcodePlayerDisconnect,
+			}
+
+			if err := conn.Close(); err != nil {
+				log.Printf("Error! Cant close player connection: %v\n", err)
+			}
+
+			l.dispatcher.Dispatch(conn, pkt.Category, pkt.Opcode, pkt.Payload)
 			return
 		}
 

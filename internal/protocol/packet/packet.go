@@ -33,4 +33,5 @@ const (
 	OpcodePlayerHandshake PacketOpcode = 3000 + iota
 	OpcodePlayerMove
 	OpcodePlayerUpdate
+	OpcodePlayerDisconnect
 )
