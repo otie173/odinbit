@@ -85,9 +85,9 @@ func (g *generator) generateSchema(schema [][]string, startX, startY int16) {
 func (g *generator) generateWorld() {
 	g.generateResource("grass", grassMultiplier, 1, 1, 2, 7, 8)
 	g.generateResource("grass", tallGrassMultiplier, 0, 3, 4, 5, 6)
-	g.generateResource("tree", treeMultiplier, 0, 4)
+	g.generateResource("tree", treeMultiplier, 0, 1)
 	g.generateResource("tree", deadTreeMultiplier, 0, 2, 3)
-	g.generateResource("stone", stoneMultiplier, 0, 2, 3)
+	g.generateResource("stone", stoneMultiplier, 0, 1, 2)
 	g.generateResource("mushroom", mushroomMultiplier, 0, 1, 2)
 
 	// houseSchema := [][]string{
