@@ -37,5 +37,5 @@ func (s *Server) Run() {
 	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM)
 	<-stopChan
 
-	log.Println("Shutting down server...")
+	log.Println("Bye! Shutting down server...")
 }

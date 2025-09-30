@@ -45,14 +45,14 @@ func (m *Manager) HandleNetwork(httpAddr, tcpAddr string) {
 			log.Fatalf("Error! Cant run HTTP handler: %v\n", err)
 		}
 	}()
-	log.Printf("HTTP handler running on: %s\n", httpAddr)
+	log.Printf("Info! HTTP handler running on: %s\n", httpAddr)
 
 	go func() {
 		if err := m.Components.Listener.Run(tcpAddr); err != nil {
 			log.Fatalf("Error! Cant run TCP listener: %v\n", err)
 		}
 	}()
-	log.Printf("TCP listener running on: %s\n", tcpAddr)
+	log.Printf("Info! TCP listener running on: %s\n", tcpAddr)
 }
 
 func (m *Manager) RenderGame() {
