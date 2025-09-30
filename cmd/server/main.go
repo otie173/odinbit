@@ -1,7 +1,14 @@
 package main
 
 import (
+	"log"
+	"os"
+	"path/filepath"
+	"sort"
+
 	"github.com/go-chi/chi/v5"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/otie173/odinbit/internal/pkg/server"
 	"github.com/otie173/odinbit/internal/server/core/manager"
 	"github.com/otie173/odinbit/internal/server/core/ticker"
@@ -12,7 +19,40 @@ import (
 	"github.com/otie173/odinbit/internal/server/net/tcp"
 )
 
+func runMigrations(db *sqlx.DB) error {
+	files, err := filepath.Glob("migrations/*.up.sql")
+	if err != nil {
+		return err
+	}
+
+	sort.Strings(files)
+	for _, file := range files {
+		content, err := os.ReadFile(file)
+		if err != nil {
+			return err
+		}
+
+		if _, err := db.Exec(string(content)); err != nil {
+			return err
+		}
+		log.Printf("Info! Database migration applied: %s\n", file)
+	}
+
+	return nil
+}
+
 func main() {
+	db, err := sqlx.Connect("sqlite3", "database.db")
+	if err != nil {
+		log.Println(db, err)
+	}
+	defer db.Close()
+
+	if err := runMigrations(db); err != nil {
+		log.Fatalf("Error! Cant apply data migration: %v\n", err)
+	}
+	log.Println("Info! Database migrations applied successfully")
+
 	textures := texture.NewPack()
 	overworld := world.New(textures)
 	playerStorage := player.NewStorage(16)
