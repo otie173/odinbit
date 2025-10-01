@@ -3,15 +3,31 @@ package player
 import (
 	"log"
 	"net"
-	"os"
 	"sync"
+
+	"github.com/jmoiron/sqlx"
 )
+
+type PlayerModel struct {
+	Id   int     `db:"player_id"`
+	Name string  `db:"player_name"`
+	X    float32 `db:"player_x"`
+	Y    float32 `db:"player_y"`
+}
 
 type Storage interface {
 	GetPlayer(conn net.Conn) *Player
 	GetPlayers() []*Player
 	AddPlayer(player *Player)
 	RemovePlayer(playerConn net.Conn)
+}
+
+type storage struct {
+	db         *sqlx.DB
+	mu         sync.Mutex
+	players    []*Player
+	capacity   int
+	playersMap map[net.Conn]*Player
 }
 
 type filestorage struct {
@@ -21,34 +37,35 @@ type filestorage struct {
 	playersMap map[net.Conn]*Player
 }
 
-func NewStorage(capacity int) *filestorage {
+func NewStorage(db *sqlx.DB, capacity int) *storage {
 	players := make([]*Player, 0, capacity)
 	playersMap := make(map[net.Conn]*Player, capacity)
 
-	dirPath := "players"
-	_, err := os.Stat(dirPath)
-	if os.IsNotExist(err) {
-		if err := os.Mkdir(dirPath, 0755); err != nil {
-			log.Printf("Error! Cant create directory for player storage: %v\n", err)
-		}
-	}
-
-	return &filestorage{
-		capacity:   capacity,
+	return &storage{
+		db:         db,
 		players:    players,
+		capacity:   capacity,
 		playersMap: playersMap,
 	}
 }
 
-func (s *filestorage) GetPlayer(conn net.Conn) *Player {
+func (s *storage) GetPlayer(conn net.Conn) *Player {
 	return s.playersMap[conn]
 }
 
-func (s *filestorage) GetPlayers() []*Player {
+func (s *storage) GetPlayers() []*Player {
 	return s.players
 }
 
-func (s *filestorage) AddPlayer(player *Player) {
+func (s *storage) LoadPlayer(name string) *Player {
+	var player PlayerModel
+
+	if err := s.db.Get(&player, "SELECT * FROM Player WHERE player_name = ?", name); err != nil {
+		log.Printf("Error! Cant get player from database: %v\n", err)
+	}
+}
+
+func (s *storage) AddPlayer(player *Player) {
 	s.mu.Lock()
 	if len(s.players) < s.capacity {
 		s.players = append(s.players, player)
@@ -59,7 +76,7 @@ func (s *filestorage) AddPlayer(player *Player) {
 	s.mu.Unlock()
 }
 
-func (s *filestorage) RemovePlayer(playerConn net.Conn) {
+func (s *storage) RemovePlayer(playerConn net.Conn) {
 	removedPlayer := s.playersMap[playerConn]
 	players := make([]*Player, 0, s.capacity)
 
