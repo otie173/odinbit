@@ -1,0 +1,6 @@
+version: "3"
+
+tasks:
+  clear:
+    cmds:
+      - python scripts/clear_repository.py
