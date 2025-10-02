@@ -4,4 +4,3 @@ CREATE TABLE IF NOT EXISTS Player (
   player_x REAL NOT NULL DEFAULT 0.0,
   player_y REAL NOT NULL DEFAULT 0.0
 );
-

@@ -37,6 +37,11 @@ func (d *Dispatcher) Dispatch(conn net.Conn, pktCategory packet.PacketCategory, 
 
 			player := player.NewPlayer(conn, pktStructure.Username, float32(common.WorldSize/2), float32(common.WorldSize)/2)
 			d.playerStorage.AddPlayer(player)
+
+			if _, err := d.playerStorage.LoadPlayer(pktStructure.Username); err != nil {
+				log.Printf("Error! Cant load player %s from database: %v\n", pktStructure.Username, err)
+			}
+
 			log.Printf("Hi, %s!\n", pktStructure.Username)
 		case packet.OpcodePlayerMove:
 			pktStructure := packet.PlayerMove{}

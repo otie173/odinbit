@@ -55,7 +55,7 @@ func main() {
 
 	textures := texture.NewPack()
 	overworld := world.New(textures)
-	playerStorage := player.NewStorage(16)
+	playerStorage := player.NewStorage(db, 16)
 
 	textureHandler := texture.NewHandler(textures)
 	playerRenderer := player.NewRenderer(playerStorage)

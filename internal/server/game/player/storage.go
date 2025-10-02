@@ -18,6 +18,7 @@ type PlayerModel struct {
 type Storage interface {
 	GetPlayer(conn net.Conn) *Player
 	GetPlayers() []*Player
+	LoadPlayer(name string) (*Player, error)
 	AddPlayer(player *Player)
 	RemovePlayer(playerConn net.Conn)
 }
@@ -57,12 +58,25 @@ func (s *storage) GetPlayers() []*Player {
 	return s.players
 }
 
-func (s *storage) LoadPlayer(name string) *Player {
-	var player PlayerModel
+func (s *storage) LoadPlayer(name string) (*Player, error) {
+	var (
+		playerModel PlayerModel
+		player      *Player
+	)
 
-	if err := s.db.Get(&player, "SELECT * FROM Player WHERE player_name = ?", name); err != nil {
-		log.Printf("Error! Cant get player from database: %v\n", err)
+	if err := s.db.Get(&playerModel, `SELECT * FROM Player WHERE player_name = $1`, name); err != nil {
+		return nil, err
 	}
+
+	player = &Player{
+		Id:       playerModel.Id,
+		Name:     playerModel.Name,
+		CurrentX: playerModel.X,
+		CurrentY: playerModel.Y,
+	}
+	log.Printf("Loaded player: %+v", player)
+
+	return player, nil
 }
 
 func (s *storage) AddPlayer(player *Player) {

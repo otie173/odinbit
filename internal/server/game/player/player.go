@@ -5,6 +5,7 @@ import (
 )
 
 type Player struct {
+	Id       int
 	Conn     net.Conn
 	Name     string
 	CurrentX float32
