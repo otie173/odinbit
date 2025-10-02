@@ -1,6 +1,6 @@
 # Script for delete useless files
 # for example file what server created
-# like database.db, players folder and etc
+# like database.db, players directory and etc
 
 import os
 import shutil
