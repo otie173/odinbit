@@ -7,6 +7,7 @@ import (
 	"github.com/otie173/odinbit/internal/client/camera"
 	"github.com/otie173/odinbit/internal/client/common"
 	"github.com/otie173/odinbit/internal/client/device"
+	"github.com/otie173/odinbit/internal/client/inventory"
 	"github.com/otie173/odinbit/internal/client/net"
 	"github.com/otie173/odinbit/internal/client/player"
 	"github.com/otie173/odinbit/internal/client/scene"
@@ -30,7 +31,8 @@ func New(title string, screenWidth, screenHeight int32) *Client {
 	netDispatcher := net.NewDispatcher(textureStorage)
 	netLoader := net.NewLoader()
 	netModule := net.New(netDispatcher, netLoader)
-	sceneHandler := scene.New(screenWidth, screenHeight, common.Title, netModule)
+	inventoryHandler := inventory.NewHandler(inventory.NewInventory())
+	sceneHandler := scene.New(screenWidth, screenHeight, common.Title, netModule, inventoryHandler)
 	deviceHandler := device.New(sceneHandler)
 
 	return &Client{
@@ -45,7 +47,7 @@ func New(title string, screenWidth, screenHeight int32) *Client {
 }
 
 func (c *Client) Load() {
-	rl.SetConfigFlags(rl.FlagVsyncHint | rl.FlagWindowUnfocused)
+	rl.SetConfigFlags(rl.FlagVsyncHint | rl.FlagWindowUnfocused | rl.FlagFullscreenMode)
 	rl.InitWindow(c.screenWidth, c.screenHeight, c.title)
 	rl.SetTargetFPS(int32(rl.GetMonitorRefreshRate(rl.GetCurrentMonitor())))
 	rl.SetExitKey(0)
@@ -53,6 +55,10 @@ func (c *Client) Load() {
 	world.Overworld.Textures = c.textureStorage
 	scene.BkgTexture = rl.LoadTexture("resources/backgrounds/background1.png")
 	texture.PlayerTexture = rl.LoadTexture("resources/textures/player.png")
+	texture.WoodMaterial = rl.LoadTexture("resources/textures/wood_material.png")
+	texture.StoneMaterial = rl.LoadTexture("resources/textures/stone_material.png")
+	texture.MetalMaterial = rl.LoadTexture("resources/textures/metal_material.png")
+	scene.SlotTexture = rl.LoadTexture("resources/ui/icons/slot.png")
 	c.ticker = ticker.New(10)
 
 	go func() {

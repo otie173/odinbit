@@ -1,6 +1,7 @@
 package scene
 
 import (
+	"fmt"
 	"image/color"
 	"log"
 	"math"
@@ -11,8 +12,10 @@ import (
 	"github.com/kelindar/binary"
 	"github.com/otie173/odinbit/internal/client/camera"
 	"github.com/otie173/odinbit/internal/client/common"
+	"github.com/otie173/odinbit/internal/client/inventory"
 	"github.com/otie173/odinbit/internal/client/net"
 	"github.com/otie173/odinbit/internal/client/player"
+	"github.com/otie173/odinbit/internal/client/texture"
 	"github.com/otie173/odinbit/internal/client/world"
 	"github.com/otie173/odinbit/internal/protocol/packet"
 	"github.com/vmihailenco/msgpack/v5"
@@ -22,6 +25,9 @@ var (
 	bkgColor         = color.RGBA{34, 35, 35, 255}
 	transparentColor = color.RGBA{34, 34, 35, 200}
 	BkgTexture       rl.Texture2D
+	SlotTexture      rl.Texture2D
+	CurrentPage      int = 1
+	MaxPage          int = 2
 
 	selectedMode int = 1
 
@@ -41,14 +47,16 @@ const (
 )
 
 type Handler struct {
-	screenWidth  int32
-	screenHeight int32
-	currentScene common.Scene
-	netModule    *net.Module
-	uiScale      float32
+	screenWidth      int32
+	screenHeight     int32
+	currentScene     common.Scene
+	InventoryOpen    bool
+	netModule        *net.Module
+	uiScale          float32
+	inventoryHandler *inventory.Handler
 }
 
-func New(screenWidth, screenHeight int32, scene common.Scene, netModule *net.Module) *Handler {
+func New(screenWidth, screenHeight int32, scene common.Scene, netModule *net.Module, inventoryHandler *inventory.Handler) *Handler {
 	scaleX := float32(screenWidth) / float32(common.BaseRenderWidth)
 	scaleY := float32(screenHeight) / float32(common.BaseRenderHeight)
 	uiScale := float32(math.Min(float64(scaleX), float64(scaleY)))
@@ -56,11 +64,12 @@ func New(screenWidth, screenHeight int32, scene common.Scene, netModule *net.Mod
 		uiScale = 1
 	}
 	return &Handler{
-		screenWidth:  screenWidth,
-		screenHeight: screenHeight,
-		currentScene: scene,
-		netModule:    netModule,
-		uiScale:      uiScale,
+		screenWidth:      screenWidth,
+		screenHeight:     screenHeight,
+		currentScene:     scene,
+		netModule:        netModule,
+		uiScale:          uiScale,
+		inventoryHandler: inventoryHandler,
 	}
 }
 
@@ -250,6 +259,81 @@ func (h *Handler) Handle() {
 			player.DrawNetworkPlayers()
 		}
 		rl.EndMode2D()
+
+		// рисовка инвентаря с ячейками
+		if h.InventoryOpen {
+			panelWidth := h.scale(550)
+			panelHeight := h.scale(500)
+			panelX := float32(h.screenWidth)/2 - panelWidth/2
+			panelY := float32(h.screenHeight)/2 - panelHeight/2
+
+			rl.DrawRectangle(roundToInt32(panelX), roundToInt32(panelY), sizeToInt32(panelWidth), sizeToInt32(panelHeight), transparentColor)
+			raygui.GroupBox(rl.NewRectangle(panelX, panelY, panelWidth, panelHeight), "Blocks")
+
+			slotScale := float32(7.0)
+			slot1Pos := rl.NewVector2(float32(h.screenWidth)/2-210, float32(h.screenHeight)/2-170)
+			slot2Pos := rl.NewVector2(slot1Pos.X+155, slot1Pos.Y)
+			slot3Pos := rl.NewVector2(slot2Pos.X+155, slot1Pos.Y)
+			slot4Pos := rl.NewVector2(slot1Pos.X, slot1Pos.Y+155)
+			slot5Pos := rl.NewVector2(slot2Pos.X, slot4Pos.Y)
+			slot6Pos := rl.NewVector2(slot3Pos.X, slot4Pos.Y)
+
+			rl.DrawTextureEx(SlotTexture, slot1Pos, 0, slotScale, rl.White)
+			rl.DrawTextureEx(SlotTexture, slot2Pos, 0, slotScale, rl.White)
+			rl.DrawTextureEx(SlotTexture, slot3Pos, 0, slotScale, rl.White)
+			rl.DrawTextureEx(SlotTexture, slot4Pos, 0, slotScale, rl.White)
+			rl.DrawTextureEx(SlotTexture, slot5Pos, 0, slotScale, rl.White)
+			rl.DrawTextureEx(SlotTexture, slot6Pos, 0, slotScale, rl.White)
+
+			pageString := fmt.Sprintf("Page: %d/%d", CurrentPage, MaxPage)
+			pageStringSize := rl.MeasureTextEx(raygui.GetFont(), pageString, 30, 2)
+			pageStringPos := rl.NewVector2((float32(h.screenWidth)-float32(pageStringSize.X))/2, 700)
+			pageStringRec := rl.NewRectangle(pageStringPos.X, pageStringPos.Y, pageStringSize.X, pageStringSize.Y)
+			raygui.Label(pageStringRec, pageString)
+		}
+
+		// ободок там где предметы
+		rl.DrawRectangleV(rl.NewVector2(0, 0), rl.NewVector2(295, 225), transparentColor)
+		rl.DrawRectangleLinesEx(rl.NewRectangle(0, 0, 295, 225), 5, rl.White)
+
+		textureScale := float32(5)
+		texturePos := rl.NewVector2(15, 15)
+		rl.DrawTextureEx(texture.WoodMaterial, texturePos, 0, textureScale, rl.White)
+
+		texturePos = rl.NewVector2(15, 75)
+		rl.DrawTextureEx(texture.StoneMaterial, texturePos, 0, textureScale, rl.White)
+
+		texturePos = rl.NewVector2(15, 120)
+		rl.DrawTextureEx(texture.MetalMaterial, texturePos, 0, textureScale, rl.White)
+
+		textContent := fmt.Sprintf("X: %.0f Y: %.0f", player.GamePlayer.CurrentX, player.GamePlayer.CurrentY)
+		textPos := rl.NewVector2(25, 185)
+		textFont := raygui.GetFont()
+		rl.DrawTextEx(textFont, textContent, textPos, 24, 2, rl.White)
+
+		/*
+			textFont := raygui.GetFont()
+			// надпись материала
+			textContent := fmt.Sprintf("Material: %s", common.MaterialMap[h.inventoryHandler.GetMaterial()])
+			textPos := rl.NewVector2(10, 5)
+			rl.DrawTextEx(textFont, textContent, textPos, 32, 2, rl.White)
+
+			// надпись дерева
+			textContent = fmt.Sprintf("Wood: ")
+			textPos = rl.NewVector2(10, 45)
+			rl.DrawTextEx(textFont, textContent, textPos, 32, 2, rl.White)
+
+			// надпись камня
+			textContent = fmt.Sprintf("Stone: ")
+			textPos = rl.NewVector2(10, 85)
+			rl.DrawTextEx(textFont, textContent, textPos, 32, 2, rl.White)
+
+			// надпись металла
+			textContent = fmt.Sprintf("Metal: ")
+			textPos = rl.NewVector2(10, 125)
+			rl.DrawTextEx(textFont, textContent, textPos, 32, 2, rl.White)
+		*/
+
 		rl.EndDrawing()
 	case common.ConnClosed:
 		rl.BeginDrawing()

@@ -4,6 +4,7 @@ import (
 	//"math"
 
 	//"log"
+	"log"
 	"math"
 	"sync/atomic"
 
@@ -93,4 +94,15 @@ func (h *Handler) Handle() {
 	// 	}
 	// }
 	//}
+
+	if rl.IsKeyPressed(rl.KeyE) && h.sceneHandler.GetScene() == common.Game {
+		switch h.sceneHandler.InventoryOpen {
+		case false:
+			h.sceneHandler.InventoryOpen = true
+		case true:
+			h.sceneHandler.InventoryOpen = false
+		}
+
+		log.Printf("Состояние инвентаря теперь: %t\n", h.sceneHandler.InventoryOpen)
+	}
 }

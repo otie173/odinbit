@@ -9,6 +9,9 @@ import (
 
 var (
 	PlayerTexture rl.Texture2D
+	WoodMaterial  rl.Texture2D
+	StoneMaterial rl.Texture2D
+	MetalMaterial rl.Texture2D
 )
 
 type Storage struct {

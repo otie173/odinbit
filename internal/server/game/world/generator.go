@@ -9,12 +9,13 @@ import (
 )
 
 const (
-	grassMultiplier     float32 = 50
-	tallGrassMultiplier float32 = 3
-	treeMultiplier      float32 = 20
-	deadTreeMultiplier  float32 = 1
-	stoneMultiplier     float32 = 5
-	mushroomMultiplier  float32 = 2
+	grassMultiplier     float32 = 0.185
+	tallGrassMultiplier float32 = 0.015
+	treeMultiplier      float32 = 0.025
+	deadTreeMultiplier  float32 = 0.0025
+	stoneMultiplier     float32 = 0.008
+	mushroomMultiplier  float32 = 0.0025
+	flowerMultiplier    float32 = 0.02
 )
 
 type generator struct {
@@ -46,9 +47,10 @@ func (g *generator) generateBarrier() {
 }
 
 func (g *generator) generateResource(name string, multiplier float32, passable uint8, textures ...int) {
-	count := float32(common.WorldSize) * multiplier
+	worldSize := common.WorldSize * common.WorldSize
+	resourceCount := float32(worldSize) * multiplier
 
-	for i := 0; i <= int(count); i++ {
+	for i := 0; i <= int(resourceCount); i++ {
 		var textureIndex int
 		var textureName string
 
@@ -89,6 +91,7 @@ func (g *generator) generateWorld() {
 	g.generateResource("tree", deadTreeMultiplier, 0, 2, 3)
 	g.generateResource("stone", stoneMultiplier, 0, 1, 2)
 	g.generateResource("mushroom", mushroomMultiplier, 0, 1, 2)
+	g.generateResource("flower", flowerMultiplier, 0, 1, 2)
 
 	// houseSchema := [][]string{
 	// 	{"wall", "wall", "wall", "wall", "wall"},
