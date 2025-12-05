@@ -22,6 +22,21 @@ func (i *Inventory) getMaterial() common.Material {
 	return i.currentMaterial
 }
 
+func (i *Inventory) getMaterialCount(material common.Material) int {
+	var count int = 0
+
+	switch material {
+	case common.Wood:
+		count = i.WoodCount
+	case common.Stone:
+		count = i.StoneCount
+	case common.Metal:
+		count = i.MetalCount
+	}
+
+	return count
+}
+
 func (i *Inventory) setMaterial(material common.Material) {
 	i.currentMaterial = material
 }

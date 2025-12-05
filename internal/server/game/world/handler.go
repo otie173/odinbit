@@ -9,19 +9,19 @@ import (
 	"github.com/otie173/odinbit/internal/server/game/player"
 )
 
-type Renderer struct {
+type Handler struct {
 	World   *World
 	players player.Storage
 }
 
-func NewRenderer(world *World, players player.Storage) *Renderer {
-	return &Renderer{
+func NewHandler(world *World, players player.Storage) *Handler {
+	return &Handler{
 		World:   world,
 		players: players,
 	}
 }
 
-func (r *Renderer) compressPacket(binaryPacket []byte) ([]byte, error) {
+func (r *Handler) compressPacket(binaryPacket []byte) ([]byte, error) {
 	compressedData, err := minlz.Encode(nil, binaryPacket, minlz.LevelSmallest)
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (r *Renderer) compressPacket(binaryPacket []byte) ([]byte, error) {
 	return compressedData, nil
 }
 
-func (r *Renderer) Render() {
+func (r *Handler) Handle() {
 	players := r.players.GetPlayers()
 	if len(players) > 0 {
 		for _, player := range players {

@@ -11,17 +11,20 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	//"github.com/otie173/odinbit/internal/client/camera"
 	"github.com/otie173/odinbit/internal/client/common"
+	"github.com/otie173/odinbit/internal/client/net"
 	"github.com/otie173/odinbit/internal/client/player"
 	"github.com/otie173/odinbit/internal/client/scene"
 )
 
 type Handler struct {
 	sceneHandler *scene.Handler
+	netModule    *net.Module
 }
 
-func New(sceneHandler *scene.Handler) *Handler {
+func New(sceneHandler *scene.Handler, netModule *net.Module) *Handler {
 	return &Handler{
 		sceneHandler: sceneHandler,
+		netModule:    netModule,
 	}
 }
 
@@ -51,7 +54,7 @@ func (h *Handler) Handle() {
 		moveY /= lenght
 	}
 
-	speed := 4.25 * rl.GetFrameTime()
+	speed := 4.5 * rl.GetFrameTime()
 	player.PlayerMu.Lock()
 	newX := player.GamePlayer.CurrentX + moveX*speed
 	newY := player.GamePlayer.CurrentY + moveY*speed
@@ -104,5 +107,10 @@ func (h *Handler) Handle() {
 		}
 
 		log.Printf("Состояние инвентаря теперь: %t\n", h.sceneHandler.InventoryOpen)
+	}
+
+	if rl.IsKeyPressed(rl.KeyEscape) && h.sceneHandler.GetScene() == common.Game {
+		h.netModule.Disconnect()
+		h.sceneHandler.SetScene(common.Title)
 	}
 }

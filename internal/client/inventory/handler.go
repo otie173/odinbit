@@ -16,6 +16,10 @@ func (h *Handler) GetMaterial() common.Material {
 	return h.inventory.getMaterial()
 }
 
+func (h *Handler) GetMaterialCount(material common.Material) int {
+	return h.inventory.getMaterialCount(material)
+}
+
 func (h *Handler) SetMaterial(material common.Material) {
 	h.inventory.setMaterial(material)
 }

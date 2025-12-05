@@ -9,17 +9,17 @@ import (
 	"github.com/otie173/odinbit/internal/protocol/packet"
 )
 
-type Renderer struct {
+type Handler struct {
 	storage Storage
 }
 
-func NewRenderer(storage Storage) *Renderer {
-	return &Renderer{
+func NewHandler(storage Storage) *Handler {
+	return &Handler{
 		storage: storage,
 	}
 }
 
-func (r *Renderer) compressPacket(binaryPacket []byte) ([]byte, error) {
+func (h *Handler) compressPacket(binaryPacket []byte) ([]byte, error) {
 	compressedData, err := minlz.Encode(nil, binaryPacket, minlz.LevelSmallest)
 	if err != nil {
 		return nil, err
@@ -27,8 +27,8 @@ func (r *Renderer) compressPacket(binaryPacket []byte) ([]byte, error) {
 	return compressedData, nil
 }
 
-func (r *Renderer) Render() {
-	players := r.storage.GetPlayers()
+func (h *Handler) Handle() {
+	players := h.storage.GetPlayers()
 
 	for _, currentPlayer := range players {
 		renderPlayers := make([]cplayer.Player, 0, len(players)-1)
@@ -69,7 +69,7 @@ func (r *Renderer) Render() {
 			log.Printf("Error! Cant marshal player update packet to binary format: %v\n", err)
 		}
 
-		compressedPkt, err := r.compressPacket(binaryPkt)
+		compressedPkt, err := h.compressPacket(binaryPkt)
 		if err != nil {
 			log.Printf("Error! Cant compress player update binary packet: %v\n", err)
 		}

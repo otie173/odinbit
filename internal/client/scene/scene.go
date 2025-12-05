@@ -292,23 +292,45 @@ func (h *Handler) Handle() {
 			raygui.Label(pageStringRec, pageString)
 		}
 
+		recWidth := float32(0)
+		playerX := player.GamePlayer.CurrentX
+		playerY := player.GamePlayer.CurrentY
+
+		if playerX >= 1000 && playerY >= 1000 {
+			recWidth = 295
+		} else {
+			recWidth = 275
+		}
+
 		// ободок там где предметы
-		rl.DrawRectangleV(rl.NewVector2(0, 0), rl.NewVector2(295, 225), transparentColor)
-		rl.DrawRectangleLinesEx(rl.NewRectangle(0, 0, 295, 225), 5, rl.White)
+		rl.DrawRectangleV(rl.NewVector2(0, 0), rl.NewVector2(recWidth, 225), transparentColor)
+		rl.DrawRectangleLinesEx(rl.NewRectangle(0, 0, recWidth, 225), 5, rl.White)
 
 		textureScale := float32(5)
 		texturePos := rl.NewVector2(15, 15)
 		rl.DrawTextureEx(texture.WoodMaterial, texturePos, 0, textureScale, rl.White)
+		materialCount := h.inventoryHandler.GetMaterialCount(common.Wood)
+		countText := fmt.Sprintf("%d", materialCount)
+		countPos := rl.NewVector2(90, 30)
+		textFont := raygui.GetFont()
+		rl.DrawTextEx(textFont, countText, countPos, 25, 2, rl.White)
 
 		texturePos = rl.NewVector2(15, 75)
 		rl.DrawTextureEx(texture.StoneMaterial, texturePos, 0, textureScale, rl.White)
+		materialCount = h.inventoryHandler.GetMaterialCount(common.Stone)
+		countText = fmt.Sprintf("%d", materialCount)
+		countPos = rl.NewVector2(90, 90)
+		rl.DrawTextEx(textFont, countText, countPos, 25, 2, rl.White)
 
 		texturePos = rl.NewVector2(15, 120)
 		rl.DrawTextureEx(texture.MetalMaterial, texturePos, 0, textureScale, rl.White)
+		materialCount = h.inventoryHandler.GetMaterialCount(common.Metal)
+		countText = fmt.Sprintf("%d", materialCount)
+		countPos = rl.NewVector2(90, 140)
+		rl.DrawTextEx(textFont, countText, countPos, 25, 2, rl.White)
 
-		textContent := fmt.Sprintf("X: %.0f Y: %.0f", player.GamePlayer.CurrentX, player.GamePlayer.CurrentY)
+		textContent := fmt.Sprintf("X: %.0f Y: %.0f", playerX, playerY)
 		textPos := rl.NewVector2(25, 185)
-		textFont := raygui.GetFont()
 		rl.DrawTextEx(textFont, textContent, textPos, 24, 2, rl.White)
 
 		/*

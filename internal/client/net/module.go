@@ -31,6 +31,7 @@ func (m *Module) Run() {
 		time.Sleep(100 * time.Millisecond)
 	}
 
+	log.Println(m.connection, m.connected, m.ready)
 	if !m.ready {
 		m.ready = true
 	}
@@ -101,7 +102,9 @@ func (m *Module) Connect(address string) error {
 }
 
 func (m *Module) Disconnect() {
-
+	m.connection.Close()
+	m.connected = false
+	m.ready = false
 }
 
 func decompressPacket(compressedPkt []byte) ([]byte, error) {
