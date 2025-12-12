@@ -76,10 +76,6 @@ func (c *Client) update() {
 	c.deviceHandler.Handle()
 	camera.UpdateCamera()
 
-	//if c.netModule.IsConnected() && !c.netModule.IsRunning() {
-	//		go c.netModule.Run()
-	//}
-
 	if c.sceneHandler.GetScene() == common.Connect && c.netModule.IsReady() {
 		c.sceneHandler.SetScene(common.Game)
 		log.Println("Поставил сцену на Game")
@@ -89,7 +85,6 @@ func (c *Client) update() {
 func (c *Client) Run() {
 	defer rl.CloseWindow()
 
-	//go c.netModule.Run()
 	for !rl.WindowShouldClose() {
 		c.update()
 	}

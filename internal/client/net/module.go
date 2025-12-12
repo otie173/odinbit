@@ -41,7 +41,9 @@ func (m *Module) Run() {
 
 	if err := m.listen(); err != nil {
 		log.Printf("Error with read buffer from server: %v\n", err)
-		m.connection.Close()
+		if m.connection != nil {
+			m.connection.Close()
+		}
 		m.connected = false
 	} else {
 		m.running = true
