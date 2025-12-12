@@ -12,6 +12,7 @@ import (
 )
 
 type Module struct {
+	running    bool
 	connection net.Conn
 	connected  bool
 	ready      bool
@@ -28,14 +29,27 @@ func New(dispatcher *Dispatcher, loader *Loader) *Module {
 
 func (m *Module) Run() {
 	for m.connection == nil && !m.connected {
+		log.Println(m.connection, m.connected, m.ready)
 		time.Sleep(100 * time.Millisecond)
 	}
 
 	log.Println(m.connection, m.connected, m.ready)
 	if !m.ready {
 		m.ready = true
+		log.Println("Поставил на Ready")
 	}
-	m.listen()
+
+	if err := m.listen(); err != nil {
+		log.Printf("Error with read buffer from server: %v\n", err)
+		m.connection.Close()
+		m.connected = false
+	} else {
+		m.running = true
+	}
+}
+
+func (m *Module) IsRunning() bool {
+	return m.running
 }
 
 func (m *Module) UpdateServerPos() {
@@ -97,12 +111,15 @@ func (m *Module) Connect(address string) error {
 
 	m.connection = conn
 	m.connected = true
+	go m.Run()
 	log.Println(m.connection, m.connected)
 	return nil
 }
 
 func (m *Module) Disconnect() {
+	m.running = false
 	m.connection.Close()
+	m.connection = nil
 	m.connected = false
 	m.ready = false
 }
@@ -119,15 +136,12 @@ func (m *Module) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory, pkt
 	m.dispatcher.Dispatch(conn, pktCategory, pktOpcode, data)
 }
 
-func (m *Module) listen() {
+func (m *Module) listen() error {
 	buffer := make([]byte, 1024*1024) // 1MB buffer
 	for m.connected && m.connection != nil {
 		n, err := m.connection.Read(buffer)
 		if err != nil {
-			log.Printf("Error with read buffer from server: %v\n", err)
-			m.connection.Close()
-			m.connected = false
-			return
+			return err
 		}
 
 		compressedPkt, err := decompressPacket(buffer[:n])
@@ -141,6 +155,7 @@ func (m *Module) listen() {
 		}
 		m.dispatcher.Dispatch(&m.connection, pkt.Category, pkt.Opcode, pkt.Payload)
 	}
+	return nil
 }
 
 func (m *Module) SendData(data []byte) error {
