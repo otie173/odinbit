@@ -9,23 +9,39 @@ import (
 	"github.com/otie173/odinbit/internal/server/common"
 	"github.com/otie173/odinbit/internal/server/game/player"
 	"github.com/otie173/odinbit/internal/server/game/texture"
+	"github.com/otie173/odinbit/internal/server/game/world"
 )
 
 type Dispatcher struct {
 	playerStorage  player.Storage
 	textureHandler *texture.Handler
+	world          *world.World
 }
 
-func NewDispatcher(playerStorage player.Storage, textureHandler *texture.Handler) *Dispatcher {
+func NewDispatcher(playerStorage player.Storage, textureHandler *texture.Handler, world *world.World) *Dispatcher {
 	return &Dispatcher{
 		playerStorage:  playerStorage,
 		textureHandler: textureHandler,
+		world:          world,
 	}
 }
 
 func (d *Dispatcher) Dispatch(conn net.Conn, pktCategory packet.PacketCategory, pktOpcode packet.PacketOpcode, pktData []byte) {
 	switch pktCategory {
 	case packet.CategoryWorld:
+		switch pktOpcode {
+		case packet.OpcodeWorldSetBlock:
+			pktStructure := packet.WorldSetBlock{}
+
+			if err := binary.Unmarshal(pktData, &pktStructure); err != nil {
+				log.Printf("Error! Cant unmarshal world set material data: %v\n", err)
+			}
+
+			d.world.AddBlock(uint8(pktStructure.BlockID), 0, int16(pktStructure.X), int16(pktStructure.Y))
+			log.Printf("Игрок поставил материал %d на %d %d\n", pktStructure.BlockID, pktStructure.X, pktStructure.Y)
+		default:
+			log.Println("Неизвестный опкод")
+		}
 	case packet.CategoryPlayer:
 		switch pktOpcode {
 		case packet.OpcodePlayerHandshake:
