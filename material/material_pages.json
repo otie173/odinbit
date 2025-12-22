@@ -1,12 +1,15 @@
 {
   "materials": {
     "wood": {
-      "pages": [{ "page": 1, "blocks": [house] }]
+      "max_page": 1,
+      "pages": [{ "page": 1, "blocks": [ "house" ] }]
     },
     "stone": {
+      "max_page": 1,
       "pages": [{ "page": 1, "blocks": [] }]
     },
     "metal": {
+      "max_page": 1,
       "pages": [{ "page": 1, "blocks": [] }]
     }
   }
