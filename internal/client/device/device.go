@@ -9,22 +9,33 @@ import (
 	"sync/atomic"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/kelindar/binary"
+
 	//"github.com/otie173/odinbit/internal/client/camera"
+	"github.com/otie173/odinbit/internal/client/camera"
 	"github.com/otie173/odinbit/internal/client/common"
+	"github.com/otie173/odinbit/internal/client/inventory"
 	"github.com/otie173/odinbit/internal/client/net"
+	"github.com/otie173/odinbit/internal/client/net/compress"
 	"github.com/otie173/odinbit/internal/client/player"
 	"github.com/otie173/odinbit/internal/client/scene"
+	"github.com/otie173/odinbit/internal/client/texture"
+	"github.com/otie173/odinbit/internal/protocol/packet"
 )
 
 type Handler struct {
-	sceneHandler *scene.Handler
-	netModule    *net.Module
+	sceneHandler     *scene.Handler
+	netModule        *net.Module
+	inventoryHandler *inventory.Handler
+	textureStorage   *texture.Storage
 }
 
-func New(sceneHandler *scene.Handler, netModule *net.Module) *Handler {
+func New(sceneHandler *scene.Handler, netModule *net.Module, inventoryHandler *inventory.Handler, textureStorage *texture.Storage) *Handler {
 	return &Handler{
-		sceneHandler: sceneHandler,
-		netModule:    netModule,
+		sceneHandler:     sceneHandler,
+		netModule:        netModule,
+		inventoryHandler: inventoryHandler,
+		textureStorage:   textureStorage,
 	}
 }
 
@@ -112,5 +123,75 @@ func (h *Handler) Handle() {
 	if rl.IsKeyPressed(rl.KeyEscape) && h.sceneHandler.GetScene() == common.Game {
 		h.netModule.Disconnect()
 		h.sceneHandler.SetScene(common.Title)
+	}
+
+	// Логика с материалами
+	if h.sceneHandler.GetScene() == common.Game {
+		if rl.IsKeyPressed(rl.KeyOne) {
+			h.inventoryHandler.SetMaterial(common.Wood)
+			log.Println("Теперь материал Wood")
+		}
+		if rl.IsKeyPressed(rl.KeyTwo) {
+			h.inventoryHandler.SetMaterial(common.Stone)
+			log.Println("Теперь материал Stone")
+		}
+		if rl.IsKeyPressed(rl.KeyThree) {
+			h.inventoryHandler.SetMaterial(common.Metal)
+			log.Println("Теперь материал Metal")
+		}
+
+		if rl.IsMouseButtonPressed(rl.MouseButtonRight) && h.inventoryHandler.GetMaterial() != -1 {
+			mousePos := rl.GetScreenToWorld2D(rl.GetMousePosition(), camera.Camera)
+			mouseX := int(math.Floor(float64(mousePos.X / common.TileSize)))
+			mouseY := int(math.Floor(float64(mousePos.Y / common.TileSize)))
+			if mouseX > -(common.WorldSize) && mouseX < common.WorldSize &&
+				mouseY > -(common.WorldSize) && mouseY < common.WorldSize {
+				log.Printf("Блок будет поставлен на %d %d\n", mouseX, mouseY)
+
+				material := h.inventoryHandler.GetMaterial()
+				materialID := -1
+
+				switch material {
+				case common.Wood:
+					materialID = int(h.textureStorage.GetIdByName("wood_material"))
+				case common.Stone:
+					materialID = int(h.textureStorage.GetIdByName("stone_material"))
+				case common.Metal:
+					materialID = int(h.textureStorage.GetIdByName("metal_material"))
+				}
+				log.Println(materialID)
+
+				pktStructure := packet.WorldSetBlock{
+					BlockID: materialID,
+					X:       mouseX,
+					Y:       mouseY,
+				}
+
+				binaryStructure, err := binary.Marshal(&pktStructure)
+				if err != nil {
+					log.Printf("Error! Cant marshal world set block structure: %v\n", err)
+				}
+
+				pkt := packet.Packet{
+					Category: packet.CategoryWorld,
+					Opcode:   packet.OpcodeWorldSetBlock,
+					Payload:  binaryStructure,
+				}
+
+				data, err := binary.Marshal(&pkt)
+				if err != nil {
+					log.Printf("Error! Cant marshal world set block packet: %v\n", err)
+				}
+
+				compressedPkt, err := compress.CompressPkt(data)
+				if err != nil {
+					log.Printf("Error! Cant compress binary world set block packet: %v\n", err)
+				}
+
+				if err := h.netModule.SendData(compressedPkt); err != nil {
+					log.Printf("Error! Cant write world set block packet data to server: %v\n", err)
+				}
+			}
+		}
 	}
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/kelindar/binary"
 	"github.com/minio/minlz"
+	"github.com/otie173/odinbit/internal/client/net/compress"
 	"github.com/otie173/odinbit/internal/client/player"
 	"github.com/otie173/odinbit/internal/protocol/packet"
 )
@@ -36,7 +37,6 @@ func (m *Module) Run() {
 	log.Println(m.connection, m.connected, m.ready)
 	if !m.ready {
 		m.ready = true
-		log.Println("Поставил на Ready")
 	}
 
 	if err := m.listen(); err != nil {
@@ -79,7 +79,7 @@ func (m *Module) UpdateServerPos() {
 		log.Printf("Error! Cant marshal player move packet: %v\n", err)
 	}
 
-	compressedPkt, err := CompressPkt(data)
+	compressedPkt, err := compress.CompressPkt(data)
 	if err != nil {
 		log.Printf("Error! Cant compress binary player move packet: %v\n", err)
 	}

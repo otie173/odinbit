@@ -14,6 +14,7 @@ import (
 	"github.com/otie173/odinbit/internal/client/common"
 	"github.com/otie173/odinbit/internal/client/inventory"
 	"github.com/otie173/odinbit/internal/client/net"
+	"github.com/otie173/odinbit/internal/client/net/compress"
 	"github.com/otie173/odinbit/internal/client/player"
 	"github.com/otie173/odinbit/internal/client/texture"
 	"github.com/otie173/odinbit/internal/client/world"
@@ -218,7 +219,7 @@ func (h *Handler) Handle() {
 							log.Printf("Error! Cant marshal player handshake packet: %v\n", err)
 						}
 
-						compressedPkt, err := net.CompressPkt(data)
+						compressedPkt, err := compress.CompressPkt(data)
 						if err != nil {
 							log.Printf("Error! Cant compress player handshake packet: %v\n", err)
 						}
@@ -315,7 +316,7 @@ func (h *Handler) Handle() {
 		textFont := raygui.GetFont()
 		rl.DrawTextEx(textFont, countText, countPos, 25, 2, rl.White)
 
-		texturePos = rl.NewVector2(15, 75)
+		texturePos = rl.NewVector2(15, 70)
 		rl.DrawTextureEx(texture.StoneMaterial, texturePos, 0, textureScale, rl.White)
 		materialCount = h.inventoryHandler.GetMaterialCount(common.Stone)
 		countText = fmt.Sprintf("%d", materialCount)

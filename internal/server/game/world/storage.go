@@ -1,15 +1,16 @@
 package world
 
 import (
+	"log"
 	"math"
 
 	"github.com/kelindar/binary"
-	"github.com/otie173/odinbit/internal/server/common"
+	scommon "github.com/otie173/odinbit/internal/server/common"
 	"github.com/vmihailenco/msgpack/v5"
 )
 
 type storage struct {
-	blocks [common.WorldSize][common.WorldSize]Block
+	blocks [scommon.WorldSize][scommon.WorldSize]Block
 }
 
 func newStorage() *storage {
@@ -18,7 +19,10 @@ func newStorage() *storage {
 
 func (s *storage) addBlock(id uint8, passable uint8, x, y int16) {
 	block := Block{TextureID: id, Passable: passable}
-	s.blocks[x][y] = block
+	if s.blocks[x][y].TextureID == 0 || s.blocks[x][y].Passable == 1 {
+		log.Println("Блока нет, поставил материал")
+		s.blocks[x][y] = block
+	}
 }
 
 func (s *storage) removeBlock(x, y int16) {
@@ -35,7 +39,7 @@ func (s *storage) getWorld() ([]byte, error) {
 }
 
 func computeAreaBounds(coord float32) (start, end int) {
-	radius := float64(common.ViewRadius)
+	radius := float64(scommon.ViewRadius)
 	start = int(math.Floor(float64(coord) - radius))
 	end = int(math.Ceil(float64(coord) + radius))
 
@@ -50,30 +54,30 @@ func computeAreaBounds(coord float32) (start, end int) {
 		start = 0
 	}
 
-	if end > common.WorldSize {
-		shift := end - common.WorldSize
-		end = common.WorldSize
+	if end > scommon.WorldSize {
+		shift := end - scommon.WorldSize
+		end = scommon.WorldSize
 		start -= shift
 		if start < 0 {
 			start = 0
 		}
 	}
 
-	if end > common.WorldSize {
-		end = common.WorldSize
+	if end > scommon.WorldSize {
+		end = scommon.WorldSize
 	}
 
 	if end <= start {
 		end = start + 1
-		if end > common.WorldSize {
-			end = common.WorldSize
+		if end > scommon.WorldSize {
+			end = scommon.WorldSize
 		}
 	}
 
 	return start, end
 }
 
-func (s *storage) getWorldArea(x, y float32) ([]byte, common.AreaPositions, error) {
+func (s *storage) getWorldArea(x, y float32) ([]byte, scommon.AreaPositions, error) {
 	startX, endX := computeAreaBounds(x)
 	startY, endY := computeAreaBounds(y)
 
@@ -90,8 +94,8 @@ func (s *storage) getWorldArea(x, y float32) ([]byte, common.AreaPositions, erro
 
 	data, err := binary.Marshal(&blocks)
 	if err != nil {
-		return nil, common.AreaPositions{}, err
+		return nil, scommon.AreaPositions{}, err
 	}
 
-	return data, common.AreaPositions{StartX: startX, StartY: startY, EndX: endX, EndY: endY}, nil
+	return data, scommon.AreaPositions{StartX: startX, StartY: startY, EndX: endX, EndY: endY}, nil
 }

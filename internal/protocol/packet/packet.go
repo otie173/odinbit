@@ -14,6 +14,7 @@ const (
 	CategoryTexture PacketCategory = iota
 	CategoryWorld
 	CategoryPlayer
+	CategoryMob
 	CategoryInventory
 )
 
@@ -25,6 +26,7 @@ const (
 // Enum for world opcodes
 const (
 	OpcodeWorldUpdate PacketOpcode = 2000 + iota
+	OpcodeWorldSetMaterial
 	OpcodeWorldSetBlock
 )
 
@@ -34,4 +36,12 @@ const (
 	OpcodePlayerMove
 	OpcodePlayerUpdate
 	OpcodePlayerDisconnect
+)
+
+// Enum for mob opcode
+const (
+// OpcodePlayerHandshake PacketOpcode = 4000 + iota
+// OpcodePlayerMove
+// OpcodePlayerUpdate
+// OpcodePlayerDisconnect
 )

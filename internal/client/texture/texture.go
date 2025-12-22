@@ -40,3 +40,7 @@ func (s *Storage) LoadTexture(id uint8, path string) {
 func (s *Storage) GetById(blockId uint8) rl.Texture2D {
 	return s.id[blockId]
 }
+
+func (s *Storage) GetIdByName(blockName string) uint8 {
+	return s.texture[blockName]
+}

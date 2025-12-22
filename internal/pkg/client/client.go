@@ -1,7 +1,6 @@
 package client
 
 import (
-	"log"
 	"sync/atomic"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -34,7 +33,7 @@ func New(title string, screenWidth, screenHeight int32) *Client {
 	netModule := net.New(netDispatcher, netLoader)
 	inventoryHandler := inventory.NewHandler(inventory.NewInventory())
 	sceneHandler := scene.New(screenWidth, screenHeight, common.Title, netModule, inventoryHandler)
-	deviceHandler := device.New(sceneHandler, netModule)
+	deviceHandler := device.New(sceneHandler, netModule, inventoryHandler, textureStorage)
 
 	return &Client{
 		title:          title,
@@ -78,7 +77,6 @@ func (c *Client) update() {
 
 	if c.sceneHandler.GetScene() == common.Connect && c.netModule.IsReady() {
 		c.sceneHandler.SetScene(common.Game)
-		log.Println("Поставил сцену на Game")
 	}
 }
 

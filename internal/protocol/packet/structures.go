@@ -26,3 +26,9 @@ type PlayerMove struct {
 type PlayerUpdate struct {
 	Players []byte
 }
+
+type WorldSetBlock struct {
+	BlockID int
+	X       int
+	Y       int
+}

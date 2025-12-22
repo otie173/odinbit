@@ -1,0 +1,16 @@
+{
+  "materials": {
+    "wood": {
+      "pages": [
+        { "page": 1, "blocks": [101, 102, 103] },
+        { "page": 2, "blocks": [104, 105] }
+      ]
+    },
+    "stone": {
+      "pages": [{ "page": 1, "blocks": [201, 202, 203, 204] }]
+    },
+    "metal": {
+      "pages": [{ "page": 1, "blocks": [301, 305] }]
+    }
+  }
+}

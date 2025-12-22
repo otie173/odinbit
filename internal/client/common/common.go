@@ -26,8 +26,10 @@ const (
 )
 
 const (
-	ScreenWidth      int32 = 1920
-	ScreenHeight     int32 = 1080
-	BaseRenderWidth  int32 = 1920
-	BaseRenderHeight int32 = 1080
+	TileSize         float32 = 12
+	WorldSize        int     = 1024
+	ScreenWidth      int32   = 1920
+	ScreenHeight     int32   = 1080
+	BaseRenderWidth  int32   = 1920
+	BaseRenderHeight int32   = 1080
 )
