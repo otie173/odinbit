@@ -23,6 +23,7 @@ func New(addr string, manager *manager.Manager) *Server {
 
 func (s *Server) Load() {
 	s.manager.Components.Textures.LoadTextures()
+	s.manager.Components.Blocks.LoadBlocks()
 	s.manager.Components.Overworld.Generate()
 }
 

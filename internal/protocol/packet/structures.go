@@ -1,5 +1,7 @@
 package packet
 
+import "github.com/otie173/odinbit/internal/server/game/blocks"
+
 // Structures for create opcode mappings
 type TextureRequest struct{}
 
@@ -7,8 +9,13 @@ type TextureData struct {
 	Textures map[string]ServerTexture
 }
 
-type PlayerHandshake struct {
+type ConnectRequest struct {
 	Username string
+}
+
+type ConnectResponse struct {
+	TexturesData map[string]ServerTexture
+	BlocksData   blocks.Materials
 }
 
 type WorldUpdate struct {

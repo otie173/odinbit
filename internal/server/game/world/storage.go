@@ -1,7 +1,6 @@
 package world
 
 import (
-	"log"
 	"math"
 
 	"github.com/kelindar/binary"
@@ -20,7 +19,6 @@ func newStorage() *storage {
 func (s *storage) addBlock(id uint8, passable uint8, x, y int16) {
 	block := Block{TextureID: id, Passable: passable}
 	if s.blocks[x][y].TextureID == 0 || s.blocks[x][y].Passable == 1 {
-		log.Println("Блока нет, поставил материал")
 		s.blocks[x][y] = block
 	}
 }

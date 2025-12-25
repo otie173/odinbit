@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/otie173/odinbit/internal/server/core/ticker"
+	"github.com/otie173/odinbit/internal/server/game/blocks"
 	"github.com/otie173/odinbit/internal/server/game/player"
 	"github.com/otie173/odinbit/internal/server/game/texture"
 	"github.com/otie173/odinbit/internal/server/game/world"
@@ -16,6 +17,7 @@ type Components struct {
 	Textures  *texture.TexturePack
 	Overworld *world.World
 	Players   player.Storage
+	Blocks    *blocks.Storage
 
 	WorldHandler  *world.Handler
 	PlayerHandler *player.Handler

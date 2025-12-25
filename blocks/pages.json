@@ -1,0 +1,17 @@
+{
+  "wood": {
+    "pages": [
+      { "number": 1, "blocks": ["house"] }
+    ]
+  },
+  "stone": {
+    "pages": [
+      { "number": 1, "blocks": [] }
+    ]
+  },
+  "metal": {
+    "pages": [
+      { "number": 1, "blocks": [] }
+    ]
+  }
+}

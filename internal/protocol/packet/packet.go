@@ -18,6 +18,11 @@ const (
 	CategoryInventory
 )
 
+const (
+	OpcodeConnectRequest  = 0
+	OpcodeConnectResponse = 1
+)
+
 // Enum for texture opcodes
 const (
 	OpcodeTextureData PacketOpcode = 1000 + iota

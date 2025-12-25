@@ -12,6 +12,7 @@ import (
 	"github.com/otie173/odinbit/internal/pkg/server"
 	"github.com/otie173/odinbit/internal/server/core/manager"
 	"github.com/otie173/odinbit/internal/server/core/ticker"
+	"github.com/otie173/odinbit/internal/server/game/blocks"
 	"github.com/otie173/odinbit/internal/server/game/player"
 	"github.com/otie173/odinbit/internal/server/game/texture"
 	"github.com/otie173/odinbit/internal/server/game/world"
@@ -56,6 +57,7 @@ func main() {
 	textures := texture.NewPack()
 	overworld := world.New(textures)
 	playerStorage := player.NewStorage(db, 16)
+	blocksStorage := blocks.NewStorage()
 
 	textureHandler := texture.NewHandler(textures)
 	playerHandler := player.NewHandler(playerStorage)
@@ -74,6 +76,7 @@ func main() {
 		Textures:      textures,
 		Overworld:     overworld,
 		Players:       playerStorage,
+		Blocks:        blocksStorage,
 		WorldHandler:  worldHandler,
 		PlayerHandler: playerHandler,
 		Handler:       handler,
