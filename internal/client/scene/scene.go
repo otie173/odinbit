@@ -167,7 +167,7 @@ func (h *Handler) Handle() {
 				nicknameEdit = !nicknameEdit
 			}
 			if raygui.TextBox(rl.NewRectangle(fieldX, fieldY+fieldSpacing, fieldWidth, fieldHeight), &tcpAddress, 16, tcpAddressEdit) {
-				httpAddressEdit = !tcpAddressEdit
+				tcpAddressEdit = !tcpAddressEdit
 			}
 
 			buttonWidth := h.scale(350)
