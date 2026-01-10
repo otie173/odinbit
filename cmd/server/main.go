@@ -66,7 +66,7 @@ func main() {
 	router := http.NewRouter(chi.NewRouter())
 	handler := http.NewHandler(router, textures, overworld)
 
-	dispatcher := tcp.NewDispatcher(playerStorage, textureHandler, overworld)
+	dispatcher := tcp.NewDispatcher(playerStorage, textureHandler, blocksStorage, overworld)
 	listener := tcp.NewListener(dispatcher)
 
 	tps := 10

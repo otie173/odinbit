@@ -11,7 +11,8 @@ type Packet struct {
 
 // Enum for packet categories
 const (
-	CategoryTexture PacketCategory = iota
+	CategoryConnection PacketCategory = iota
+	CategoryTexture
 	CategoryWorld
 	CategoryPlayer
 	CategoryMob

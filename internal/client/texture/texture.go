@@ -14,6 +14,11 @@ var (
 	MetalMaterial rl.Texture2D
 )
 
+type Texture struct {
+	Id   uint8
+	Path string
+}
+
 type Storage struct {
 	texture map[string]uint8
 	id      map[uint8]rl.Texture2D

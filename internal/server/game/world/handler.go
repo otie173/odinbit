@@ -4,9 +4,9 @@ import (
 	"log"
 
 	"github.com/kelindar/binary"
-	"github.com/minio/minlz"
 	"github.com/otie173/odinbit/internal/protocol/packet"
 	"github.com/otie173/odinbit/internal/server/game/player"
+	"github.com/otie173/odinbit/internal/server/net/compress"
 )
 
 type Handler struct {
@@ -19,14 +19,6 @@ func NewHandler(world *World, players player.Storage) *Handler {
 		World:   world,
 		players: players,
 	}
-}
-
-func (r *Handler) compressPacket(binaryPacket []byte) ([]byte, error) {
-	compressedData, err := minlz.Encode(nil, binaryPacket, minlz.LevelSmallest)
-	if err != nil {
-		return nil, err
-	}
-	return compressedData, nil
 }
 
 func (r *Handler) Handle() {
@@ -62,7 +54,7 @@ func (r *Handler) Handle() {
 				log.Printf("Error! Cant marshal world update packet: %v\n", err)
 			}
 
-			compressedPkt, err := r.compressPacket(binaryPkt)
+			compressedPkt, err := compress.CompressPacket(binaryPkt)
 			if err != nil {
 				log.Printf("Error! Cant compress world update packet: %v\n", err)
 			}

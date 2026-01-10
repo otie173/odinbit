@@ -19,7 +19,7 @@ import (
 	"github.com/otie173/odinbit/internal/client/texture"
 	"github.com/otie173/odinbit/internal/client/world"
 	"github.com/otie173/odinbit/internal/protocol/packet"
-	"github.com/vmihailenco/msgpack/v5"
+	//"github.com/vmihailenco/msgpack/v5"
 )
 
 var (
@@ -183,18 +183,20 @@ func (h *Handler) Handle() {
 			buttonY := panelY + h.scale(420)
 			if raygui.Button(rl.NewRectangle(buttonX, buttonY, buttonWidth, buttonHeight), "Connect") {
 				if !h.netModule.IsConnected() {
-					data, err := h.netModule.LoadTextures("http://0.0.0.0:9999")
-					if err != nil {
-						log.Printf("Error! Cant load textures from server: %v\n", err)
-						return
-					}
+					/*
+						data, err := h.netModule.LoadTextures("http://0.0.0.0:9999")
+						if err != nil {
+							log.Printf("Error! Cant load textures from server: %v\n", err)
+							return
+						}
 
-					pkt := packet.Packet{}
-					if err := msgpack.Unmarshal(data, &pkt); err != nil {
-						log.Printf("Error! Cant unmarshal body: %v\n", err)
-						return
-					}
-					h.netModule.Dispatch(nil, pkt.Category, pkt.Opcode, pkt.Payload)
+						pkt := packet.Packet{}
+						if err := msgpack.Unmarshal(data, &pkt); err != nil {
+							log.Printf("Error! Cant unmarshal body: %v\n", err)
+							return
+						}
+						h.netModule.Dispatch(nil, pkt.Category, pkt.Opcode, pkt.Payload)
+					*/
 
 					if err := h.netModule.Connect(tcpAddress); err != nil {
 						log.Printf("Error! Cant connect to server: %v\n", err)
@@ -202,26 +204,40 @@ func (h *Handler) Handle() {
 					} else {
 						log.Printf("Success! Connected to %s\n", tcpAddress)
 
-						pktStructure := packet.PlayerHandshake{Username: nickname}
+						/*
+							pktStructure := packet.PlayerHandshake{Username: nickname}
+							binaryStructure, err := binary.Marshal(&pktStructure)
+							if err != nil {
+								log.Printf("Error! Cant marshal player handshake structure: %v\n", err)
+							}
+
+							pkt := packet.Packet{
+								Category: packet.CategoryPlayer,
+								Opcode:   packet.OpcodePlayerHandshake,
+								Payload:  binaryStructure,
+							}
+						*/
+
+						pktStructure := packet.ConnectRequest{Username: nickname}
 						binaryStructure, err := binary.Marshal(&pktStructure)
 						if err != nil {
-							log.Printf("Error! Cant marshal player handshake structure: %v\n", err)
+							log.Printf("Error! Cant marshal player connect request structure: %v\n", err)
 						}
 
 						pkt := packet.Packet{
 							Category: packet.CategoryPlayer,
-							Opcode:   packet.OpcodePlayerHandshake,
+							Opcode:   packet.OpcodeConnectRequest,
 							Payload:  binaryStructure,
 						}
 
 						data, err := binary.Marshal(&pkt)
 						if err != nil {
-							log.Printf("Error! Cant marshal player handshake packet: %v\n", err)
+							log.Printf("Error! Cant marshal player connect request packet: %v\n", err)
 						}
 
 						compressedPkt, err := compress.CompressPkt(data)
 						if err != nil {
-							log.Printf("Error! Cant compress player handshake packet: %v\n", err)
+							log.Printf("Error! Cant compress player connect request packet: %v\n", err)
 						}
 
 						h.netModule.SendData(compressedPkt)

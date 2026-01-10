@@ -1,6 +1,7 @@
 package client
 
 import (
+	//"log"
 	"sync/atomic"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -16,6 +17,11 @@ import (
 	"github.com/otie173/odinbit/internal/server/core/ticker"
 )
 
+var (
+	MainChan  = make(chan texture.Texture)
+	ReadyChan = make(chan bool)
+)
+
 type Client struct {
 	title                     string
 	screenWidth, screenHeight int32
@@ -28,7 +34,7 @@ type Client struct {
 
 func New(title string, screenWidth, screenHeight int32) *Client {
 	textureStorage := texture.New()
-	netDispatcher := net.NewDispatcher(textureStorage)
+	netDispatcher := net.NewDispatcher(MainChan, ReadyChan, textureStorage)
 	netLoader := net.NewLoader()
 	netModule := net.New(netDispatcher, netLoader)
 	inventoryHandler := inventory.NewHandler(inventory.NewInventory())
@@ -71,6 +77,25 @@ func (c *Client) Load() {
 }
 
 func (c *Client) update() {
+	select {
+	case ready, ok := <-ReadyChan:
+		if !ok {
+			ReadyChan = nil
+			break
+		}
+		c.netModule.SetReady(ready)
+	case texture, ok := <-MainChan:
+		if !ok {
+			MainChan = nil
+			break
+		}
+		c.textureStorage.LoadTexture(texture.Id, texture.Path)
+		//log.Println(texture)
+	default:
+		goto UPDATE
+	}
+
+UPDATE:
 	c.sceneHandler.Handle()
 	c.deviceHandler.Handle()
 	camera.UpdateCamera()

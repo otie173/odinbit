@@ -16,6 +16,7 @@ type Module struct {
 	running    bool
 	connection net.Conn
 	connected  bool
+	readyChan  chan bool
 	ready      bool
 	dispatcher *Dispatcher
 	loader     *Loader
@@ -34,10 +35,10 @@ func (m *Module) Run() {
 		time.Sleep(100 * time.Millisecond)
 	}
 
-	log.Println(m.connection, m.connected, m.ready)
-	if !m.ready {
-		m.ready = true
-	}
+	//log.Println(m.connection, m.connected, m.ready)
+	//if !m.ready {
+	//		m.ready = true
+	//	}
 
 	if err := m.listen(); err != nil {
 		log.Printf("Error with read buffer from server: %v\n", err)
@@ -95,6 +96,10 @@ func (m *Module) LoadTextures(addr string) ([]byte, error) {
 		return nil, err
 	}
 	return data, nil
+}
+
+func (m *Module) SetReady(flag bool) {
+	m.ready = flag
 }
 
 func (m *Module) IsReady() bool {

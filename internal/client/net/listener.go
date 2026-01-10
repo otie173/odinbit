@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/kelindar/binary"
-	"github.com/minio/minlz"
+	"github.com/otie173/odinbit/internal/client/net/compress"
 	"github.com/otie173/odinbit/internal/protocol/packet"
 	"github.com/vmihailenco/msgpack/v5"
 )
@@ -57,14 +57,6 @@ func (l *Listener) ConvertPacket(pktCategory packet.PacketCategory, pktOpcode pa
 	return binaryPacket, nil
 }
 
-func parsePacket(buffer []byte) (packet.Packet, error) {
-	pkt := packet.Packet{}
-	if err := msgpack.Unmarshal(buffer, &pkt); err != nil {
-		return packet.Packet{}, err
-	}
-	return pkt, nil
-}
-
 func parseBinaryPacket(buffer []byte) (packet.Packet, error) {
 	pkt := packet.Packet{}
 	if err := binary.Unmarshal(buffer, &pkt); err != nil {
@@ -94,15 +86,6 @@ func (l *Listener) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory, p
 	l.dispatcher.Dispatch(conn, pktCategory, pktOpcode, data)
 }
 
-func (l *Listener) decompressPacket(compressedPkt []byte) ([]byte, error) {
-	//log.Printf("Info! Compressed packet lenght: %d\n", len(compressedPkt))
-	decompressedData, err := minlz.Decode(nil, compressedPkt)
-	if err != nil {
-		return nil, err
-	}
-	return decompressedData, nil
-}
-
 func (l *Listener) Handle() {
 	log.Println("Началась обработка соединения")
 	buffer := make([]byte, 1024*1024) // 1MB buffer
@@ -116,7 +99,7 @@ func (l *Listener) Handle() {
 			return
 		}
 
-		compressedPkt, err := l.decompressPacket(buffer[:n])
+		compressedPkt, err := compress.DecompressedPkt(buffer[:n])
 		if err != nil {
 			log.Printf("Error! Cant decompress packet: %v\n", err)
 		}

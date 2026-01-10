@@ -39,3 +39,7 @@ func (s *Storage) LoadBlocks() {
 		log.Printf("Error! Cant unmarshal binary data from pages json file: %v\n", err)
 	}
 }
+
+func (s *Storage) GetBlocks() Materials {
+	return s.Blocks
+}

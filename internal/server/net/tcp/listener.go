@@ -5,8 +5,8 @@ import (
 	"net"
 
 	"github.com/kelindar/binary"
-	"github.com/minio/minlz"
 	"github.com/otie173/odinbit/internal/protocol/packet"
+	"github.com/otie173/odinbit/internal/server/net/compress"
 )
 
 type Listener struct {
@@ -17,14 +17,6 @@ func NewListener(dispatcher *Dispatcher) *Listener {
 	return &Listener{
 		dispatcher: dispatcher,
 	}
-}
-
-func (l *Listener) decompressPacket(compressedPkt []byte) ([]byte, error) {
-	decompressedPkt, err := minlz.Decode(nil, compressedPkt)
-	if err != nil {
-		return nil, err
-	}
-	return decompressedPkt, nil
 }
 
 func (l *Listener) parsePacket(buffer []byte) (packet.Packet, error) {
@@ -59,7 +51,7 @@ func (l *Listener) listen(conn net.Conn) {
 			return
 		}
 
-		decompressedPkt, err := l.decompressPacket(buffer[:n])
+		decompressedPkt, err := compress.DecompressedPkt(buffer[:n])
 		if err != nil {
 			log.Printf("Error! Cant decompress packet from %s: %v\n", conn.RemoteAddr().String(), err)
 		}

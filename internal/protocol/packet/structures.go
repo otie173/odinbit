@@ -14,7 +14,7 @@ type ConnectRequest struct {
 }
 
 type ConnectResponse struct {
-	TexturesData map[string]ServerTexture
+	TexturesData []byte
 	BlocksData   blocks.Materials
 }
 

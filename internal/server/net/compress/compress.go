@@ -2,12 +2,12 @@ package compress
 
 import "github.com/minio/minlz"
 
-func CompressPkt(pkt []byte) ([]byte, error) {
-	compressedPkt, err := minlz.Encode(nil, pkt, minlz.LevelSmallest)
+func CompressPacket(binaryPacket []byte) ([]byte, error) {
+	compressedData, err := minlz.Encode(nil, binaryPacket, minlz.LevelSmallest)
 	if err != nil {
 		return nil, err
 	}
-	return compressedPkt, nil
+	return compressedData, nil
 }
 
 func DecompressedPkt(compressedPkt []byte) ([]byte, error) {

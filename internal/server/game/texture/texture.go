@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/kelindar/binary"
 	"github.com/otie173/odinbit/internal/protocol/packet"
-	"github.com/vmihailenco/msgpack/v5"
 )
 
 var (
@@ -58,7 +58,7 @@ func (t *TexturePack) GetID(name string) uint8 {
 
 func (t *TexturePack) GetTextures() ([]byte, error) {
 	texturesStruct := packet.TextureData{Textures: t.textures}
-	binaryTextures, err := msgpack.Marshal(texturesStruct)
+	binaryTextures, err := binary.Marshal(texturesStruct)
 	if err != nil {
 		return nil, err
 	}

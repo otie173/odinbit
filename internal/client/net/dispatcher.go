@@ -9,27 +9,60 @@ import (
 	"github.com/otie173/odinbit/internal/client/texture"
 	"github.com/otie173/odinbit/internal/client/world"
 	"github.com/otie173/odinbit/internal/protocol/packet"
-	"github.com/vmihailenco/msgpack/v5"
 )
 
 type Dispatcher struct {
+	mainChan       chan texture.Texture
+	readyChan      chan bool
 	textureStorage *texture.Storage
 }
 
-func NewDispatcher(storage *texture.Storage) *Dispatcher {
+func NewDispatcher(mainChan chan texture.Texture, readyChan chan bool, storage *texture.Storage) *Dispatcher {
 	return &Dispatcher{
+		mainChan:       mainChan,
+		readyChan:      readyChan,
 		textureStorage: storage,
 	}
 }
 
 func (d *Dispatcher) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory, pktOpcode packet.PacketOpcode, pktData []byte) {
 	switch pktCategory {
+	case packet.CategoryConnection:
+		switch pktOpcode {
+		case packet.OpcodeConnectResponse:
+			log.Printf("Какая-то инфа с сервака пришла: %d bytes\n", len(pktData))
+
+			pktStructure := packet.ConnectResponse{}
+			if err := binary.Unmarshal(pktData, &pktStructure); err != nil {
+				log.Printf("Error! Cant unmarshal connect response packet: %v\n", err)
+			}
+
+			var textures packet.TextureData
+			if err := binary.Unmarshal(pktStructure.TexturesData, &textures); err != nil {
+				log.Printf("Error! Cant unmarshal texture data: %v\n", err)
+			}
+			//log.Println(textures)
+
+			for _, data := range textures.Textures {
+				loadedTexture := texture.Texture{
+					Id:   data.Id,
+					Path: data.Path,
+				}
+				d.mainChan <- loadedTexture
+			}
+			d.readyChan <- true
+			close(d.mainChan)
+			close(d.readyChan)
+
+			//log.Println(pktStructure.BlocksData)
+
+		}
 	case packet.CategoryTexture:
 		switch pktOpcode {
 		case packet.OpcodeTextureData:
 			var pktStructure packet.TextureData
 
-			if err := msgpack.Unmarshal(pktData, &pktStructure); err != nil {
+			if err := binary.Unmarshal(pktData, &pktStructure); err != nil {
 				log.Printf("Error! Cant unmarshal texture data: %v\n", err)
 			}
 
