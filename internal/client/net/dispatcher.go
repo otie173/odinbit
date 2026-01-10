@@ -50,8 +50,8 @@ func (d *Dispatcher) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory,
 				d.mainChan <- loadedTexture
 			}
 			d.readyChan <- true
-			close(d.mainChan)
-			close(d.readyChan)
+			//close(d.mainChan)
+			//close(d.readyChan)
 		}
 	case packet.CategoryTexture:
 		switch pktOpcode {
