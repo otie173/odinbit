@@ -34,10 +34,7 @@ var (
 	nickname     string = "Nickname"
 	nicknameEdit bool   = false
 
-	httpAddress     string = "HTTP address"
-	httpAddressEdit bool   = false
-
-	tcpAddress     string = "TCP address"
+	tcpAddress     string = "Address"
 	tcpAddressEdit bool   = false
 )
 
@@ -169,11 +166,8 @@ func (h *Handler) Handle() {
 			if raygui.TextBox(rl.NewRectangle(fieldX, fieldY, fieldWidth, fieldHeight), &nickname, 64, nicknameEdit) {
 				nicknameEdit = !nicknameEdit
 			}
-			if raygui.TextBox(rl.NewRectangle(fieldX, fieldY+fieldSpacing, fieldWidth, fieldHeight), &httpAddress, 16, httpAddressEdit) {
-				httpAddressEdit = !httpAddressEdit
-			}
-			if raygui.TextBox(rl.NewRectangle(fieldX, fieldY+fieldSpacing*2, fieldWidth, fieldHeight), &tcpAddress, 64, tcpAddressEdit) {
-				tcpAddressEdit = !tcpAddressEdit
+			if raygui.TextBox(rl.NewRectangle(fieldX, fieldY+fieldSpacing, fieldWidth, fieldHeight), &tcpAddress, 16, tcpAddressEdit) {
+				httpAddressEdit = !tcpAddressEdit
 			}
 
 			buttonWidth := h.scale(350)
