@@ -15,6 +15,7 @@ var (
 const (
 	Title Scene = iota
 	Connect
+	Connecting
 	Game
 	ConnClosed
 )

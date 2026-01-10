@@ -100,7 +100,7 @@ UPDATE:
 	c.deviceHandler.Handle()
 	camera.UpdateCamera()
 
-	if c.sceneHandler.GetScene() == common.Connect && c.netModule.IsReady() {
+	if c.sceneHandler.GetScene() == common.Connecting && c.netModule.IsReady() {
 		c.sceneHandler.SetScene(common.Game)
 	}
 }

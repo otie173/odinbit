@@ -205,10 +205,33 @@ func (h *Handler) Handle() {
 						}
 
 						h.netModule.SendData(compressedPkt)
+						h.SetScene(common.Connecting)
 					}
 				}
 			}
 		})
+	case common.Connecting:
+		rl.BeginDrawing()
+		rl.ClearBackground(bkgColor)
+		h.drawBackground()
+
+		panelWidth := h.scale(900)
+		panelHeight := h.scale(350)
+		panelX := float32(h.screenWidth)/2 - panelWidth/2
+		panelY := float32(h.screenHeight)/2 - panelHeight/2
+
+		rl.DrawRectangle(roundToInt32(panelX), roundToInt32(panelY), sizeToInt32(panelWidth), sizeToInt32(panelHeight), transparentColor)
+		raygui.GroupBox(rl.NewRectangle(panelX, panelY, panelWidth, panelHeight), "Notification")
+
+		text := "Connecting..."
+		fontSize := float32(h.scaledInt(32))
+		spacing := h.scale(2)
+		textSize := rl.MeasureTextEx(raygui.GetFont(), text, fontSize, spacing)
+		textX := panelX + panelWidth/2 - textSize.X/2
+		textY := panelY + h.scale(160)
+		raygui.Label(rl.NewRectangle(textX, textY, textSize.X, textSize.Y), text)
+
+		rl.EndDrawing()
 	case common.Game:
 		if selectedMode == multiplayer && !h.netModule.IsConnected() {
 			h.SetScene(common.ConnClosed)
