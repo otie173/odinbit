@@ -41,7 +41,6 @@ func (d *Dispatcher) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory,
 			if err := binary.Unmarshal(pktStructure.TexturesData, &textures); err != nil {
 				log.Printf("Error! Cant unmarshal texture data: %v\n", err)
 			}
-			//log.Println(textures)
 
 			for _, data := range textures.Textures {
 				loadedTexture := texture.Texture{
@@ -53,9 +52,6 @@ func (d *Dispatcher) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory,
 			d.readyChan <- true
 			close(d.mainChan)
 			close(d.readyChan)
-
-			//log.Println(pktStructure.BlocksData)
-
 		}
 	case packet.CategoryTexture:
 		switch pktOpcode {
@@ -92,8 +88,6 @@ func (d *Dispatcher) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory,
 	case packet.CategoryWorld:
 		switch pktOpcode {
 		case packet.OpcodeWorldUpdate:
-			//log.Println("Received world area with size in bytes: ", len(pktData))
-
 			var pktStructure packet.WorldUpdate
 			var blocks []world.Block
 
@@ -111,8 +105,6 @@ func (d *Dispatcher) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory,
 			world.Overworld.EndX = pktStructure.EndX
 			world.Overworld.EndY = pktStructure.EndY
 			world.OverworldMu.Unlock()
-
-			// log.Println(pktStructure.StartX, pktStructure.StartY, pktStructure.EndX, pktStructure.EndY)
 		}
 	}
 }

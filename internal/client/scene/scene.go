@@ -19,7 +19,6 @@ import (
 	"github.com/otie173/odinbit/internal/client/texture"
 	"github.com/otie173/odinbit/internal/client/world"
 	"github.com/otie173/odinbit/internal/protocol/packet"
-	//"github.com/vmihailenco/msgpack/v5"
 )
 
 var (
@@ -183,40 +182,11 @@ func (h *Handler) Handle() {
 			buttonY := panelY + h.scale(420)
 			if raygui.Button(rl.NewRectangle(buttonX, buttonY, buttonWidth, buttonHeight), "Connect") {
 				if !h.netModule.IsConnected() {
-					/*
-						data, err := h.netModule.LoadTextures("http://0.0.0.0:9999")
-						if err != nil {
-							log.Printf("Error! Cant load textures from server: %v\n", err)
-							return
-						}
-
-						pkt := packet.Packet{}
-						if err := msgpack.Unmarshal(data, &pkt); err != nil {
-							log.Printf("Error! Cant unmarshal body: %v\n", err)
-							return
-						}
-						h.netModule.Dispatch(nil, pkt.Category, pkt.Opcode, pkt.Payload)
-					*/
-
 					if err := h.netModule.Connect(tcpAddress); err != nil {
 						log.Printf("Error! Cant connect to server: %v\n", err)
 						return
 					} else {
 						log.Printf("Success! Connected to %s\n", tcpAddress)
-
-						/*
-							pktStructure := packet.PlayerHandshake{Username: nickname}
-							binaryStructure, err := binary.Marshal(&pktStructure)
-							if err != nil {
-								log.Printf("Error! Cant marshal player handshake structure: %v\n", err)
-							}
-
-							pkt := packet.Packet{
-								Category: packet.CategoryPlayer,
-								Opcode:   packet.OpcodePlayerHandshake,
-								Payload:  binaryStructure,
-							}
-						*/
 
 						pktStructure := packet.ConnectRequest{Username: nickname}
 						binaryStructure, err := binary.Marshal(&pktStructure)
@@ -349,30 +319,6 @@ func (h *Handler) Handle() {
 		textContent := fmt.Sprintf("X: %.0f Y: %.0f", playerX, playerY)
 		textPos := rl.NewVector2(25, 185)
 		rl.DrawTextEx(textFont, textContent, textPos, 24, 2, rl.White)
-
-		/*
-			textFont := raygui.GetFont()
-			// надпись материала
-			textContent := fmt.Sprintf("Material: %s", common.MaterialMap[h.inventoryHandler.GetMaterial()])
-			textPos := rl.NewVector2(10, 5)
-			rl.DrawTextEx(textFont, textContent, textPos, 32, 2, rl.White)
-
-			// надпись дерева
-			textContent = fmt.Sprintf("Wood: ")
-			textPos = rl.NewVector2(10, 45)
-			rl.DrawTextEx(textFont, textContent, textPos, 32, 2, rl.White)
-
-			// надпись камня
-			textContent = fmt.Sprintf("Stone: ")
-			textPos = rl.NewVector2(10, 85)
-			rl.DrawTextEx(textFont, textContent, textPos, 32, 2, rl.White)
-
-			// надпись металла
-			textContent = fmt.Sprintf("Metal: ")
-			textPos = rl.NewVector2(10, 125)
-			rl.DrawTextEx(textFont, textContent, textPos, 32, 2, rl.White)
-		*/
-
 		rl.EndDrawing()
 	case common.ConnClosed:
 		rl.BeginDrawing()
