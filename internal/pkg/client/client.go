@@ -38,7 +38,7 @@ func New(title string, screenWidth, screenHeight int32) *Client {
 	netLoader := net.NewLoader()
 	netModule := net.New(netDispatcher, netLoader)
 	inventoryHandler := inventory.NewHandler(inventory.NewInventory())
-	sceneHandler := scene.New(screenWidth, screenHeight, common.Title, netModule, inventoryHandler)
+	sceneHandler := scene.New(screenWidth, screenHeight, common.Title, netModule, inventoryHandler, textureStorage)
 	deviceHandler := device.New(sceneHandler, netModule, inventoryHandler, textureStorage)
 
 	return &Client{

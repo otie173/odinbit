@@ -13,6 +13,7 @@ import (
 	"github.com/otie173/odinbit/internal/client/camera"
 	"github.com/otie173/odinbit/internal/client/common"
 	"github.com/otie173/odinbit/internal/client/inventory"
+	"github.com/otie173/odinbit/internal/client/material"
 	"github.com/otie173/odinbit/internal/client/net"
 	"github.com/otie173/odinbit/internal/client/net/compress"
 	"github.com/otie173/odinbit/internal/client/player"
@@ -51,9 +52,10 @@ type Handler struct {
 	netModule        *net.Module
 	uiScale          float32
 	inventoryHandler *inventory.Handler
+	textureStorage   *texture.Storage
 }
 
-func New(screenWidth, screenHeight int32, scene common.Scene, netModule *net.Module, inventoryHandler *inventory.Handler) *Handler {
+func New(screenWidth, screenHeight int32, scene common.Scene, netModule *net.Module, inventoryHandler *inventory.Handler, textureStorage *texture.Storage) *Handler {
 	scaleX := float32(screenWidth) / float32(common.BaseRenderWidth)
 	scaleY := float32(screenHeight) / float32(common.BaseRenderHeight)
 	uiScale := float32(math.Min(float64(scaleX), float64(scaleY)))
@@ -67,6 +69,7 @@ func New(screenWidth, screenHeight int32, scene common.Scene, netModule *net.Mod
 		netModule:        netModule,
 		uiScale:          uiScale,
 		inventoryHandler: inventoryHandler,
+		textureStorage:   textureStorage,
 	}
 }
 
@@ -288,6 +291,31 @@ func (h *Handler) Handle() {
 			rl.DrawTextureEx(SlotTexture, slot4Pos, 0, slotScale, rl.White)
 			rl.DrawTextureEx(SlotTexture, slot5Pos, 0, slotScale, rl.White)
 			rl.DrawTextureEx(SlotTexture, slot6Pos, 0, slotScale, rl.White)
+
+			itemScale := float32(6.0)
+			//item1Pos := rl.NewVector2(float32(h.screenWidth)/2-190, float32(h.screenHeight)/2-152)
+			itemPos := []rl.Vector2{
+				rl.NewVector2(float32(h.screenWidth)/2-190, float32(h.screenHeight)/2-152),
+				rl.NewVector2(float32(h.screenWidth)/2-36, float32(h.screenHeight)/2-152),
+				rl.NewVector2(float32(h.screenWidth)/2+115, float32(h.screenHeight)/2-152),
+				rl.NewVector2(float32(h.screenWidth)/2-190, float32(h.screenHeight)/2+5),
+				rl.NewVector2(float32(h.screenWidth)/2-36, float32(h.screenHeight)/2+5),
+				rl.NewVector2(float32(h.screenWidth)/2+115, float32(h.screenHeight)/2+5),
+			}
+
+			pages := material.GetMaterials()
+			neededPage := pages.Wood.Pages[0]
+			for index, block := range neededPage.Blocks {
+				if block == "" {
+					break
+				}
+				textureId := h.textureStorage.GetIdByName(block)
+				texture := h.textureStorage.GetById(textureId)
+				if index >= len(neededPage.Blocks) {
+					break
+				}
+				rl.DrawTextureEx(texture, itemPos[index], 0, itemScale, rl.White)
+			}
 
 			pageString := fmt.Sprintf("Page: %d/%d", CurrentPage, MaxPage)
 			pageStringSize := rl.MeasureTextEx(raygui.GetFont(), pageString, 30, 2)

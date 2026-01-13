@@ -1,7 +1,7 @@
 {
   "wood": {
     "pages": [
-      { "number": 1, "blocks": ["house"] }
+      { "number": 1, "blocks": ["house", "barrel", "windmill", "house2", "bogeyman", "bonfire"] }
     ]
   },
   "stone": {

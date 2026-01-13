@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/kelindar/binary"
+	"github.com/otie173/odinbit/internal/client/material"
 	"github.com/otie173/odinbit/internal/client/player"
 	"github.com/otie173/odinbit/internal/client/texture"
 	"github.com/otie173/odinbit/internal/client/world"
@@ -49,6 +50,8 @@ func (d *Dispatcher) Dispatch(conn *net.Conn, pktCategory packet.PacketCategory,
 				}
 				d.mainChan <- loadedTexture
 			}
+
+			material.LoadMaterials(pktStructure.BlocksData)
 			d.readyChan <- true
 			//close(d.mainChan)
 			//close(d.readyChan)
