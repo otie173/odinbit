@@ -2,6 +2,7 @@ package client
 
 import (
 	//"log"
+	"log"
 	"sync/atomic"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -53,10 +54,12 @@ func New(title string, screenWidth, screenHeight int32) *Client {
 }
 
 func (c *Client) Load() {
-	rl.SetConfigFlags(rl.FlagVsyncHint | rl.FlagWindowUnfocused | rl.FlagFullscreenMode)
+	rl.SetConfigFlags(rl.FlagVsyncHint | rl.FlagWindowUnfocused | rl.FlagFullscreenMode | rl.FlagWindowHighdpi)
 	rl.InitWindow(c.screenWidth, c.screenHeight, c.title)
 	rl.SetTargetFPS(int32(rl.GetMonitorRefreshRate(rl.GetCurrentMonitor())))
 	rl.SetExitKey(0)
+	screenScale := rl.GetWindowScaleDPI()
+	rl.SetMouseScale(screenScale.X, screenScale.Y)
 	camera.LoadCamera()
 	world.Overworld.Textures = c.textureStorage
 	scene.BkgTexture = rl.LoadTexture("resources/backgrounds/background1.png")
