@@ -20,6 +20,7 @@ import (
 	"github.com/otie173/odinbit/internal/client/texture"
 	"github.com/otie173/odinbit/internal/client/world"
 	"github.com/otie173/odinbit/internal/protocol/packet"
+	"github.com/otie173/odinbit/internal/server/game/blocks"
 )
 
 var (
@@ -304,7 +305,18 @@ func (h *Handler) Handle() {
 			}
 
 			pages := material.GetMaterials()
-			neededPage := pages.Wood.Pages[0]
+
+			currentMaterial := h.inventoryHandler.GetMaterial()
+			var neededPage blocks.Page
+			switch currentMaterial {
+			case common.Wood:
+				neededPage = pages.Wood.Pages[0]
+			case common.Stone:
+				neededPage = pages.Stone.Pages[0]
+			case common.Metal:
+				neededPage = pages.Metal.Pages[0]
+			}
+
 			for index, block := range neededPage.Blocks {
 				if block == "" {
 					break

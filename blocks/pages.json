@@ -6,7 +6,7 @@
   },
   "stone": {
     "pages": [
-      { "number": 1, "blocks": [] }
+      { "number": 1, "blocks": ["wall", "window"] }
     ]
   },
   "metal": {

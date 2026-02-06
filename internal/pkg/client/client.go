@@ -1,8 +1,6 @@
 package client
 
 import (
-	//"log"
-	"log"
 	"sync/atomic"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
